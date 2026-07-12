@@ -5,6 +5,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../shared/widgets/category_visuals.dart';
 import '../../transactions/presentation/transaction_providers.dart';
+import 'budget_detail_page.dart';
 import 'budget_providers.dart';
 import 'set_budget_sheet.dart';
 
@@ -55,7 +56,16 @@ class BudgetsPage extends ConsumerWidget {
 
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
-                  child: Padding(
+                  clipBehavior: Clip.antiAlias,
+                  child: InkWell(
+                    // Tap a budget to see the transactions that make up its
+                    // spent amount for this month.
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (_) => BudgetDetailPage(budget: budget, category: category),
+                      ),
+                    ),
+                    child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -107,6 +117,7 @@ class BudgetsPage extends ConsumerWidget {
                           ],
                         ),
                       ],
+                    ),
                     ),
                   ),
                 );

@@ -1,10 +1,23 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/session/session_provider.dart';
+import '../../transactions/domain/transaction.dart';
+import '../../transactions/presentation/transaction_providers.dart';
 import '../data/budget_repository.dart';
 import '../domain/budget.dart';
 
 final budgetRepositoryProvider = Provider<BudgetRepository>((ref) => BudgetRepository());
+
+/// Expense transactions for one category, used by the budget detail view
+/// to show exactly which transactions make up a budget's spent amount.
+/// Keyed by categoryId; the detail page narrows further to the budget's
+/// month/year. Fetched independently of the Transactions page's own
+/// filter state so opening a budget never depends on what's filtered
+/// there. Matches the backend's spent calculation (category + expense).
+final budgetTransactionsProvider = FutureProvider.family<List<AppTransaction>, int>((ref, categoryId) {
+  ref.watch(sessionIdProvider);
+  return ref.read(transactionRepositoryProvider).list(categoryId: categoryId);
+});
 
 /// Which month/year the Budgets screen is currently viewing. Defaults to
 /// the current month; a future "previous/next month" control just
