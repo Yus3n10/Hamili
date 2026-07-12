@@ -8,6 +8,7 @@ import '../../auth/presentation/auth_providers.dart';
 import '../../transactions/presentation/add_edit_transaction_page.dart';
 import '../../transactions/presentation/transaction_providers.dart';
 import '../../transactions/presentation/widgets/transaction_tile.dart';
+import 'widgets/insights_card.dart';
 import 'widgets/summary_card.dart';
 
 /// Balance/income/expense figures are computed client-side from the
@@ -98,7 +99,9 @@ class DashboardPage extends ConsumerWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                const SizedBox(height: 12),
+                const InsightsCard(),
+                const SizedBox(height: 12),
                 Text('Recent Transactions', style: Theme.of(context).textTheme.titleMedium),
                 const SizedBox(height: 8),
                 if (recent.isEmpty)
