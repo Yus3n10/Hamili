@@ -67,8 +67,10 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
       ref.invalidateSelf();
       // Budgets compute spent_amount live from transactions, so a new
       // expense here means every budget's usage figure is now stale until
-      // this refetches.
+      // this refetches. The per-budget drill-down list is derived the same
+      // way, so invalidate the whole family too or it serves a stale cache.
       ref.invalidate(budgetsProvider);
+      ref.invalidate(budgetTransactionsProvider);
       invalidateAnalytics(ref);
       await future;
     } on OfflineQueuedException {
@@ -99,6 +101,7 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
       await repo.update(id, categoryId: categoryId, amount: amount, note: note, transactionDate: transactionDate);
       ref.invalidateSelf();
       ref.invalidate(budgetsProvider);
+      ref.invalidate(budgetTransactionsProvider);
       invalidateAnalytics(ref);
       await future;
     } on OfflineQueuedException {
@@ -128,6 +131,7 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
       await repo.delete(id);
       ref.invalidateSelf();
       ref.invalidate(budgetsProvider);
+      ref.invalidate(budgetTransactionsProvider);
       invalidateAnalytics(ref);
       await future;
     } on OfflineQueuedException {

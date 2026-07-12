@@ -48,10 +48,15 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
             ref.invalidate(goalsProvider);
           case 'budgets':
             ref.invalidate(budgetsProvider);
+            ref.invalidate(budgetTransactionsProvider);
           case 'recurring':
             ref.invalidate(recurringProvider);
           case 'transactions':
             ref.invalidate(transactionsProvider);
+            // A transaction change also moves budget usage and the per-budget
+            // drill-down; refresh both so the Budgets tab isn't left stale.
+            ref.invalidate(budgetsProvider);
+            ref.invalidate(budgetTransactionsProvider);
             invalidateAnalytics(ref);
           case 'profile':
             ref.invalidate(currentUserProvider);
