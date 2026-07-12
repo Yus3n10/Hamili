@@ -31,6 +31,21 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
     _startNewSession();
   }
 
+  /// Update the profile (onboarding + profile editor) and reflect the
+  /// new values in the shared user state so the whole app updates.
+  Future<void> updateProfile({
+    String? preferredName,
+    String? preferredCurrency,
+    String? financialGoalText,
+  }) async {
+    final updated = await ref.read(authRepositoryProvider).updateProfile(
+          preferredName: preferredName,
+          preferredCurrency: preferredCurrency,
+          financialGoalText: financialGoalText,
+        );
+    state = AsyncData(updated);
+  }
+
   Future<void> logout() async {
     await ref.read(authRepositoryProvider).logout();
     // Offline cache is keyed globally, not per-account — clear it so a

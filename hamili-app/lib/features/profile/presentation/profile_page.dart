@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../auth/presentation/auth_providers.dart';
+import 'edit_profile_page.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -47,7 +48,15 @@ class ProfilePage extends ConsumerWidget {
                     title: const Text('Financial goal'),
                     subtitle: Text(user.financialGoalText ?? 'Not set yet'),
                   ),
-                  const SizedBox(height: 24),
+                  const SizedBox(height: 16),
+                  FilledButton.icon(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => EditProfilePage(user: user)),
+                    ),
+                    icon: const Icon(Icons.edit_outlined),
+                    label: const Text('Edit profile'),
+                  ),
+                  const SizedBox(height: 12),
                   OutlinedButton(
                     onPressed: () => _confirmLogout(context, ref),
                     child: const Text('Log out'),

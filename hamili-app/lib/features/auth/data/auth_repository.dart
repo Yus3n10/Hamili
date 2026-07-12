@@ -42,6 +42,19 @@ class AuthRepository {
     return AppUser.fromJson(response.data);
   }
 
+  Future<AppUser> updateProfile({
+    String? preferredName,
+    String? preferredCurrency,
+    String? financialGoalText,
+  }) async {
+    final response = await _dio.patch('/auth/me', data: {
+      if (preferredName != null) 'preferred_name': preferredName,
+      if (preferredCurrency != null) 'preferred_currency': preferredCurrency,
+      if (financialGoalText != null) 'financial_goal_text': financialGoalText,
+    });
+    return AppUser.fromJson(response.data);
+  }
+
   Future<bool> hasStoredSession() async {
     final token = await _storage.read(key: AppConstants.accessTokenKey);
     return token != null;

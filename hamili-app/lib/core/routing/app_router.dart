@@ -10,6 +10,7 @@ import '../../features/budgets/presentation/budgets_page.dart';
 import '../../features/chat/presentation/hami_chat_page.dart';
 import '../../features/dashboard/presentation/dashboard_page.dart';
 import '../../features/goals/presentation/goals_page.dart';
+import '../../features/onboarding/presentation/onboarding_page.dart';
 import '../../features/profile/presentation/more_page.dart';
 import '../../features/profile/presentation/profile_page.dart';
 import '../../features/recurring/presentation/recurring_page.dart';
@@ -49,6 +50,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     routes: [
       GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
       GoRoute(path: '/register', builder: (context, state) => const RegisterPage()),
+      GoRoute(path: '/onboarding', builder: (context, state) => const OnboardingPage()),
       GoRoute(path: '/budgets', builder: (context, state) => const BudgetsPage()),
       GoRoute(path: '/goals', builder: (context, state) => const GoalsPage()),
       GoRoute(path: '/recurring', builder: (context, state) => const RecurringPage()),

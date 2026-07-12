@@ -39,7 +39,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             email: _emailController.text.trim(),
             password: _passwordController.text,
           );
-      if (mounted) context.go('/dashboard');
+      if (mounted) context.go('/onboarding');
     } catch (_) {
       setState(() => _errorMessage = 'Something went wrong. Try a different email.');
     } finally {

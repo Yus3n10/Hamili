@@ -69,9 +69,16 @@ class DashboardPage extends ConsumerWidget {
                       children: [
                         const Text('Current Balance', style: TextStyle(color: Colors.white70)),
                         const SizedBox(height: 6),
-                        Text(
-                          CurrencyFormatter.format(balance),
-                          style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w700),
+                        // Gentle count-up so the balance reads as "tallied"
+                        // rather than snapping in.
+                        TweenAnimationBuilder<double>(
+                          tween: Tween(begin: 0, end: balance),
+                          duration: const Duration(milliseconds: 700),
+                          curve: Curves.easeOutCubic,
+                          builder: (context, value, _) => Text(
+                            CurrencyFormatter.format(value),
+                            style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.w700),
+                          ),
                         ),
                       ],
                     ),

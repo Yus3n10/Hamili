@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.security import create_access_token, create_refresh_token, hash_password, verify_password
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
-from app.schemas.user import TokenPair, UserLogin, UserRegister
+from app.schemas.user import TokenPair, UserLogin, UserRegister, UserUpdate
 
 
 class AuthService:
@@ -21,6 +21,11 @@ class AuthService:
             preferred_name=payload.preferred_name,
         )
         return self.repo.create(user)
+
+    def update_profile(self, user: User, payload: UserUpdate) -> User:
+        """Partial profile update — used by onboarding and the profile
+        editor. Only fields the client actually sends are changed."""
+        return self.repo.update(user, **payload.model_dump(exclude_unset=True))
 
     def login(self, payload: UserLogin) -> TokenPair:
         user = self.repo.get_by_email(payload.email)

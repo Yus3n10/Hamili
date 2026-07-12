@@ -31,3 +31,22 @@ def test_register_and_login():
     )
     assert login_response.status_code == 200
     assert "access_token" in login_response.json()
+
+
+def test_update_profile():
+    email = "profile_update@example.com"
+    password = "SecurePass123"
+    client.post("/auth/register", json={"email": email, "password": password, "preferred_name": "Before"})
+    token = client.post("/auth/login", json={"email": email, "password": password}).json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    response = client.patch(
+        "/auth/me",
+        headers=headers,
+        json={"preferred_name": "After", "preferred_currency": "USD", "financial_goal_text": "Save 50k"},
+    )
+    assert response.status_code == 200
+    body = response.json()
+    assert body["preferred_name"] == "After"
+    assert body["preferred_currency"] == "USD"
+    assert body["financial_goal_text"] == "Save 50k"
