@@ -135,7 +135,9 @@ class AgentService:
                     transaction_date=params.get("date") or date.today().isoformat(),
                 ),
             )
-            return ["transactions"]
+            # An expense changes its category's budget usage, so the client
+            # must refresh budgets too — not just the transactions list.
+            return ["transactions", "budgets"] if t_type == "expense" else ["transactions"]
 
         if action == "update_profile":
             AuthService(self.db).update_profile(
