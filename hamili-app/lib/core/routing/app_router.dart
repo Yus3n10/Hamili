@@ -48,13 +48,13 @@ final routerProvider = Provider<GoRouter>((ref) {
       return null;
     },
     routes: [
-      GoRoute(path: '/login', builder: (context, state) => const LoginPage()),
-      GoRoute(path: '/register', builder: (context, state) => const RegisterPage()),
-      GoRoute(path: '/onboarding', builder: (context, state) => const OnboardingPage()),
-      GoRoute(path: '/budgets', builder: (context, state) => const BudgetsPage()),
-      GoRoute(path: '/goals', builder: (context, state) => const GoalsPage()),
-      GoRoute(path: '/recurring', builder: (context, state) => const RecurringPage()),
-      GoRoute(path: '/profile', builder: (context, state) => const ProfilePage()),
+      GoRoute(path: '/login', pageBuilder: (c, s) => _fade(const LoginPage(), s)),
+      GoRoute(path: '/register', pageBuilder: (c, s) => _fade(const RegisterPage(), s)),
+      GoRoute(path: '/onboarding', pageBuilder: (c, s) => _fade(const OnboardingPage(), s)),
+      GoRoute(path: '/budgets', pageBuilder: (c, s) => _slideFade(const BudgetsPage(), s)),
+      GoRoute(path: '/goals', pageBuilder: (c, s) => _slideFade(const GoalsPage(), s)),
+      GoRoute(path: '/recurring', pageBuilder: (c, s) => _slideFade(const RecurringPage(), s)),
+      GoRoute(path: '/profile', pageBuilder: (c, s) => _slideFade(const ProfilePage(), s)),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => MainShell(navigationShell: navigationShell),
         branches: [
@@ -78,3 +78,36 @@ final routerProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+/// Slide-from-right + fade for pushed detail routes.
+CustomTransitionPage<void> _slideFade(Widget child, GoRouterState state) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 320),
+    reverseTransitionDuration: const Duration(milliseconds: 260),
+    transitionsBuilder: (context, animation, secondary, child) {
+      final curved = CurvedAnimation(parent: animation, curve: Curves.easeOutCubic, reverseCurve: Curves.easeInCubic);
+      return FadeTransition(
+        opacity: curved,
+        child: SlideTransition(
+          position: Tween<Offset>(begin: const Offset(0.06, 0), end: Offset.zero).animate(curved),
+          child: child,
+        ),
+      );
+    },
+  );
+}
+
+/// Gentle fade-through for auth/onboarding swaps.
+CustomTransitionPage<void> _fade(Widget child, GoRouterState state) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: const Duration(milliseconds: 300),
+    transitionsBuilder: (context, animation, secondary, child) => FadeTransition(
+      opacity: CurvedAnimation(parent: animation, curve: Curves.easeOut),
+      child: child,
+    ),
+  );
+}

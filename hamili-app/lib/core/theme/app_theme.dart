@@ -192,6 +192,8 @@ class AppTheme {
           GoogleFonts.dmSans(fontWeight: FontWeight.w600, fontSize: 12, color: textPrimary),
         ),
       ),
+      // RefreshIndicator already uses colorScheme.primary in Material 3.
+      progressIndicatorTheme: const ProgressIndicatorThemeData(color: AppColors.primary),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: surface,
         shape: const RoundedRectangleBorder(

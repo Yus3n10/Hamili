@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
@@ -83,7 +84,10 @@ class AnalyticsPage extends ConsumerWidget {
                 child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
               ),
               error: (_, __) => const Text("Couldn't load category breakdown."),
-              data: (breakdown) => CategoryDonut(breakdown: breakdown, categories: categories),
+              data: (breakdown) => CategoryDonut(breakdown: breakdown, categories: categories)
+                  .animate()
+                  .fadeIn(duration: 400.ms)
+                  .scaleXY(begin: 0.95, end: 1, curve: Curves.easeOutBack),
             ),
             const SizedBox(height: 24),
             Text('Income vs Expenses', style: Theme.of(context).textTheme.titleMedium),
@@ -93,7 +97,10 @@ class AnalyticsPage extends ConsumerWidget {
                 child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
               ),
               error: (_, __) => const Text("Couldn't load trend."),
-              data: (points) => TrendBarChart(points: points),
+              data: (points) => TrendBarChart(points: points)
+                  .animate()
+                  .fadeIn(duration: 400.ms)
+                  .slideY(begin: 0.06, end: 0, curve: Curves.easeOutCubic),
             ),
             const SizedBox(height: 24),
             Text('Net balance trend', style: Theme.of(context).textTheme.titleMedium),
@@ -103,7 +110,10 @@ class AnalyticsPage extends ConsumerWidget {
                 child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
               ),
               error: (_, __) => const Text("Couldn't load net balance."),
-              data: (points) => NetBalanceLineChart(points: points),
+              data: (points) => NetBalanceLineChart(points: points)
+                  .animate()
+                  .fadeIn(duration: 400.ms)
+                  .slideY(begin: 0.06, end: 0, curve: Curves.easeOutCubic),
             ),
           ],
         ),

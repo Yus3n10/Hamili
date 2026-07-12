@@ -37,6 +37,9 @@ dependencies:
   # Motion — lightweight, pure-Dart animation (staggers, fades, shimmers)
   flutter_animate: ^4.5.0
 
+  # Celebration confetti (goal completion) — CustomPaint particles, no assets
+  confetti: ^0.8.0
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

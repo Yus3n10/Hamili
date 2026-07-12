@@ -1,3 +1,4 @@
+import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
@@ -49,13 +50,7 @@ class GoalsPage extends ConsumerWidget {
   void _showCelebration(BuildContext context, AppSavingsGoal goal) {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('🎉 Goal reached!'),
-        content: Text('You hit your "${goal.title}" goal of ${CurrencyFormatter.format(goal.targetAmount)}. Hami is proud of you!'),
-        actions: [
-          FilledButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Nice!')),
-        ],
-      ),
+      builder: (context) => _CelebrationDialog(goal: goal),
     );
   }
 
@@ -151,6 +146,75 @@ class GoalsPage extends ConsumerWidget {
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) => const Center(child: Text("Couldn't load savings goals.")),
+      ),
+    );
+  }
+}
+
+/// Goal-completion celebration: the reached-goal message with a confetti
+/// burst raining from the top. The controller lives with the dialog so it
+/// is disposed cleanly when dismissed.
+class _CelebrationDialog extends StatefulWidget {
+  const _CelebrationDialog({required this.goal});
+
+  final AppSavingsGoal goal;
+
+  @override
+  State<_CelebrationDialog> createState() => _CelebrationDialogState();
+}
+
+class _CelebrationDialogState extends State<_CelebrationDialog> {
+  late final ConfettiController _confetti = ConfettiController(duration: const Duration(seconds: 2));
+
+  @override
+  void initState() {
+    super.initState();
+    _confetti.play();
+  }
+
+  @override
+  void dispose() {
+    _confetti.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox.expand(
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.center,
+        children: [
+          Align(
+            alignment: Alignment.topCenter,
+            child: ConfettiWidget(
+              confettiController: _confetti,
+              blastDirectionality: BlastDirectionality.explosive,
+              shouldLoop: false,
+              emissionFrequency: 0.06,
+              numberOfParticles: 22,
+              minBlastForce: 8,
+              maxBlastForce: 26,
+              gravity: 0.3,
+              colors: const [
+                AppColors.primary,
+                AppColors.income,
+                AppColors.secondary,
+                Color(0xFFEC4899),
+                Color(0xFF9B6DFF),
+              ],
+            ),
+          ),
+          AlertDialog(
+            title: const Text('🎉 Goal reached!'),
+            content: Text(
+              'You hit your "${widget.goal.title}" goal of ${CurrencyFormatter.format(widget.goal.targetAmount)}. Hami is proud of you!',
+            ),
+            actions: [
+              FilledButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Nice!')),
+            ],
+          ),
+        ],
       ),
     );
   }
