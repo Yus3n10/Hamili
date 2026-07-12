@@ -53,7 +53,12 @@ class NetBalanceLineChart extends StatelessWidget {
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
+                // One label per month. Without a fixed interval, fl_chart
+                // draws labels at fractional x positions that truncate to
+                // the same index, producing repeated month names.
+                interval: 1,
                 getTitlesWidget: (value, meta) {
+                  if (value != value.roundToDouble()) return const SizedBox.shrink();
                   final i = value.toInt();
                   if (i < 0 || i >= points.length) return const SizedBox.shrink();
                   final label = DateFormat.MMM().format(DateTime(points[i].year, points[i].month));
