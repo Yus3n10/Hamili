@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
+import '../../../core/network/offline_queue.dart';
 import '../../../core/utils/thousands_separator_formatter.dart';
 import '../../../shared/widgets/category_picker.dart';
 import '../../../shared/widgets/primary_button.dart';
@@ -130,6 +131,10 @@ class _AddEditTransactionPageState extends ConsumerState<AddEditTransactionPage>
       _errorMessage = null;
     });
 
+    // Captured before any pop so the snackbar can still show afterward.
+    final messenger = ScaffoldMessenger.of(context);
+    final navigator = Navigator.of(context);
+
     try {
       final notifier = ref.read(transactionsProvider.notifier);
       final amount = ThousandsSeparatorInputFormatter.parseAmount(_amountController.text)!;
@@ -153,7 +158,13 @@ class _AddEditTransactionPageState extends ConsumerState<AddEditTransactionPage>
         );
       }
 
-      if (mounted) Navigator.of(context).pop();
+      if (mounted) navigator.pop();
+    } on OfflineQueuedException {
+      // Not a failure — it's saved locally and will sync on reconnect.
+      if (mounted) navigator.pop();
+      messenger.showSnackBar(
+        const SnackBar(content: Text('Saved offline — it’ll sync when you’re back online.')),
+      );
     } catch (_) {
       setState(() => _errorMessage = "Couldn't save. Check your connection and try again.");
     } finally {

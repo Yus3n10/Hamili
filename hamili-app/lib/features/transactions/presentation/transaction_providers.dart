@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/offline_queue.dart';
 import '../../../core/session/session_provider.dart';
 import '../../analytics/presentation/analytics_providers.dart';
 import '../../budgets/presentation/budget_providers.dart';
@@ -55,20 +56,35 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
     String? note,
   }) async {
     final repo = ref.read(transactionRepositoryProvider);
-    await repo.create(
-      categoryId: categoryId,
-      amount: amount,
-      type: type,
-      transactionDate: transactionDate,
-      note: note,
-    );
-    ref.invalidateSelf();
-    // Budgets compute spent_amount live from transactions, so a new
-    // expense here means every budget's usage figure is now stale until
-    // this refetches.
-    ref.invalidate(budgetsProvider);
-    invalidateAnalytics(ref);
-    await future;
+    try {
+      await repo.create(
+        categoryId: categoryId,
+        amount: amount,
+        type: type,
+        transactionDate: transactionDate,
+        note: note,
+      );
+      ref.invalidateSelf();
+      // Budgets compute spent_amount live from transactions, so a new
+      // expense here means every budget's usage figure is now stale until
+      // this refetches.
+      ref.invalidate(budgetsProvider);
+      invalidateAnalytics(ref);
+      await future;
+    } on OfflineQueuedException {
+      // Queued offline — show it immediately with a temporary negative id;
+      // the real row replaces it when the queue syncs and the list refetches.
+      final temp = AppTransaction(
+        id: -DateTime.now().millisecondsSinceEpoch,
+        categoryId: categoryId,
+        amount: amount,
+        type: type,
+        note: note,
+        transactionDate: transactionDate,
+      );
+      state = AsyncData([temp, ...(state.valueOrNull ?? [])]);
+      rethrow; // let the form surface a "saved offline" message
+    }
   }
 
   Future<void> editTransaction(
@@ -79,20 +95,46 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
     DateTime? transactionDate,
   }) async {
     final repo = ref.read(transactionRepositoryProvider);
-    await repo.update(id, categoryId: categoryId, amount: amount, note: note, transactionDate: transactionDate);
-    ref.invalidateSelf();
-    ref.invalidate(budgetsProvider);
-    invalidateAnalytics(ref);
-    await future;
+    try {
+      await repo.update(id, categoryId: categoryId, amount: amount, note: note, transactionDate: transactionDate);
+      ref.invalidateSelf();
+      ref.invalidate(budgetsProvider);
+      invalidateAnalytics(ref);
+      await future;
+    } on OfflineQueuedException {
+      // Optimistic local edit until the queued update syncs.
+      final current = state.valueOrNull ?? [];
+      state = AsyncData([
+        for (final t in current)
+          if (t.id == id)
+            AppTransaction(
+              id: id,
+              categoryId: categoryId ?? t.categoryId,
+              amount: amount ?? t.amount,
+              type: t.type,
+              note: note ?? t.note,
+              transactionDate: transactionDate ?? t.transactionDate,
+            )
+          else
+            t,
+      ]);
+      rethrow;
+    }
   }
 
   Future<void> deleteTransaction(int id) async {
     final repo = ref.read(transactionRepositoryProvider);
-    await repo.delete(id);
-    ref.invalidateSelf();
-    ref.invalidate(budgetsProvider);
-    invalidateAnalytics(ref);
-    await future;
+    try {
+      await repo.delete(id);
+      ref.invalidateSelf();
+      ref.invalidate(budgetsProvider);
+      invalidateAnalytics(ref);
+      await future;
+    } on OfflineQueuedException {
+      // Keep it removed optimistically; the queued delete syncs later.
+      final current = state.valueOrNull ?? [];
+      state = AsyncData(current.where((t) => t.id != id).toList());
+    }
   }
 }
 

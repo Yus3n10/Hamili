@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/network/offline_queue.dart';
 import '../domain/transaction.dart';
 
 /// Every successful list fetch overwrites the local cache, so the app has
@@ -50,14 +51,23 @@ class TransactionRepository {
     required DateTime transactionDate,
     String? note,
   }) async {
-    final response = await _dio.post('/transactions', data: {
+    final data = {
       'category_id': categoryId,
       'amount': amount,
       'type': type,
       'note': note,
       'transaction_date': transactionDate.toIso8601String().split('T').first,
-    });
-    return AppTransaction.fromJson(response.data);
+    };
+    try {
+      final response = await _dio.post('/transactions', data: data);
+      return AppTransaction.fromJson(response.data);
+    } on DioException catch (e) {
+      if (OfflineQueue.isConnectionError(e)) {
+        await OfflineQueue.instance.enqueue(method: 'POST', path: '/transactions', data: data);
+        throw const OfflineQueuedException();
+      }
+      rethrow;
+    }
   }
 
   Future<AppTransaction> update(
@@ -67,17 +77,34 @@ class TransactionRepository {
     String? note,
     DateTime? transactionDate,
   }) async {
-    final response = await _dio.patch('/transactions/$id', data: {
+    final data = {
       if (categoryId != null) 'category_id': categoryId,
       if (amount != null) 'amount': amount,
       if (note != null) 'note': note,
       if (transactionDate != null) 'transaction_date': transactionDate.toIso8601String().split('T').first,
-    });
-    return AppTransaction.fromJson(response.data);
+    };
+    try {
+      final response = await _dio.patch('/transactions/$id', data: data);
+      return AppTransaction.fromJson(response.data);
+    } on DioException catch (e) {
+      if (OfflineQueue.isConnectionError(e)) {
+        await OfflineQueue.instance.enqueue(method: 'PATCH', path: '/transactions/$id', data: data);
+        throw const OfflineQueuedException();
+      }
+      rethrow;
+    }
   }
 
   Future<void> delete(int id) async {
-    await _dio.delete('/transactions/$id');
+    try {
+      await _dio.delete('/transactions/$id');
+    } on DioException catch (e) {
+      if (OfflineQueue.isConnectionError(e)) {
+        await OfflineQueue.instance.enqueue(method: 'DELETE', path: '/transactions/$id');
+        throw const OfflineQueuedException();
+      }
+      rethrow;
+    }
   }
 
   /// Clears the offline cache entirely. Called on logout so a second

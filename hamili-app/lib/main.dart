@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'core/network/offline_queue.dart';
 import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
@@ -10,6 +11,7 @@ import 'features/auth/data/auth_repository.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter(); // local/offline cache — boxes registered per-feature as they're added
+  await OfflineQueue.instance.init(); // restore pending-write count from a previous session
 
   // Security: never auto-resume a previous session. Every cold start of
   // the app (including a web page refresh) clears any stored token so the

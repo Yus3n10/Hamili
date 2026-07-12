@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/offline_queue.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../analytics/presentation/analytics_providers.dart';
@@ -60,6 +61,27 @@ class DashboardPage extends ConsumerWidget {
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [
+                ValueListenableBuilder<int>(
+                  valueListenable: OfflineQueue.instance.pendingCount,
+                  builder: (context, count, _) {
+                    if (count == 0) return const SizedBox.shrink();
+                    return Container(
+                      margin: const EdgeInsets.only(bottom: 12),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: AppColors.warning.withValues(alpha: 0.15),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          const Icon(Icons.cloud_off, size: 18, color: AppColors.warning),
+                          const SizedBox(width: 8),
+                          Expanded(child: Text('$count change${count == 1 ? '' : 's'} waiting to sync')),
+                        ],
+                      ),
+                    );
+                  },
+                ),
                 Card(
                   color: Theme.of(context).colorScheme.primary,
                   child: Padding(
