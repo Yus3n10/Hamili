@@ -9,6 +9,10 @@ import '../domain/chat_message.dart';
 /// nothing during the round-trip to Gemini.
 final chatIsRespondingProvider = StateProvider<bool>((ref) => false);
 
+/// True when Hami's last reply was the quota-exhausted fallback — the chat
+/// screen uses it to show the mascot "sleeping".
+final chatServersDownProvider = StateProvider<bool>((ref) => false);
+
 final chatMessagesProvider = StateNotifierProvider<ChatMessagesNotifier, List<ChatMessage>>(
   (ref) {
     ref.watch(sessionIdProvider);
@@ -27,6 +31,8 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
 
     try {
       final response = await ApiClient.instance.dio.post('/chat/message', data: {'content': content});
+      final available = response.data['available'] as bool? ?? true;
+      ref.read(chatServersDownProvider.notifier).state = !available;
       state = [...state, ChatMessage('assistant', response.data['reply'] as String)];
     } catch (_) {
       state = [

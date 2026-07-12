@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/thousands_separator_formatter.dart';
+import '../../../shared/widgets/piggy_mascot.dart';
 import '../../../shared/widgets/primary_button.dart';
 import '../domain/goal.dart';
 import 'add_goal_sheet.dart';
@@ -207,8 +208,16 @@ class _CelebrationDialogState extends State<_CelebrationDialog> {
           ),
           AlertDialog(
             title: const Text('🎉 Goal reached!'),
-            content: Text(
-              'You hit your "${widget.goal.title}" goal of ${CurrencyFormatter.format(widget.goal.targetAmount)}. Hami is proud of you!',
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                const PiggyMascot(size: 110, coinFlipOnInit: true),
+                const SizedBox(height: 8),
+                Text(
+                  'You hit your "${widget.goal.title}" goal of ${CurrencyFormatter.format(widget.goal.targetAmount)}. Hami is proud of you!',
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
             actions: [
               FilledButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Nice!')),

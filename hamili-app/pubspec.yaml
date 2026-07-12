@@ -40,6 +40,9 @@ dependencies:
   # Celebration confetti (goal completion) — CustomPaint particles, no assets
   confetti: ^0.8.0
 
+  # Rive — vector mascot animation (piggy bank state machine)
+  rive: ^0.13.1
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
@@ -51,6 +54,5 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  # assets:
-  #   - assets/images/hami/
-  #   - assets/icons/
+  assets:
+    - assets/rive/

@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/mascot/piggy_events.dart';
 import '../../../core/session/session_provider.dart';
 import '../data/goal_repository.dart';
 import '../domain/goal.dart';
@@ -27,6 +28,7 @@ class GoalsNotifier extends AsyncNotifier<List<AppSavingsGoal>> {
     final repo = ref.read(goalRepositoryProvider);
     final updated = await repo.contribute(id, amount);
     ref.invalidateSelf();
+    ref.read(piggyCoinFlipProvider.notifier).state++; // Hami flips a coin for progress
     await future;
     return updated;
   }

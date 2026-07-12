@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/mascot/piggy_events.dart';
 import '../../../core/network/offline_queue.dart';
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/piggy_mascot.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../analytics/presentation/analytics_page.dart';
 import '../../analytics/presentation/analytics_providers.dart';
@@ -113,6 +115,8 @@ class DashboardPage extends ConsumerWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 4),
+                const _DashboardMascot(),
                 const SizedBox(height: 12),
                 const InsightsCard(),
                 const SizedBox(height: 12),
@@ -150,6 +154,27 @@ class DashboardPage extends ConsumerWidget {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) => const Center(child: Text("Couldn't load your data. Pull down to retry.")),
       ),
+    );
+  }
+}
+
+/// The dashboard piggy mascot — does a coin flip on load and whenever a
+/// celebratory event fires (income added, goal progress).
+class _DashboardMascot extends ConsumerStatefulWidget {
+  const _DashboardMascot();
+
+  @override
+  ConsumerState<_DashboardMascot> createState() => _DashboardMascotState();
+}
+
+class _DashboardMascotState extends ConsumerState<_DashboardMascot> {
+  final PiggyMascotController _piggy = PiggyMascotController();
+
+  @override
+  Widget build(BuildContext context) {
+    ref.listen(piggyCoinFlipProvider, (_, __) => _piggy.coinFlip());
+    return Center(
+      child: PiggyMascot(size: 116, controller: _piggy, coinFlipOnInit: true),
     );
   }
 }

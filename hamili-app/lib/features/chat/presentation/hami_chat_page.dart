@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../shared/widgets/piggy_mascot.dart';
 import 'chat_providers.dart';
 
 const _suggestedPrompts = [
@@ -50,6 +52,7 @@ class _HamiChatPageState extends ConsumerState<HamiChatPage> {
   Widget build(BuildContext context) {
     final messages = ref.watch(chatMessagesProvider);
     final isThinking = ref.watch(chatIsRespondingProvider);
+    final serversDown = ref.watch(chatServersDownProvider);
 
     // Auto-scroll whenever a new message arrives or the thinking bubble
     // appears/disappears — runs after the frame so the list has already
@@ -65,6 +68,23 @@ class _HamiChatPageState extends ConsumerState<HamiChatPage> {
       appBar: AppBar(title: const Text('Hami')),
       body: Column(
         children: [
+          // Hami mascot header — blinks while you chat, and dozes off when
+          // the AI backend is unavailable.
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.only(top: 4, bottom: 4),
+            child: Column(
+              children: [
+                PiggyMascot(size: 84, blink: !serversDown, sleeping: serversDown),
+                Text(
+                  serversDown ? 'Hami is napping…' : 'Hami',
+                  style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                      ),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: messages.isEmpty
                 ? _EmptyState(onPromptTap: (prompt) => ref.read(chatMessagesProvider.notifier).sendMessage(prompt))
@@ -89,14 +109,23 @@ class _HamiChatPageState extends ConsumerState<HamiChatPage> {
                             color: isUser
                                 ? Theme.of(context).colorScheme.primary
                                 : Theme.of(context).colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.only(
+                              topLeft: const Radius.circular(18),
+                              topRight: const Radius.circular(18),
+                              bottomLeft: Radius.circular(isUser ? 18 : 4),
+                              bottomRight: Radius.circular(isUser ? 4 : 18),
+                            ),
                           ),
                           child: Text(
                             message.content,
-                            style: TextStyle(color: isUser ? Colors.white : null),
+                            style: TextStyle(color: isUser ? Theme.of(context).colorScheme.onPrimary : null),
                           ),
                         ),
-                      );
+                      )
+                          .animate()
+                          .fadeIn(duration: 240.ms)
+                          .slideX(begin: isUser ? 0.12 : -0.12, end: 0, curve: Curves.easeOutCubic)
+                          .scaleXY(begin: 0.96, end: 1, curve: Curves.easeOutCubic);
                     },
                   ),
           ),
