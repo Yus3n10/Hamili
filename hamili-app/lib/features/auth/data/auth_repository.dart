@@ -48,6 +48,13 @@ class AuthRepository {
   }
 
   Future<void> logout() async {
+    await clearStoredSession();
+  }
+
+  /// Removes any persisted tokens. Called on logout, and also at app
+  /// startup so a session never silently resumes across app launches
+  /// (see main.dart) — the user must re-authenticate every time.
+  Future<void> clearStoredSession() async {
     await _storage.delete(key: AppConstants.accessTokenKey);
     await _storage.delete(key: AppConstants.refreshTokenKey);
   }
