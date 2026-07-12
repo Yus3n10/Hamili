@@ -6,8 +6,17 @@ import 'app_colors.dart';
 /// Two full ThemeData objects — light and dark. MaterialApp switches
 /// between them based on system brightness or a user toggle (see
 /// `themeModeProvider` in core/theme/theme_provider.dart).
+///
+/// Design language: bright, friendly fintech. Nunito (rounded, warm) for
+/// headings, DM Sans (clean, geometric) for body; white cards floating on a
+/// soft background with gentle shadows and generous corner radii.
 class AppTheme {
   AppTheme._();
+
+  // On-primary is intentionally near-black: white text on the gold brand
+  // fails WCAG contrast, whereas dark text on gold passes comfortably and
+  // reads as bold and modern.
+  static const Color _onPrimary = Color(0xFF241A05);
 
   static ThemeData get light => _build(
         brightness: Brightness.light,
@@ -25,6 +34,27 @@ class AppTheme {
         textSecondary: AppColors.darkTextSecondary,
       );
 
+  static TextTheme _textTheme(TextTheme base, Color textPrimary) {
+    // DM Sans everywhere, then Nunito (heavier, rounded) for display/heading/
+    // title roles to give headings their friendly character.
+    final body = GoogleFonts.dmSansTextTheme(base).apply(
+      bodyColor: textPrimary,
+      displayColor: textPrimary,
+    );
+    TextStyle heading(TextStyle? s, FontWeight w) =>
+        GoogleFonts.nunito(textStyle: s, fontWeight: w, color: textPrimary);
+    return body.copyWith(
+      displayLarge: heading(body.displayLarge, FontWeight.w800),
+      displayMedium: heading(body.displayMedium, FontWeight.w800),
+      displaySmall: heading(body.displaySmall, FontWeight.w800),
+      headlineLarge: heading(body.headlineLarge, FontWeight.w800),
+      headlineMedium: heading(body.headlineMedium, FontWeight.w800),
+      headlineSmall: heading(body.headlineSmall, FontWeight.w700),
+      titleLarge: heading(body.titleLarge, FontWeight.w700),
+      titleMedium: heading(body.titleMedium, FontWeight.w700),
+    );
+  }
+
   static ThemeData _build({
     required Brightness brightness,
     required Color background,
@@ -33,69 +63,139 @@ class AppTheme {
     required Color textSecondary,
   }) {
     final base = ThemeData(brightness: brightness, useMaterial3: true);
-    final textTheme = GoogleFonts.interTextTheme(base.textTheme).apply(
-      bodyColor: textPrimary,
-      displayColor: textPrimary,
+    final textTheme = _textTheme(base.textTheme, textPrimary);
+    final isLight = brightness == Brightness.light;
+
+    final colorScheme = ColorScheme.fromSeed(
+      seedColor: AppColors.primary,
+      brightness: brightness,
+    ).copyWith(
+      primary: AppColors.primary,
+      onPrimary: _onPrimary,
+      secondary: AppColors.secondary,
+      onSecondary: Colors.white,
+      surface: surface,
+      onSurface: textPrimary,
+      error: AppColors.expense,
+      onError: Colors.white,
     );
 
     return base.copyWith(
       scaffoldBackgroundColor: background,
-      colorScheme: ColorScheme.fromSeed(
-        seedColor: AppColors.primary,
-        brightness: brightness,
-        surface: surface,
-      ),
+      colorScheme: colorScheme,
       textTheme: textTheme,
+      dividerTheme: DividerThemeData(
+        color: textSecondary.withValues(alpha: 0.12),
+        thickness: 1,
+        space: 1,
+      ),
       appBarTheme: AppBarTheme(
         backgroundColor: background,
         foregroundColor: textPrimary,
         elevation: 0,
-        scrolledUnderElevation: 1,
+        scrolledUnderElevation: 0.5,
         centerTitle: false,
-        titleTextStyle: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+        titleTextStyle: GoogleFonts.nunito(
+          fontWeight: FontWeight.w800,
+          fontSize: 22,
+          color: textPrimary,
+        ),
       ),
       cardTheme: CardThemeData(
         color: surface,
-        elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        // Soft, low floating shadow rather than a flat card, for depth.
+        elevation: 4,
+        shadowColor: Colors.black.withValues(alpha: isLight ? 0.07 : 0.4),
+        surfaceTintColor: Colors.transparent,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         margin: EdgeInsets.zero,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
-          foregroundColor: Colors.white,
-          minimumSize: const Size.fromHeight(52), // large touch target
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-          textStyle: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+          foregroundColor: _onPrimary,
+          elevation: 0,
+          minimumSize: const Size.fromHeight(54), // large touch target
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          textStyle: GoogleFonts.nunito(fontWeight: FontWeight.w700, fontSize: 16),
         ),
+      ),
+      filledButtonTheme: FilledButtonThemeData(
+        style: FilledButton.styleFrom(
+          backgroundColor: AppColors.primary,
+          foregroundColor: _onPrimary,
+          minimumSize: const Size.fromHeight(52),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          textStyle: GoogleFonts.nunito(fontWeight: FontWeight.w700, fontSize: 15),
+        ),
+      ),
+      outlinedButtonTheme: OutlinedButtonThemeData(
+        style: OutlinedButton.styleFrom(
+          foregroundColor: textPrimary,
+          minimumSize: const Size.fromHeight(52),
+          side: BorderSide(color: textSecondary.withValues(alpha: 0.25)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          textStyle: GoogleFonts.nunito(fontWeight: FontWeight.w700, fontSize: 15),
+        ),
+      ),
+      textButtonTheme: TextButtonThemeData(
+        style: TextButton.styleFrom(
+          foregroundColor: AppColors.primaryDark,
+          textStyle: GoogleFonts.nunito(fontWeight: FontWeight.w700),
+        ),
+      ),
+      floatingActionButtonTheme: FloatingActionButtonThemeData(
+        backgroundColor: AppColors.primary,
+        foregroundColor: _onPrimary,
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
+      ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          shape: WidgetStatePropertyAll(
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+          ),
+          backgroundColor: WidgetStateProperty.resolveWith(
+            (states) => states.contains(WidgetState.selected)
+                ? AppColors.primary.withValues(alpha: 0.16)
+                : Colors.transparent,
+          ),
+        ),
+      ),
+      snackBarTheme: SnackBarThemeData(
+        behavior: SnackBarBehavior.floating,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surface,
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        fillColor: isLight ? const Color(0xFFF0F1F7) : Colors.white.withValues(alpha: 0.04),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: textSecondary.withValues(alpha: 0.2)),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: BorderSide(color: textSecondary.withValues(alpha: 0.2)),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.5),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surface,
         elevation: 0,
-        height: 64,
-        indicatorColor: AppColors.primary.withValues(alpha: 0.15),
+        height: 66,
+        indicatorColor: AppColors.primary.withValues(alpha: 0.18),
+        labelTextStyle: WidgetStatePropertyAll(
+          GoogleFonts.dmSans(fontWeight: FontWeight.w600, fontSize: 12, color: textPrimary),
+        ),
       ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: surface,
         shape: const RoundedRectangleBorder(
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
         ),
       ),
     );

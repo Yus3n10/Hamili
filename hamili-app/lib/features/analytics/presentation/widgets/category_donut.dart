@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/theme/app_colors.dart';
 import '../../../../core/utils/currency_formatter.dart';
 import '../../../transactions/domain/category.dart';
 import '../../domain/analytics_models.dart';
@@ -14,10 +15,7 @@ class CategoryDonut extends StatelessWidget {
   final List<CategoryBreakdown> breakdown;
   final List<AppCategory> categories;
 
-  static const List<Color> _palette = [
-    Color(0xFFF5A623), Color(0xFF2ECC71), Color(0xFFE74C3C), Color(0xFF3498DB),
-    Color(0xFF9B59B6), Color(0xFF1ABC9C), Color(0xFFE67E22), Color(0xFF34495E),
-  ];
+  static const List<Color> _palette = AppColors.chartPalette;
 
   String _nameFor(int categoryId) {
     final matches = categories.where((c) => c.id == categoryId);

@@ -21,16 +21,25 @@ class SummaryCard extends StatelessWidget {
             Row(
               children: [
                 if (icon != null) ...[
-                  Icon(icon, size: 18, color: color),
-                  const SizedBox(width: 6),
+                  Container(
+                    padding: const EdgeInsets.all(7),
+                    decoration: BoxDecoration(
+                      color: color.withValues(alpha: 0.14),
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Icon(icon, size: 16, color: color),
+                  ),
+                  const SizedBox(width: 8),
                 ],
-                Text(label, style: Theme.of(context).textTheme.bodyMedium),
+                Flexible(
+                  child: Text(label, style: Theme.of(context).textTheme.bodyMedium, overflow: TextOverflow.ellipsis),
+                ),
               ],
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: 10),
             Text(
               CurrencyFormatter.format(amount),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700, color: color),
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, color: color),
             ),
           ],
         ),
