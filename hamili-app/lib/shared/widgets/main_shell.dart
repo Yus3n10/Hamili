@@ -42,6 +42,7 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
 
     return Scaffold(
       body: Stack(
+        fit: StackFit.expand,
         children: [
           AnimatedBuilder(
             animation: _controller,
