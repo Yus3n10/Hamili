@@ -19,6 +19,10 @@ final chatIsRespondingProvider = StateProvider<bool>((ref) => false);
 /// screen uses it to show the mascot "sleeping".
 final chatServersDownProvider = StateProvider<bool>((ref) => false);
 
+/// Bumped once each time Hami completes an action, so the chat mascot can
+/// play its coin-flip. A counter (not a bool) so repeated actions each fire.
+final hamiCoinFlipProvider = StateProvider<int>((ref) => 0);
+
 final chatMessagesProvider = StateNotifierProvider<ChatMessagesNotifier, List<ChatMessage>>(
   (ref) {
     ref.watch(sessionIdProvider);
@@ -66,6 +70,9 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
         ...state,
         ChatMessage('assistant', response.data['reply'] as String, actionDone: changed.isNotEmpty),
       ];
+      if (changed.isNotEmpty) {
+        ref.read(hamiCoinFlipProvider.notifier).state++;
+      }
     } catch (_) {
       state = [
         ...state,

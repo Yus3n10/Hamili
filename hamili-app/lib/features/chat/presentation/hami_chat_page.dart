@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
 import 'chat_providers.dart';
+import 'widgets/hami_mascot.dart';
 
 const _suggestedPrompts = [
   'Where am I overspending?',
@@ -67,6 +68,7 @@ class _HamiChatPageState extends ConsumerState<HamiChatPage> {
       appBar: AppBar(title: const Text('Hami')),
       body: Column(
         children: [
+          const _HamiHeader(),
           Expanded(
             child: messages.isEmpty
                 ? _EmptyState(onPromptTap: (prompt) => ref.read(chatMessagesProvider.notifier).sendMessage(prompt))
@@ -135,6 +137,45 @@ class _HamiChatPageState extends ConsumerState<HamiChatPage> {
                 ],
               ),
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _HamiHeader extends ConsumerWidget {
+  const _HamiHeader();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final sleeping = ref.watch(chatServersDownProvider);
+    final thinking = ref.watch(chatIsRespondingProvider);
+    final status = sleeping
+        ? 'Hami is napping…'
+        : thinking
+            ? 'Hami is thinking…'
+            : 'Ask me about your money';
+
+    return Container(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      decoration: BoxDecoration(
+        color: Theme.of(context).colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+        border: Border(
+          bottom: BorderSide(color: Theme.of(context).dividerColor.withValues(alpha: 0.4)),
+        ),
+      ),
+      child: Row(
+        children: [
+          const HamiMascot(size: 52),
+          const SizedBox(width: 12),
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('Hami', style: TextStyle(fontWeight: FontWeight.w700)),
+              Text(status, style: Theme.of(context).textTheme.bodySmall),
+            ],
           ),
         ],
       ),
