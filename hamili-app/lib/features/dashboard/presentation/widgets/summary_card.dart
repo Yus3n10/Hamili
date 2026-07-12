@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/utils/currency_formatter.dart';
+import '../../../../shared/widgets/pressable_scale.dart';
 
 class SummaryCard extends StatelessWidget {
-  const SummaryCard({super.key, required this.label, required this.amount, required this.color, this.icon});
+  const SummaryCard(
+      {super.key, required this.label, required this.amount, required this.color, this.icon, this.onTap});
 
   final String label;
   final double amount;
   final Color color;
   final IconData? icon;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
-    return Card(
+    final card = Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -37,13 +40,21 @@ class SummaryCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 10),
-            Text(
-              CurrencyFormatter.format(amount),
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, color: color),
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0, end: amount),
+              duration: const Duration(milliseconds: 650),
+              curve: Curves.easeOutCubic,
+              builder: (context, value, _) => Text(
+                CurrencyFormatter.format(value),
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, color: color),
+              ),
             ),
           ],
         ),
       ),
     );
+
+    if (onTap == null) return card;
+    return PressableScale(onTap: onTap, child: card);
   }
 }

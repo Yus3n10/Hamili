@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'add_edit_transaction_page.dart';
@@ -111,7 +112,10 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                           MaterialPageRoute(builder: (_) => AddEditTransactionPage(transaction: transaction)),
                         ),
                         onDelete: () => ref.read(transactionsProvider.notifier).deleteTransaction(transaction.id),
-                      );
+                      )
+                          .animate(delay: (40 * (index % 12)).ms)
+                          .fadeIn(duration: 300.ms)
+                          .slideY(begin: 0.1, end: 0, curve: Curves.easeOutCubic);
                     },
                   ),
                 );

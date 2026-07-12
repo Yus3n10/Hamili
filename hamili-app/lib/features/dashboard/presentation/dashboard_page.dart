@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/offline_queue.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../analytics/presentation/analytics_page.dart';
 import '../../analytics/presentation/analytics_providers.dart';
 import '../../auth/presentation/auth_providers.dart';
 import '../../transactions/presentation/add_edit_transaction_page.dart';
@@ -82,57 +84,7 @@ class DashboardPage extends ConsumerWidget {
                     );
                   },
                 ),
-                Container(
-                  padding: const EdgeInsets.all(22),
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: AppColors.brandGradient,
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                    ),
-                    borderRadius: BorderRadius.circular(24),
-                    boxShadow: [
-                      BoxShadow(
-                        color: AppColors.primary.withValues(alpha: 0.35),
-                        blurRadius: 22,
-                        offset: const Offset(0, 10),
-                      ),
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(8),
-                            decoration: BoxDecoration(
-                              color: Colors.white.withValues(alpha: 0.28),
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: const Icon(Icons.account_balance_wallet_rounded,
-                                color: Color(0xFF3A2B00), size: 20),
-                          ),
-                          const SizedBox(width: 10),
-                          const Text('Current Balance',
-                              style: TextStyle(color: Color(0xFF3A2B00), fontWeight: FontWeight.w700)),
-                        ],
-                      ),
-                      const SizedBox(height: 14),
-                      // Gentle count-up so the balance reads as "tallied"
-                      // rather than snapping in. Dark text passes contrast on gold.
-                      TweenAnimationBuilder<double>(
-                        tween: Tween(begin: 0, end: balance),
-                        duration: const Duration(milliseconds: 700),
-                        curve: Curves.easeOutCubic,
-                        builder: (context, value, _) => Text(
-                          CurrencyFormatter.format(value),
-                          style: const TextStyle(color: Color(0xFF241A05), fontSize: 34, fontWeight: FontWeight.w800),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+                _BalanceHero(balance: balance),
                 const SizedBox(height: 12),
                 Row(
                   children: [
@@ -142,6 +94,9 @@ class DashboardPage extends ConsumerWidget {
                         amount: income,
                         color: AppColors.income,
                         icon: Icons.arrow_downward,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const AnalyticsPage()),
+                        ),
                       ),
                     ),
                     const SizedBox(width: 12),
@@ -151,6 +106,9 @@ class DashboardPage extends ConsumerWidget {
                         amount: expense,
                         color: AppColors.expense,
                         icon: Icons.arrow_upward,
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const AnalyticsPage()),
+                        ),
                       ),
                     ),
                   ],
@@ -182,12 +140,109 @@ class DashboardPage extends ConsumerWidget {
                       }).toList(),
                     ),
                   ),
-              ],
+              ]
+                  .animate(interval: 65.ms)
+                  .fadeIn(duration: 320.ms)
+                  .slideY(begin: 0.06, end: 0, curve: Curves.easeOutCubic),
             ),
           );
         },
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (_, __) => const Center(child: Text("Couldn't load your data. Pull down to retry.")),
+      ),
+    );
+  }
+}
+
+/// Balance hero: gold gradient with two translucent orbs that slowly drift
+/// for continuous ambient motion, a wallet chip, and a count-up figure.
+class _BalanceHero extends StatelessWidget {
+  const _BalanceHero({required this.balance});
+
+  final double balance;
+
+  Widget _orb(double size, double opacity) => Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(color: Colors.white.withValues(alpha: opacity), shape: BoxShape.circle),
+      );
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(color: AppColors.primary.withValues(alpha: 0.35), blurRadius: 22, offset: const Offset(0, 10)),
+        ],
+      ),
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(24),
+        child: Stack(
+          children: [
+            const Positioned.fill(
+              child: DecoratedBox(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: AppColors.brandGradient,
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+              ),
+            ),
+            Positioned(
+              top: -28,
+              right: -10,
+              child: _orb(96, 0.16)
+                  .animate(onPlay: (c) => c.repeat(reverse: true))
+                  .moveY(begin: -8, end: 10, duration: 3200.ms, curve: Curves.easeInOut)
+                  .scaleXY(begin: 1, end: 1.15, duration: 4000.ms, curve: Curves.easeInOut),
+            ),
+            Positioned(
+              bottom: -34,
+              left: -12,
+              child: _orb(84, 0.12)
+                  .animate(onPlay: (c) => c.repeat(reverse: true))
+                  .moveY(begin: 8, end: -8, duration: 3800.ms, curve: Curves.easeInOut)
+                  .moveX(begin: -4, end: 12, duration: 4600.ms, curve: Curves.easeInOut),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(22),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.white.withValues(alpha: 0.28),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Icon(Icons.account_balance_wallet_rounded, color: Color(0xFF3A2B00), size: 20),
+                      ),
+                      const SizedBox(width: 10),
+                      const Text('Current Balance',
+                          style: TextStyle(color: Color(0xFF3A2B00), fontWeight: FontWeight.w700)),
+                    ],
+                  ),
+                  const SizedBox(height: 14),
+                  // Count-up so the balance reads as "tallied". Dark text on gold passes WCAG.
+                  TweenAnimationBuilder<double>(
+                    tween: Tween(begin: 0, end: balance),
+                    duration: const Duration(milliseconds: 700),
+                    curve: Curves.easeOutCubic,
+                    builder: (context, value, _) => Text(
+                      CurrencyFormatter.format(value),
+                      style: const TextStyle(color: Color(0xFF241A05), fontSize: 34, fontWeight: FontWeight.w800),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

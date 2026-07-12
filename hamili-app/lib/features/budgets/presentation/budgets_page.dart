@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
@@ -88,11 +89,16 @@ class BudgetsPage extends ConsumerWidget {
                         const SizedBox(height: 8),
                         ClipRRect(
                           borderRadius: BorderRadius.circular(8),
-                          child: LinearProgressIndicator(
-                            value: (budget.percentageUsed / 100).clamp(0, 1),
-                            minHeight: 8,
-                            backgroundColor: progressColor.withValues(alpha: 0.15),
-                            valueColor: AlwaysStoppedAnimation(progressColor),
+                          child: TweenAnimationBuilder<double>(
+                            tween: Tween(begin: 0, end: (budget.percentageUsed / 100).clamp(0, 1).toDouble()),
+                            duration: const Duration(milliseconds: 900),
+                            curve: Curves.easeOutCubic,
+                            builder: (context, value, _) => LinearProgressIndicator(
+                              value: value,
+                              minHeight: 8,
+                              backgroundColor: progressColor.withValues(alpha: 0.15),
+                              valueColor: AlwaysStoppedAnimation(progressColor),
+                            ),
                           ),
                         ),
                         const SizedBox(height: 8),
@@ -119,7 +125,10 @@ class BudgetsPage extends ConsumerWidget {
                     ),
                     ),
                   ),
-                );
+                )
+                    .animate(delay: (60 * index).ms)
+                    .fadeIn(duration: 300.ms)
+                    .slideY(begin: 0.08, end: 0, curve: Curves.easeOutCubic);
               },
             ),
           );

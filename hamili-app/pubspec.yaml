@@ -34,6 +34,9 @@ dependencies:
   google_fonts: ^6.2.1
   intl: ^0.19.0
 
+  # Motion — lightweight, pure-Dart animation (staggers, fades, shimmers)
+  flutter_animate: ^4.5.0
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
