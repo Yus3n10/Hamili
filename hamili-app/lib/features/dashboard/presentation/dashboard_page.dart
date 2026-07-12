@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
+import '../../analytics/presentation/analytics_providers.dart';
 import '../../auth/presentation/auth_providers.dart';
 import '../../transactions/presentation/add_edit_transaction_page.dart';
 import '../../transactions/presentation/transaction_providers.dart';
@@ -23,6 +24,7 @@ class DashboardPage extends ConsumerWidget {
     final transactionsAsync = ref.watch(transactionsProvider);
     final categoriesAsync = ref.watch(categoriesProvider);
     final categories = categoriesAsync.valueOrNull ?? [];
+    final summaryAsync = ref.watch(dashboardSummaryProvider);
 
     return Scaffold(
       appBar: AppBar(
@@ -40,13 +42,20 @@ class DashboardPage extends ConsumerWidget {
       ),
       body: transactionsAsync.when(
         data: (transactions) {
-          final income = transactions.where((t) => t.type == 'income').fold(0.0, (sum, t) => sum + t.amount);
-          final expense = transactions.where((t) => t.type == 'expense').fold(0.0, (sum, t) => sum + t.amount);
-          final balance = income - expense;
+          // Totals are now server-computed (Milestone 5) instead of summed
+          // client-side; the recent list still comes from the transactions
+          // fetch. Until the summary resolves, show zeros rather than block.
           final recent = transactions.take(5).toList();
+          final summary = summaryAsync.valueOrNull;
+          final income = summary?.income ?? 0;
+          final expense = summary?.expense ?? 0;
+          final balance = summary?.net ?? 0;
 
           return RefreshIndicator(
-            onRefresh: () => ref.refresh(transactionsProvider.future),
+            onRefresh: () {
+              ref.invalidate(dashboardSummaryProvider);
+              return ref.refresh(transactionsProvider.future);
+            },
             child: ListView(
               padding: const EdgeInsets.all(16),
               children: [

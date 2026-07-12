@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/session/session_provider.dart';
+import '../../analytics/presentation/analytics_providers.dart';
 import '../../budgets/presentation/budget_providers.dart';
 import '../data/category_repository.dart';
 import '../data/transaction_repository.dart';
@@ -66,6 +67,7 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
     // expense here means every budget's usage figure is now stale until
     // this refetches.
     ref.invalidate(budgetsProvider);
+    invalidateAnalytics(ref);
     await future;
   }
 
@@ -80,6 +82,7 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
     await repo.update(id, categoryId: categoryId, amount: amount, note: note, transactionDate: transactionDate);
     ref.invalidateSelf();
     ref.invalidate(budgetsProvider);
+    invalidateAnalytics(ref);
     await future;
   }
 
@@ -88,6 +91,7 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
     await repo.delete(id);
     ref.invalidateSelf();
     ref.invalidate(budgetsProvider);
+    invalidateAnalytics(ref);
     await future;
   }
 }

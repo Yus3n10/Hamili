@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/session/session_provider.dart';
+import '../../analytics/presentation/analytics_providers.dart';
 import '../../budgets/presentation/budget_providers.dart';
 import '../../transactions/presentation/transaction_providers.dart';
 import '../data/recurring_repository.dart';
@@ -20,6 +21,7 @@ class RecurringNotifier extends AsyncNotifier<List<RecurringItem>> {
   void _invalidateDerived() {
     ref.invalidate(transactionsProvider);
     ref.invalidate(budgetsProvider);
+    invalidateAnalytics(ref);
   }
 
   Future<void> addItem({
