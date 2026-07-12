@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/app_colors.dart';
 import 'chat_providers.dart';
 
 const _suggestedPrompts = [
@@ -80,28 +81,35 @@ class _HamiChatPageState extends ConsumerState<HamiChatPage> {
 
                       final message = messages[index];
                       final isUser = message.role == 'user';
-                      return Align(
-                        alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-                        child: Container(
-                          margin: const EdgeInsets.symmetric(vertical: 4),
-                          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
-                          constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
-                          decoration: BoxDecoration(
-                            color: isUser
-                                ? Theme.of(context).colorScheme.primary
-                                : Theme.of(context).colorScheme.surfaceContainerHighest,
-                            borderRadius: BorderRadius.only(
-                              topLeft: const Radius.circular(18),
-                              topRight: const Radius.circular(18),
-                              bottomLeft: Radius.circular(isUser ? 18 : 4),
-                              bottomRight: Radius.circular(isUser ? 4 : 18),
-                            ),
-                          ),
-                          child: Text(
-                            message.content,
-                            style: TextStyle(color: isUser ? Theme.of(context).colorScheme.onPrimary : null),
+                      final bubble = Container(
+                        margin: const EdgeInsets.symmetric(vertical: 4),
+                        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                        constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width * 0.75),
+                        decoration: BoxDecoration(
+                          color: isUser
+                              ? Theme.of(context).colorScheme.primary
+                              : Theme.of(context).colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.only(
+                            topLeft: const Radius.circular(18),
+                            topRight: const Radius.circular(18),
+                            bottomLeft: Radius.circular(isUser ? 18 : 4),
+                            bottomRight: Radius.circular(isUser ? 4 : 18),
                           ),
                         ),
+                        child: Text(
+                          message.content,
+                          style: TextStyle(color: isUser ? Theme.of(context).colorScheme.onPrimary : null),
+                        ),
+                      );
+                      return Align(
+                        alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
+                        child: message.actionDone
+                            ? Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [bubble, const _DoneChip()],
+                              )
+                            : bubble,
                       )
                           .animate()
                           .fadeIn(duration: 240.ms)
@@ -167,6 +175,32 @@ class _EmptyState extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Small confirmation chip shown under an assistant reply that performed an
+/// action (added a goal, changed the profile, etc.).
+class _DoneChip extends StatelessWidget {
+  const _DoneChip();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.only(left: 4, bottom: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 3),
+      decoration: BoxDecoration(
+        color: AppColors.income.withValues(alpha: 0.16),
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: const Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.check_circle, size: 13, color: AppColors.income),
+          SizedBox(width: 4),
+          Text('Done', style: TextStyle(color: AppColors.income, fontSize: 11, fontWeight: FontWeight.w700)),
+        ],
       ),
     );
   }

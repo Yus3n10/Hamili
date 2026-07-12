@@ -122,6 +122,19 @@ class GoalsPage extends ConsumerWidget {
                           '(${goal.progressPercentage.toStringAsFixed(0)}%)',
                           style: Theme.of(context).textTheme.bodySmall,
                         ),
+                        if (goal.targetDate != null) ...[
+                          const SizedBox(height: 6),
+                          Row(
+                            children: [
+                              Icon(Icons.event_outlined, size: 14, color: Theme.of(context).colorScheme.primary),
+                              const SizedBox(width: 5),
+                              Text(
+                                'Due ${DateFormat.yMMMd().format(goal.targetDate!)}',
+                                style: Theme.of(context).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                              ),
+                            ],
+                          ),
+                        ],
                         if (!goal.isCompleted && goal.estimatedCompletionDate != null) ...[
                           const SizedBox(height: 4),
                           Text(

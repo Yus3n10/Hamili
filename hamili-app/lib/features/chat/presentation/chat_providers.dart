@@ -6,6 +6,7 @@ import '../../analytics/presentation/analytics_providers.dart';
 import '../../auth/presentation/auth_providers.dart';
 import '../../budgets/presentation/budget_providers.dart';
 import '../../goals/presentation/goal_providers.dart';
+import '../../recurring/presentation/recurring_providers.dart';
 import '../../transactions/presentation/transaction_providers.dart';
 import '../domain/chat_message.dart';
 
@@ -47,6 +48,8 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
             ref.invalidate(goalsProvider);
           case 'budgets':
             ref.invalidate(budgetsProvider);
+          case 'recurring':
+            ref.invalidate(recurringProvider);
           case 'transactions':
             ref.invalidate(transactionsProvider);
             invalidateAnalytics(ref);
@@ -54,7 +57,10 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
             ref.invalidate(currentUserProvider);
         }
       }
-      state = [...state, ChatMessage('assistant', response.data['reply'] as String)];
+      state = [
+        ...state,
+        ChatMessage('assistant', response.data['reply'] as String, actionDone: changed.isNotEmpty),
+      ];
     } catch (_) {
       state = [
         ...state,

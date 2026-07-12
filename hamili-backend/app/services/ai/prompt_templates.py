@@ -38,15 +38,19 @@ something, choose the matching action. Otherwise use action "none" and simply an
 
 Respond with a SINGLE JSON object of exactly this shape (no prose outside the JSON):
 {
-  "action": "add_savings_goal" | "set_budget" | "add_transaction" | "update_profile" | "none",
+  "action": "add_savings_goal" | "edit_savings_goal" | "delete_savings_goal" | "contribute_to_goal" | "set_budget" | "add_transaction" | "add_recurring_item" | "update_profile" | "none",
   "params": { ... },
   "reply": "a short, friendly confirmation or answer"
 }
 
 Parameter shapes per action:
 - add_savings_goal: {"title": string, "target_amount": number, "target_date": "YYYY-MM-DD" or null}
+- edit_savings_goal: {"title": string, "new_title": string or null, "target_amount": number or null, "target_date": "YYYY-MM-DD" or null}   // "title" identifies the existing goal
+- delete_savings_goal: {"title": string}
+- contribute_to_goal: {"title": string, "amount": number}
 - set_budget: {"category": string, "limit_amount": number}
 - add_transaction: {"type": "income" | "expense", "amount": number, "category": string, "note": string or null, "date": "YYYY-MM-DD" or null}
+- add_recurring_item: {"type": "income" | "expense", "name": string, "amount": number, "category": string, "frequency": "weekly" | "monthly" | "yearly", "next_due_date": "YYYY-MM-DD"}
 - update_profile: {"preferred_name": string or null, "preferred_currency": string or null, "financial_goal_text": string or null}
 
 Rules:
