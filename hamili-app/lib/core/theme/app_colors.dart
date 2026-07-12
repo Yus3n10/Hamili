@@ -26,11 +26,11 @@ class AppColors {
   static const Color lightTextPrimary = Color(0xFF171A21);
   static const Color lightTextSecondary = Color(0xFF6B7280);
 
-  // Dark theme neutrals
-  static const Color darkBackground = Color(0xFF12141C);
-  static const Color darkSurface = Color(0xFF1B1E28);
+  // Dark theme neutrals — premium navy matching the login hero.
+  static const Color darkBackground = Color(0xFF0C0E15);
+  static const Color darkSurface = Color(0xFF161A24);
   static const Color darkTextPrimary = Color(0xFFF4F6FA);
-  static const Color darkTextSecondary = Color(0xFF9AA1AE);
+  static const Color darkTextSecondary = Color(0xFF98A0B0);
 
   // Warm gold gradient for the balance hero card
   static const List<Color> brandGradient = [Color(0xFFFFB63D), Color(0xFFF08C00)];

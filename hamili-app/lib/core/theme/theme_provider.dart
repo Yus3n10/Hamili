@@ -25,10 +25,12 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
     switch (value) {
       case 'light':
         return ThemeMode.light;
-      case 'dark':
-        return ThemeMode.dark;
-      default:
+      case 'system':
         return ThemeMode.system;
+      // Default (no saved preference) is the dark premium look that matches
+      // the login — the user can still switch to Light/System in Profile.
+      default:
+        return ThemeMode.dark;
     }
   }
 

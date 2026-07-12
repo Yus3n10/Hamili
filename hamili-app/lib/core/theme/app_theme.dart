@@ -107,7 +107,12 @@ class AppTheme {
         elevation: 4,
         shadowColor: Colors.black.withValues(alpha: isLight ? 0.07 : 0.4),
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        // On the near-black dark background, shadows disappear — a hairline
+        // border gives cards definition and the premium navy look.
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: isLight ? BorderSide.none : BorderSide(color: Colors.white.withValues(alpha: 0.06)),
+        ),
         margin: EdgeInsets.zero,
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
