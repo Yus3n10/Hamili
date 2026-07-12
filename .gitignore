@@ -1,0 +1,30 @@
+# ===== Secrets / environment =====
+# Never commit real credentials (Aiven Postgres URL, Gemini API key, JWT secret).
+.env
+*.env
+!.env.example
+
+# ===== Python / FastAPI backend =====
+hamili-backend/venv/
+hamili-backend/.venv/
+**/__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# ===== Flutter app (hamili-app also has its own .gitignore) =====
+hamili-app/build/
+hamili-app/.dart_tool/
+hamili-app/.flutter-plugins
+hamili-app/.flutter-plugins-dependencies
+
+# ===== Editors / IDE =====
+.idea/
+.vscode/
+*.iml
+
+# ===== OS =====
+.DS_Store
+Thumbs.db
