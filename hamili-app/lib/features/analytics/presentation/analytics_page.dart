@@ -7,6 +7,7 @@ import '../../../core/utils/currency_formatter.dart';
 import '../../transactions/presentation/transaction_providers.dart';
 import 'analytics_providers.dart';
 import 'widgets/category_donut.dart';
+import 'widgets/net_balance_line_chart.dart';
 import 'widgets/trend_bar_chart.dart';
 
 class AnalyticsPage extends ConsumerWidget {
@@ -93,6 +94,16 @@ class AnalyticsPage extends ConsumerWidget {
               ),
               error: (_, __) => const Text("Couldn't load trend."),
               data: (points) => TrendBarChart(points: points),
+            ),
+            const SizedBox(height: 24),
+            Text('Net balance trend', style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            trendAsync.when(
+              loading: () => const Center(
+                child: Padding(padding: EdgeInsets.all(24), child: CircularProgressIndicator()),
+              ),
+              error: (_, __) => const Text("Couldn't load net balance."),
+              data: (points) => NetBalanceLineChart(points: points),
             ),
           ],
         ),
