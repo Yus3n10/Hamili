@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/mascot/piggy_events.dart';
 import '../../../core/network/offline_queue.dart';
 import '../../../core/session/session_provider.dart';
 import '../../analytics/presentation/analytics_providers.dart';
@@ -71,7 +70,6 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
       // this refetches.
       ref.invalidate(budgetsProvider);
       invalidateAnalytics(ref);
-      if (type == 'income') ref.read(piggyCoinFlipProvider.notifier).state++; // Hami celebrates income
       await future;
     } on OfflineQueuedException {
       // Queued offline — show it immediately with a temporary negative id;

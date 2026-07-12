@@ -40,9 +40,6 @@ dependencies:
   # Celebration confetti (goal completion) — CustomPaint particles, no assets
   confetti: ^0.8.0
 
-  # Rive — vector mascot animation (piggy bank state machine)
-  rive: ^0.13.1
-
   # Profile picture picking (crop/adjust done in-app, no heavy cropper dep)
   image_picker: ^1.1.2
 
@@ -57,5 +54,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-  assets:
-    - assets/rive/
