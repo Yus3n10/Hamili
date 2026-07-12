@@ -23,6 +23,12 @@ Flutter (Android + Web) personal finance tracker with an AI companion, **Hami**.
 
 ## Status: Milestones 1–8 complete + a full design/UX pass + an AI action agent
 
+### Latest additions (2026-07-13) — three small features, on `main`
+- **Turn off AI insights:** a device-level toggle (`insightsEnabledProvider`, `app_settings` Hive, mirrors `themeModeProvider`) in Profile's new "AI" section. When off, the dashboard insights card hides **and** `InsightsNotifier.build()` skips the fetch, so **no Gemini call** is made. Default on.
+- **AI scope guard (starter version):** a "Scope & limits" block added to `HAMI_SYSTEM_PROMPT` (inherited by agent + insights). Hami now declines out-of-scope asks — specific stock/crypto/investment picks, or real-world/live data it has no access to (nearest cafe, live prices) — with a warm "I'm still an early version…" deflection, `action:"none"`. **Verified live** against all three example prompts + an in-scope control; pytest still 15/15.
+- **Budget over-limit overlay:** `BudgetAlertOverlay` mounted in `MainShell`'s body (a `Stack(fit: StackFit.expand)`), so reddish-translucent, closable (× or swipe) toasts appear above the nav bar on every authenticated screen — never on login/onboarding. One toast per over-limit budget (`spentAmount > limitAmount`). Dismissal is session-scoped in-memory (`dismissedBudgetAlertsProvider`, watches `sessionIdProvider`), so a closed alert returns next session if still over. Side-effect: the overlay watching `budgetsProvider`/`categoriesProvider` means budgets now load at app startup. `flutter analyze` clean + full `flutter build web` passes; visual behavior pending user check in Opera GX.
+- Spec + plan in `docs/superpowers/specs/2026-07-13-insights-toggle-ai-scope-budget-alert-design.md` and `docs/superpowers/plans/2026-07-13-insights-toggle-ai-scope-budget-alert.md`.
+
 All run against **live Aiven Postgres + real Gemini**, not just written. Backend has a pytest suite (15+ tests) that passes; the AI agent was verified end-to-end via live API calls.
 
 ### Backend (`hamili-backend/app/`)
