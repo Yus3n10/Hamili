@@ -68,6 +68,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
+                  textInputAction: TextInputAction.next,
                   decoration: const InputDecoration(labelText: 'Email'),
                   validator: (value) =>
                       (value == null || !value.contains('@')) ? 'Enter a valid email' : null,
@@ -76,6 +77,13 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: true,
+                  textInputAction: TextInputAction.done,
+                  // Pressing Enter (or the keyboard's "done" action) submits
+                  // the form, so logging in never requires reaching for the
+                  // button — as long as we're not already mid-request.
+                  onFieldSubmitted: (_) {
+                    if (!_isLoading) _handleLogin();
+                  },
                   decoration: const InputDecoration(labelText: 'Password'),
                   validator: (value) =>
                       (value == null || value.length < 8) ? 'Password must be at least 8 characters' : null,
