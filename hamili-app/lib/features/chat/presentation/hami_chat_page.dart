@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'chat_providers.dart';
-import '../domain/chat_message.dart';
 
 const _suggestedPrompts = [
   'Where am I overspending?',

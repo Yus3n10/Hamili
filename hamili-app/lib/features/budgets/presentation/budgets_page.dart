@@ -17,7 +17,6 @@ class BudgetsPage extends ConsumerWidget {
     final budgetsAsync = ref.watch(budgetsProvider);
     final categoriesAsync = ref.watch(categoriesProvider);
     final categories = categoriesAsync.valueOrNull ?? [];
-    final period = ref.watch(budgetPeriodProvider);
 
     return Scaffold(
       appBar: AppBar(title: const Text('Budgets')),
