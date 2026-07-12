@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/budgets/presentation/budget_alert_overlay.dart';
+
 /// Bottom-nav shell wrapping the core screens. Dashboard, transactions,
 /// analytics, chat are one tap away; budgets/goals/recurring/profile live
 /// under "More". Switching tabs glides the new branch in (slide + fade),
@@ -39,17 +41,22 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
     }
 
     return Scaffold(
-      body: AnimatedBuilder(
-        animation: _controller,
-        builder: (context, child) {
-          final width = MediaQuery.of(context).size.width;
-          final dx = (1 - _controller.value) * (_forward ? 0.05 : -0.05) * width;
-          return Opacity(
-            opacity: 0.35 + 0.65 * _controller.value,
-            child: Transform.translate(offset: Offset(dx, 0), child: child),
-          );
-        },
-        child: widget.navigationShell,
+      body: Stack(
+        children: [
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) {
+              final width = MediaQuery.of(context).size.width;
+              final dx = (1 - _controller.value) * (_forward ? 0.05 : -0.05) * width;
+              return Opacity(
+                opacity: 0.35 + 0.65 * _controller.value,
+                child: Transform.translate(offset: Offset(dx, 0), child: child),
+              );
+            },
+            child: widget.navigationShell,
+          ),
+          const BudgetAlertOverlay(),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: widget.navigationShell.currentIndex,
