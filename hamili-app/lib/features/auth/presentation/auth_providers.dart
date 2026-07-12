@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/session/session_provider.dart';
+import '../../recurring/presentation/recurring_providers.dart';
 import '../../transactions/presentation/transaction_providers.dart';
 import '../data/auth_repository.dart';
 import '../domain/app_user.dart';
@@ -36,6 +37,7 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
     // second account on the same device can't see the first account's
     // cached transactions before its own first successful fetch.
     await ref.read(transactionRepositoryProvider).clearCache();
+    await ref.read(recurringRepositoryProvider).clearCache();
     state = const AsyncData(null);
     _startNewSession();
   }
