@@ -6,7 +6,12 @@ from app.db.session import get_db
 from app.models.ai import AIChatMessage
 from app.models.user import User
 from app.schemas.chat import ChatMessageCreate, ChatMessageOut, ChatReply
+from app.services.ai.base_provider import AIProviderUnavailable
 from app.services.insight_service import InsightService
+
+# Shown when Gemini's quota is exhausted — "tomorrow" because the free-tier
+# quota resets daily.
+_SERVERS_DOWN_REPLY = "Hami's servers are down right now, try again tomorrow. 💤"
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 
@@ -41,7 +46,12 @@ def send_message(
     )
     message_history = [{"role": m.role, "content": m.content} for m in history]
 
-    reply_text = InsightService(db).chat(current_user, message_history)
+    try:
+        reply_text = InsightService(db).chat(current_user, message_history)
+    except AIProviderUnavailable:
+        # Quota exhausted — surface a friendly message and don't persist it as
+        # real chat history (the user's question stays; Hami just couldn't answer).
+        return ChatReply(reply=_SERVERS_DOWN_REPLY, available=False)
 
     assistant_message = AIChatMessage(user_id=current_user.id, role="assistant", content=reply_text)
     db.add(assistant_message)

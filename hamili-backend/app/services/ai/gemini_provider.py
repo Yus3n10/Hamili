@@ -3,7 +3,7 @@ import json
 import google.generativeai as genai
 
 from app.core.config import get_settings
-from app.services.ai.base_provider import AIProvider
+from app.services.ai.base_provider import AIProvider, AIProviderUnavailable, looks_like_quota_error
 from app.services.ai.prompt_templates import HAMI_SYSTEM_PROMPT, build_insight_prompt
 
 settings = get_settings()
@@ -36,7 +36,12 @@ class GeminiProvider(AIProvider):
         latest_user_message = messages[-1]["content"]
         prompt = f"Financial snapshot:\n{json.dumps(financial_context)}\n\nUser: {latest_user_message}"
 
-        response = chat_session.send_message(prompt)
+        try:
+            response = chat_session.send_message(prompt)
+        except Exception as err:  # noqa: BLE001 — classify then re-raise
+            if looks_like_quota_error(err):
+                raise AIProviderUnavailable from err
+            raise
         return response.text.strip()
 
     def generate_insights(self, financial_context: dict) -> list[str]:
