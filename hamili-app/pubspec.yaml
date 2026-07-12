@@ -43,6 +43,9 @@ dependencies:
   # Rive — vector mascot animation (piggy bank state machine)
   rive: ^0.13.1
 
+  # Profile picture picking (crop/adjust done in-app, no heavy cropper dep)
+  image_picker: ^1.1.2
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:

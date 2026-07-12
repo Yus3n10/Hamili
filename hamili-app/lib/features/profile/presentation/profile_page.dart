@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/theme_provider.dart';
+import '../../../shared/widgets/user_avatar.dart';
 import '../../auth/presentation/auth_providers.dart';
+import 'avatar_edit.dart';
+import 'avatar_providers.dart';
 import 'edit_profile_page.dart';
 
 class ProfilePage extends ConsumerWidget {
@@ -42,6 +45,37 @@ class ProfilePage extends ConsumerWidget {
             : ListView(
                 padding: const EdgeInsets.all(16),
                 children: [
+                  Center(
+                    child: Stack(
+                      children: [
+                        UserAvatar(base64: ref.watch(avatarProvider), fallbackInitial: user.preferredName, radius: 48),
+                        Positioned(
+                          right: 0,
+                          bottom: 0,
+                          child: Material(
+                            color: Theme.of(context).colorScheme.primary,
+                            shape: const CircleBorder(),
+                            child: InkWell(
+                              customBorder: const CircleBorder(),
+                              onTap: () => pickAndSetAvatar(context, ref),
+                              child: Padding(
+                                padding: const EdgeInsets.all(7),
+                                child: Icon(Icons.camera_alt, size: 16, color: Theme.of(context).colorScheme.onPrimary),
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  if (ref.watch(avatarProvider) != null)
+                    Center(
+                      child: TextButton(
+                        onPressed: () => ref.read(avatarProvider.notifier).clear(),
+                        child: const Text('Remove photo'),
+                      ),
+                    ),
+                  const SizedBox(height: 12),
                   ListTile(title: const Text('Preferred name'), subtitle: Text(user.preferredName)),
                   ListTile(title: const Text('Email'), subtitle: Text(user.email)),
                   ListTile(title: const Text('Currency'), subtitle: Text(user.preferredCurrency)),

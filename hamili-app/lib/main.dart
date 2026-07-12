@@ -12,6 +12,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Hive.initFlutter(); // local/offline cache — boxes registered per-feature as they're added
   await Hive.openBox<String>('app_settings'); // device prefs (theme mode) — read synchronously by providers
+  await Hive.openBox<String>('avatars'); // per-account profile pictures (base64), read synchronously
   await OfflineQueue.instance.init(); // restore pending-write count from a previous session
 
   // Security: never auto-resume a previous session. Every cold start of
