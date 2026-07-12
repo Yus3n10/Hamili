@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/thousands_separator_formatter.dart';
 import '../../../shared/widgets/category_picker.dart';
 import '../../../shared/widgets/primary_button.dart';
 import '../../transactions/domain/category.dart';
+import '../domain/budget.dart';
 import 'budget_providers.dart';
+
+enum _BudgetConflictChoice { replace, add }
 
 Future<void> showSetBudgetSheet(BuildContext context, WidgetRef ref) {
   return showModalBottomSheet(
@@ -40,19 +44,62 @@ class _SetBudgetSheetState extends ConsumerState<_SetBudgetSheet> {
       return;
     }
 
+    // If this category already has a budget for the current period, ask
+    // whether to replace the limit or add the two amounts together.
+    final budgets = ref.read(budgetsProvider).valueOrNull ?? const <AppBudget>[];
+    AppBudget? existing;
+    for (final b in budgets) {
+      if (b.categoryId == _selectedCategory!.id) {
+        existing = b;
+        break;
+      }
+    }
+
+    var finalAmount = amount;
+    if (existing != null) {
+      final choice = await _askReplaceOrAdd(existing.limitAmount, amount);
+      if (choice == null) return; // cancelled — keep the sheet open
+      finalAmount = choice == _BudgetConflictChoice.add ? existing.limitAmount + amount : amount;
+    }
+
     setState(() {
       _isSaving = true;
       _error = null;
     });
 
     try {
-      await ref.read(budgetsProvider.notifier).setBudget(categoryId: _selectedCategory!.id, limitAmount: amount);
+      await ref.read(budgetsProvider.notifier).setBudget(categoryId: _selectedCategory!.id, limitAmount: finalAmount);
       if (mounted) Navigator.of(context).pop();
     } catch (_) {
       setState(() => _error = "Couldn't save budget. Try again.");
     } finally {
       if (mounted) setState(() => _isSaving = false);
     }
+  }
+
+  Future<_BudgetConflictChoice?> _askReplaceOrAdd(double existing, double added) {
+    final total = existing + added;
+    return showDialog<_BudgetConflictChoice>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: Text('${_selectedCategory!.name} already has a budget'),
+        content: Text(
+          'This category already has a ${CurrencyFormatter.format(existing)} budget this month.\n\n'
+          'Replace it with ${CurrencyFormatter.format(added)}, or add them together?',
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(dialogContext), child: const Text('Cancel')),
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, _BudgetConflictChoice.replace),
+            child: const Text('Replace'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, _BudgetConflictChoice.add),
+            child: Text('Add → ${CurrencyFormatter.format(total)}'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
