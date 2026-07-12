@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/theme_provider.dart';
 import '../../auth/presentation/auth_providers.dart';
 import 'edit_profile_page.dart';
 
@@ -48,7 +49,38 @@ class ProfilePage extends ConsumerWidget {
                     title: const Text('Financial goal'),
                     subtitle: Text(user.financialGoalText ?? 'Not set yet'),
                   ),
-                  const SizedBox(height: 16),
+                  const Divider(height: 32),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, bottom: 10),
+                    child: Text('Appearance', style: Theme.of(context).textTheme.titleMedium),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: SegmentedButton<ThemeMode>(
+                      segments: const [
+                        ButtonSegment(
+                          value: ThemeMode.system,
+                          icon: Icon(Icons.brightness_auto_outlined),
+                          label: Text('System'),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.light,
+                          icon: Icon(Icons.light_mode_outlined),
+                          label: Text('Light'),
+                        ),
+                        ButtonSegment(
+                          value: ThemeMode.dark,
+                          icon: Icon(Icons.dark_mode_outlined),
+                          label: Text('Dark'),
+                        ),
+                      ],
+                      selected: {ref.watch(themeModeProvider)},
+                      showSelectedIcon: false,
+                      onSelectionChanged: (selection) =>
+                          ref.read(themeModeProvider.notifier).setThemeMode(selection.first),
+                    ),
+                  ),
+                  const SizedBox(height: 28),
                   FilledButton.icon(
                     onPressed: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => EditProfilePage(user: user)),
