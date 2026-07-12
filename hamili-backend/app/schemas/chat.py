@@ -19,5 +19,8 @@ class ChatMessageOut(BaseModel):
 class ChatReply(BaseModel):
     reply: str
     # False when the AI backend was unavailable (quota exhausted) and `reply`
-    # is the fallback message — lets the app show Hami "sleeping".
+    # is the fallback message.
     available: bool = True
+    # App areas the reply changed (e.g. ["goals"], ["profile"]) so the client
+    # can refresh those tabs. Empty for ordinary answers.
+    changed: list[str] = []

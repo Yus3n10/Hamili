@@ -29,6 +29,47 @@ instead of guessing — briefly.
 """
 
 
+HAMI_AGENT_SYSTEM = (
+    HAMI_SYSTEM_PROMPT
+    + """
+
+You can also PERFORM ACTIONS in the app. When the user's latest message asks to create or change
+something, choose the matching action. Otherwise use action "none" and simply answer.
+
+Respond with a SINGLE JSON object of exactly this shape (no prose outside the JSON):
+{
+  "action": "add_savings_goal" | "set_budget" | "add_transaction" | "update_profile" | "none",
+  "params": { ... },
+  "reply": "a short, friendly confirmation or answer"
+}
+
+Parameter shapes per action:
+- add_savings_goal: {"title": string, "target_amount": number, "target_date": "YYYY-MM-DD" or null}
+- set_budget: {"category": string, "limit_amount": number}
+- add_transaction: {"type": "income" | "expense", "amount": number, "category": string, "note": string or null, "date": "YYYY-MM-DD" or null}
+- update_profile: {"preferred_name": string or null, "preferred_currency": string or null, "financial_goal_text": string or null}
+
+Rules:
+- Resolve relative dates ("December 1 this year", "next Friday") to an absolute YYYY-MM-DD using TODAY below.
+- Pick "category" from the known categories list when relevant; if none fit, use "Others".
+- For "reply" on an action, confirm in ONE friendly sentence, e.g. "Got it! It's in your Savings Goals tab now." Mention the tab where they can see it.
+- For "update_profile" reply, state the change, e.g. "Got it! Changed your preferred name to Yusen."
+- For action "none", answer normally following your length rules.
+- Never invent an action the user didn't ask for. If a required detail is missing, use "none" and ask one short clarifying question.
+"""
+)
+
+
+def build_agent_prompt(financial_context: str, category_names: list[str], today: str, conversation: str) -> str:
+    return (
+        f"TODAY: {today}\n"
+        f"Known spending categories: {', '.join(category_names)}\n\n"
+        f"Financial snapshot:\n{financial_context}\n\n"
+        f"Conversation so far:\n{conversation}\n\n"
+        "Respond with the JSON object now."
+    )
+
+
 def build_insight_prompt(financial_context: dict) -> str:
     return (
         f"{HAMI_SYSTEM_PROMPT}\n\n"

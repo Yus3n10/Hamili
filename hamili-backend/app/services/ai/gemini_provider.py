@@ -4,7 +4,12 @@ import google.generativeai as genai
 
 from app.core.config import get_settings
 from app.services.ai.base_provider import AIProvider, AIProviderUnavailable, looks_like_quota_error
-from app.services.ai.prompt_templates import HAMI_SYSTEM_PROMPT, build_insight_prompt
+from app.services.ai.prompt_templates import (
+    HAMI_AGENT_SYSTEM,
+    HAMI_SYSTEM_PROMPT,
+    build_agent_prompt,
+    build_insight_prompt,
+)
 
 settings = get_settings()
 
@@ -15,6 +20,7 @@ class GeminiProvider(AIProvider):
 
     def __init__(self, model_name: str = "gemini-flash-lite-latest"):
         genai.configure(api_key=settings.gemini_api_key)
+        self._model_name = model_name
         self.model = genai.GenerativeModel(
             model_name=model_name,
             system_instruction=HAMI_SYSTEM_PROMPT,
@@ -43,6 +49,43 @@ class GeminiProvider(AIProvider):
                 raise AIProviderUnavailable from err
             raise
         return response.text.strip()
+
+    def interpret(
+        self,
+        messages: list[dict],
+        financial_context: dict,
+        category_names: list[str],
+        today: str,
+    ) -> dict:
+        conversation = "\n".join(f"{m['role']}: {m['content']}" for m in messages[-6:])
+        prompt = build_agent_prompt(json.dumps(financial_context), category_names, today, conversation)
+        model = genai.GenerativeModel(
+            model_name=self._model_name,
+            system_instruction=HAMI_AGENT_SYSTEM,
+            generation_config=genai.GenerationConfig(
+                response_mime_type="application/json",
+                max_output_tokens=500,
+            ),
+        )
+        try:
+            response = model.generate_content(prompt)
+        except Exception as err:  # noqa: BLE001 — classify then re-raise
+            if looks_like_quota_error(err):
+                raise AIProviderUnavailable from err
+            raise
+
+        try:
+            cleaned = response.text.strip().removeprefix("```json").removesuffix("```").strip()
+            data = json.loads(cleaned)
+            if not isinstance(data, dict):
+                raise ValueError("not an object")
+            data.setdefault("action", "none")
+            data.setdefault("params", {})
+            data.setdefault("reply", "")
+            return data
+        except (json.JSONDecodeError, AttributeError, ValueError):
+            text = (getattr(response, "text", "") or "").strip()
+            return {"action": "none", "params": {}, "reply": text or "Sorry, I didn't catch that."}
 
     def generate_insights(self, financial_context: dict) -> list[str]:
         prompt = build_insight_prompt(json.dumps(financial_context))

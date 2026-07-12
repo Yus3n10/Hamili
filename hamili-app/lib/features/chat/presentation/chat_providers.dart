@@ -2,6 +2,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
 import '../../../core/session/session_provider.dart';
+import '../../analytics/presentation/analytics_providers.dart';
+import '../../auth/presentation/auth_providers.dart';
+import '../../budgets/presentation/budget_providers.dart';
+import '../../goals/presentation/goal_providers.dart';
+import '../../transactions/presentation/transaction_providers.dart';
 import '../domain/chat_message.dart';
 
 /// Tracks whether Hami is currently generating a reply, so the UI can
@@ -33,6 +38,22 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
       final response = await ApiClient.instance.dio.post('/chat/message', data: {'content': content});
       final available = response.data['available'] as bool? ?? true;
       ref.read(chatServersDownProvider.notifier).state = !available;
+      // If Hami performed an action, refresh the affected tabs so the change
+      // is visible when the user navigates there.
+      final changed = (response.data['changed'] as List?)?.cast<String>() ?? const [];
+      for (final area in changed) {
+        switch (area) {
+          case 'goals':
+            ref.invalidate(goalsProvider);
+          case 'budgets':
+            ref.invalidate(budgetsProvider);
+          case 'transactions':
+            ref.invalidate(transactionsProvider);
+            invalidateAnalytics(ref);
+          case 'profile':
+            ref.invalidate(currentUserProvider);
+        }
+      }
       state = [...state, ChatMessage('assistant', response.data['reply'] as String)];
     } catch (_) {
       state = [

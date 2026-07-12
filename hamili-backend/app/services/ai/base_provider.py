@@ -41,3 +41,15 @@ class AIProvider(ABC):
         """Generate proactive insight strings (overspending alerts,
         goal-progress nudges, subscription suggestions) from a snapshot."""
         raise NotImplementedError
+
+    @abstractmethod
+    def interpret(
+        self,
+        messages: list[dict],
+        financial_context: dict,
+        category_names: list[str],
+        today: str,
+    ) -> dict:
+        """Interpret the conversation as either a normal reply or an action
+        request. Returns a dict: {"action": str, "params": dict, "reply": str}."""
+        raise NotImplementedError
