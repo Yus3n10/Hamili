@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.config import get_settings
-from app.routers import analytics, auth, budgets, categories, chat, goals, recurring, transactions
+from app.routers import analytics, auth, budgets, categories, chat, goals, insights, recurring, transactions
 
 settings = get_settings()
 
@@ -27,6 +27,7 @@ app.include_router(budgets.router)
 app.include_router(goals.router)
 app.include_router(recurring.router)
 app.include_router(analytics.router)
+app.include_router(insights.router)
 app.include_router(chat.router)
 # Milestone 4+: recurring, analytics routers plug in the same way — each
 # is self-contained, so this file stays a thin registry.

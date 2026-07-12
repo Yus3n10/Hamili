@@ -1,7 +1,10 @@
 from datetime import date
 
+from fastapi import HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from app.models.ai import AIInsight
 from app.models.budget import Budget
 from app.models.goal import SavingsGoal
 from app.models.recurring import RecurringItem
@@ -63,3 +66,76 @@ class InsightService:
     def generate_proactive_insights(self, user: User) -> list[str]:
         snapshot = self.build_financial_snapshot(user)
         return self.provider.generate_insights(snapshot)
+
+    # --- Persisted, dashboard-surfaced insights (Milestone 6) -------------
+
+    def list_active(self, user: User) -> list[AIInsight]:
+        """Undismissed insights, newest first."""
+        return (
+            self.db.query(AIInsight)
+            .filter(AIInsight.user_id == user.id, AIInsight.is_read.is_(False))
+            .order_by(AIInsight.created_at.desc())
+            .all()
+        )
+
+    def _has_todays_batch(self, user: User) -> bool:
+        """Whether any insight was generated today (read or not) — a batch
+        the user has already dismissed still counts, so we don't regenerate
+        (and re-charge a Gemini call) the same day."""
+        today = date.today()
+        return (
+            self.db.query(AIInsight)
+            .filter(
+                AIInsight.user_id == user.id,
+                func.date(AIInsight.created_at) == today,
+            )
+            .first()
+            is not None
+        )
+
+    def generate_and_store(self, user: User) -> list[AIInsight]:
+        """Generate a fresh batch and replace the current unread one. Any
+        provider failure (e.g. a dead model id) leaves existing insights
+        untouched and returns an empty list rather than raising, so the
+        dashboard degrades gracefully instead of erroring."""
+        try:
+            messages = self.provider.generate_insights(self.build_financial_snapshot(user))
+        except Exception:
+            return []
+
+        if not messages:
+            return []
+
+        # Replace the prior unread batch so the card shows only the latest.
+        self.db.query(AIInsight).filter(
+            AIInsight.user_id == user.id, AIInsight.is_read.is_(False)
+        ).delete(synchronize_session=False)
+
+        created = [
+            AIInsight(user_id=user.id, insight_type="general", message=text)
+            for text in messages
+            if isinstance(text, str) and text.strip()
+        ]
+        self.db.add_all(created)
+        self.db.commit()
+        for insight in created:
+            self.db.refresh(insight)
+        return created
+
+    def ensure_daily(self, user: User) -> list[AIInsight]:
+        """Return active insights, generating today's batch first if none
+        has been generated yet today."""
+        if not self._has_todays_batch(user):
+            self.generate_and_store(user)
+        return self.list_active(user)
+
+    def dismiss(self, user: User, insight_id: int) -> None:
+        insight = (
+            self.db.query(AIInsight)
+            .filter(AIInsight.id == insight_id, AIInsight.user_id == user.id)
+            .first()
+        )
+        if not insight:
+            raise HTTPException(status.HTTP_404_NOT_FOUND, "Insight not found")
+        insight.is_read = True
+        self.db.commit()
