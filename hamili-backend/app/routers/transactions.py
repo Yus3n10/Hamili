@@ -5,6 +5,7 @@ from app.core.deps import get_current_user
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.transaction import TransactionCreate, TransactionOut, TransactionUpdate
+from app.services.recurring_service import RecurringService
 from app.services.transaction_service import TransactionService
 
 router = APIRouter(prefix="/transactions", tags=["transactions"])
@@ -17,6 +18,9 @@ def list_transactions(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
+    # Recurring items are promoted lazily; do it here so the dashboard
+    # (which is computed client-side from this list) is always current.
+    RecurringService(db).promote_due(current_user)
     return TransactionService(db).list(current_user, category_id, search)
 
 
