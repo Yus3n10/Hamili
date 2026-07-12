@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../insight_providers.dart';
+import '../insights_enabled_provider.dart';
 
 /// "Insights from Hami" — proactive, AI-generated nudges on the dashboard.
 /// Renders nothing when there are no insights and nothing is loading, to
@@ -13,6 +14,7 @@ class InsightsCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (!ref.watch(insightsEnabledProvider)) return const SizedBox.shrink();
     final insightsAsync = ref.watch(insightsProvider);
     final insights = insightsAsync.valueOrNull ?? [];
     final isLoading = insightsAsync.isLoading;

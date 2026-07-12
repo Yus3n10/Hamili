@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/theme_provider.dart';
+import '../../dashboard/presentation/insights_enabled_provider.dart';
 import '../../../shared/widgets/user_avatar.dart';
 import '../../auth/presentation/auth_providers.dart';
 import 'avatar_edit.dart';
@@ -113,6 +114,18 @@ class ProfilePage extends ConsumerWidget {
                       onSelectionChanged: (selection) =>
                           ref.read(themeModeProvider.notifier).setThemeMode(selection.first),
                     ),
+                  ),
+                  const Divider(height: 32),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, bottom: 4),
+                    child: Text('AI', style: Theme.of(context).textTheme.titleMedium),
+                  ),
+                  SwitchListTile(
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+                    title: const Text('AI insights from Hami'),
+                    subtitle: const Text('Proactive nudges on your dashboard'),
+                    value: ref.watch(insightsEnabledProvider),
+                    onChanged: (v) => ref.read(insightsEnabledProvider.notifier).setEnabled(v),
                   ),
                   const SizedBox(height: 28),
                   FilledButton.icon(

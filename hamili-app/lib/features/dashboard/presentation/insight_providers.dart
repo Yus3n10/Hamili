@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/session/session_provider.dart';
 import '../data/insights_repository.dart';
 import '../domain/ai_insight.dart';
+import 'insights_enabled_provider.dart';
 
 final insightsRepositoryProvider = Provider<InsightsRepository>((ref) => InsightsRepository());
 
@@ -10,12 +11,14 @@ class InsightsNotifier extends AsyncNotifier<List<AiInsight>> {
   @override
   Future<List<AiInsight>> build() async {
     ref.watch(sessionIdProvider); // reset on login/logout (account isolation)
+    if (!ref.watch(insightsEnabledProvider)) return []; // off -> no Gemini call
     return ref.read(insightsRepositoryProvider).get();
   }
 
   /// Force a fresh batch (a Gemini call). Keeps the old list visible while
   /// the new one loads instead of flashing empty.
   Future<void> refresh() async {
+    if (!ref.read(insightsEnabledProvider)) return;
     state = const AsyncLoading<List<AiInsight>>().copyWithPrevious(state);
     state = await AsyncValue.guard(() => ref.read(insightsRepositoryProvider).refresh());
   }
