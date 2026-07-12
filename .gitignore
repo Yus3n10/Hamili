@@ -20,6 +20,16 @@ hamili-app/.dart_tool/
 hamili-app/.flutter-plugins
 hamili-app/.flutter-plugins-dependencies
 
+# ===== Android release signing (NEVER commit keystores or passwords) =====
+**/key.properties
+!**/key.properties.example
+*.jks
+*.keystore
+
+# ===== Firebase Hosting =====
+hamili-app/.firebase/
+firebase-debug.log
+
 # ===== Editors / IDE =====
 .idea/
 .vscode/

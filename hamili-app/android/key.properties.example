@@ -1,0 +1,8 @@
+# Copy this file to android/key.properties and fill in your real values.
+# key.properties is gitignored and must NEVER be committed — it holds your
+# keystore passwords. See docs/deployment.md for how to generate the keystore.
+storePassword=your-keystore-password
+keyPassword=your-key-password
+keyAlias=hamili
+# Absolute path to your .jks (recommended), or a path relative to android/app/.
+storeFile=C:/Users/you/keys/hamili-release.jks

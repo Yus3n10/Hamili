@@ -1,0 +1,32 @@
+# Render Blueprint for the Hamili backend.
+# Deploy: push this repo to GitHub, then in Render → New → Blueprint, point
+# it at this repo. Render reads this file and provisions the web service.
+# Secrets (sync: false / generateValue) are set in the Render dashboard —
+# they are never committed. See docs/deployment.md for the full walkthrough.
+services:
+  - type: web
+    name: hamili-api
+    runtime: python
+    rootDir: hamili-backend
+    plan: free
+    # Migrations run on every start (alembic upgrade head is a no-op when
+    # already current), so the schema is always in sync on the free plan
+    # without a separate release phase.
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.11.9"
+      - key: AI_PROVIDER
+        value: gemini
+      - key: ENVIRONMENT
+        value: production
+      # Secrets — set these in the Render dashboard, not here:
+      - key: DATABASE_URL # your Aiven Postgres connection string
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: CORS_ORIGINS # e.g. https://hamili-xxxx.web.app
+        sync: false
+      - key: SECRET_KEY # JWT signing key
+        generateValue: true
