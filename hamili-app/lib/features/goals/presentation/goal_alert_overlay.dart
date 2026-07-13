@@ -3,33 +3,22 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../core/utils/currency_formatter.dart';
-import '../../transactions/presentation/transaction_providers.dart';
-import 'budget_alert_provider.dart';
-import 'budget_providers.dart';
+import 'goal_alert_provider.dart';
+import 'goal_providers.dart';
 
-/// Floating, closable alerts shown near the bottom of every authenticated screen
-/// whenever a budget is over its limit. Reddish and translucent so it never fully
-/// obstructs the content behind it. Mounted inside MainShell, so it follows the
-/// user across tabs but never appears on login/onboarding.
-class BudgetAlertOverlay extends ConsumerWidget {
-  const BudgetAlertOverlay({super.key});
+/// Green, semi-transparent celebration toasts shown near the bottom of every
+/// authenticated screen when a savings goal is met. Mirrors the red budget
+/// over-limit overlay; closable by × or swipe, session-dismissed.
+class GoalAlertOverlay extends ConsumerWidget {
+  const GoalAlertOverlay({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final budgets = ref.watch(budgetsProvider).valueOrNull ?? const [];
-    final categories = ref.watch(categoriesProvider).valueOrNull ?? const [];
-    final dismissed = ref.watch(dismissedBudgetAlertsProvider);
+    final goals = ref.watch(goalsProvider).valueOrNull ?? const [];
+    final dismissed = ref.watch(dismissedGoalAlertsProvider);
 
-    final over = budgets
-        .where((b) => b.spentAmount > b.limitAmount && !dismissed.contains(b.id))
-        .toList();
-    if (over.isEmpty) return const SizedBox.shrink();
-
-    String nameFor(int categoryId) {
-      final match = categories.where((c) => c.id == categoryId);
-      return match.isNotEmpty ? match.first.name : 'A budget';
-    }
+    final met = goals.where((g) => g.isCompleted && !dismissed.contains(g.id)).toList();
+    if (met.isEmpty) return const SizedBox.shrink();
 
     return Positioned(
       left: 12,
@@ -40,14 +29,13 @@ class BudgetAlertOverlay extends ConsumerWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            for (final b in over)
+            for (final g in met)
               Padding(
                 padding: const EdgeInsets.only(top: 8),
-                child: _AlertToast(
-                  key: ValueKey(b.id),
-                  message:
-                      '${nameFor(b.categoryId)} is ${CurrencyFormatter.format(b.spentAmount - b.limitAmount)} over budget',
-                  onClose: () => ref.read(dismissedBudgetAlertsProvider.notifier).dismiss(b.id),
+                child: _GoalToast(
+                  key: ValueKey(g.id),
+                  message: "You hit '${g.title}'! 🎉",
+                  onClose: () => ref.read(dismissedGoalAlertsProvider.notifier).dismiss(g.id),
                 ),
               ),
           ],
@@ -57,8 +45,8 @@ class BudgetAlertOverlay extends ConsumerWidget {
   }
 }
 
-class _AlertToast extends StatelessWidget {
-  const _AlertToast({super.key, required this.message, required this.onClose});
+class _GoalToast extends StatelessWidget {
+  const _GoalToast({super.key, required this.message, required this.onClose});
 
   final String message;
   final VoidCallback onClose;
@@ -73,14 +61,15 @@ class _AlertToast extends StatelessWidget {
         color: Colors.transparent,
         child: Container(
           decoration: BoxDecoration(
-            color: AppColors.expense.withValues(alpha: 0.8),
+            // Green + semi-transparent so it celebrates without blocking the view.
+            color: AppColors.primary.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(14),
             boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 12, offset: Offset(0, 4))],
           ),
           padding: const EdgeInsets.fromLTRB(14, 10, 6, 10),
           child: Row(
             children: [
-              const Icon(Icons.warning_amber_rounded, color: Colors.white, size: 20),
+              const Icon(Icons.emoji_events_rounded, color: Colors.white, size: 20),
               const SizedBox(width: 10),
               Expanded(
                 child: Text(

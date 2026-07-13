@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/budgets/presentation/budget_alert_overlay.dart';
+import '../../features/goals/presentation/goal_alert_overlay.dart';
 
 /// Bottom-nav shell wrapping the core screens. Dashboard, transactions,
 /// analytics, chat are one tap away; budgets/goals/recurring/profile live
@@ -57,14 +58,14 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
             child: widget.navigationShell,
           ),
           const BudgetAlertOverlay(),
+          const GoalAlertOverlay(),
         ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: widget.navigationShell.currentIndex,
-        onDestinationSelected: (index) => widget.navigationShell.goBranch(
-          index,
-          initialLocation: index == widget.navigationShell.currentIndex,
-        ),
+        // Always reset the branch to its root on tab tap, so a pushed sheet
+        // (e.g. add-transaction) doesn't linger when you come back to the tab.
+        onDestinationSelected: (index) => widget.navigationShell.goBranch(index, initialLocation: true),
         destinations: const [
           NavigationDestination(icon: Icon(Icons.dashboard_outlined), selectedIcon: Icon(Icons.dashboard), label: 'Home'),
           NavigationDestination(icon: Icon(Icons.receipt_long_outlined), selectedIcon: Icon(Icons.receipt_long), label: 'Transactions'),
