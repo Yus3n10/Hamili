@@ -1,7 +1,7 @@
 """
 AI provider interface.
 
-Every LLM backend (Gemini today, OpenAI/Claude/local model tomorrow) must
+Every LLM backend (Gemini today, OpenAI or a local model tomorrow) must
 implement this interface. Nothing outside this `ai/` package should ever
 import a provider-specific SDK directly — routers and services depend only
 on `AIProvider`, so swapping providers means writing one new class and
