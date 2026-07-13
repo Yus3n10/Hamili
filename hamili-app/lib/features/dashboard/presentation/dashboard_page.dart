@@ -81,7 +81,11 @@ class DashboardPage extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => _push(context, const AddEditTransactionPage()),
+        // Root navigator so the form covers the shell (nav bar included) and
+        // can't linger behind a tab switch.
+        onPressed: () => Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(builder: (_) => const AddEditTransactionPage()),
+        ),
         child: const Icon(Icons.add),
       ),
       body: transactionsAsync.when(
