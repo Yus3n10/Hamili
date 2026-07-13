@@ -3,7 +3,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
 class UserRegister(BaseModel):
     email: EmailStr
-    password: str = Field(min_length=8)
+    password: str = Field(min_length=8, max_length=128)
     preferred_name: str = Field(min_length=1, max_length=100)
 
 
@@ -13,11 +13,11 @@ class UserLogin(BaseModel):
 
 
 class UserUpdate(BaseModel):
-    preferred_name: str | None = None
-    preferred_currency: str | None = None
-    monthly_salary: float | None = None
-    allowance: float | None = None
-    financial_goal_text: str | None = None
+    preferred_name: str | None = Field(default=None, min_length=1, max_length=100)
+    preferred_currency: str | None = Field(default=None, min_length=1, max_length=8)
+    monthly_salary: float | None = Field(default=None, ge=0, le=1_000_000_000_000)
+    allowance: float | None = Field(default=None, ge=0, le=1_000_000_000_000)
+    financial_goal_text: str | None = Field(default=None, max_length=500)
 
 
 class UserOut(BaseModel):

@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user
+from app.core.rate_limit import AI_LIMIT, limiter
 from app.db.session import get_db
 from app.models.ai import AIChatMessage
 from app.models.user import User
@@ -27,7 +28,9 @@ def get_history(current_user: User = Depends(get_current_user), db: Session = De
 
 
 @router.post("/message", response_model=ChatReply)
+@limiter.limit(AI_LIMIT)
 def send_message(
+    request: Request,
     payload: ChatMessageCreate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),

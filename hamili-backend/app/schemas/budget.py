@@ -9,12 +9,12 @@ class BudgetCreate(BaseModel):
 
     category_id: int
     month: int = Field(ge=1, le=12)
-    year: int = Field(ge=2020)
-    limit_amount: float = Field(gt=0)
+    year: int = Field(ge=2020, le=2100)
+    limit_amount: float = Field(gt=0, le=1_000_000_000_000)
 
 
 class BudgetUpdate(BaseModel):
-    limit_amount: float = Field(gt=0)
+    limit_amount: float = Field(gt=0, le=1_000_000_000_000)
 
 
 class BudgetOut(BaseModel):

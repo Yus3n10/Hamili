@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user
+from app.core.rate_limit import LOGIN_LIMIT, limiter
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import TokenPair, UserLogin, UserOut, UserRegister, UserUpdate
@@ -11,12 +12,14 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=UserOut, status_code=201)
-def register(payload: UserRegister, db: Session = Depends(get_db)):
+@limiter.limit(LOGIN_LIMIT)
+def register(request: Request, payload: UserRegister, db: Session = Depends(get_db)):
     return AuthService(db).register(payload)
 
 
 @router.post("/login", response_model=TokenPair)
-def login(payload: UserLogin, db: Session = Depends(get_db)):
+@limiter.limit(LOGIN_LIMIT)
+def login(request: Request, payload: UserLogin, db: Session = Depends(get_db)):
     return AuthService(db).login(payload)
 
 
