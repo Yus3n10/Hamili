@@ -125,11 +125,10 @@ class DashboardPage extends ConsumerWidget {
                     );
                   },
                 ),
-                if (activeGoal != null)
-                  _ActiveGoalCard(goal: activeGoal, onAddFunds: () => _push(context, const GoalsPage()))
-                else
-                  _NoGoalCard(onCreate: () => _push(context, const GoalsPage())),
-                const SizedBox(height: 12),
+                if (activeGoal != null) ...[
+                  _ActiveGoalCard(goal: activeGoal, onAddFunds: () => _push(context, const GoalsPage())),
+                  const SizedBox(height: 12),
+                ],
                 _BalanceHero(balance: balance),
                 const SizedBox(height: 12),
                 Row(
@@ -156,6 +155,10 @@ class DashboardPage extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 12),
+                if (activeGoal == null) ...[
+                  _NoGoalCard(onCreate: () => _push(context, const GoalsPage())),
+                  const SizedBox(height: 12),
+                ],
                 SpendingChart(transactions: transactions),
                 const SizedBox(height: 12),
                 const InsightsCard(),
@@ -303,16 +306,26 @@ class _NoGoalCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       child: Padding(
-        padding: const EdgeInsets.all(18),
-        child: Row(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.flag_outlined, color: AppColors.primary),
-            const SizedBox(width: 12),
-            const Expanded(
-              child: Text('What are you saving for? Set a goal and Hami will help you get there.'),
+            const Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(Icons.flag_outlined, color: AppColors.primary),
+                SizedBox(width: 10),
+                Text('Set a savings goal', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+              ],
             ),
-            const SizedBox(width: 8),
-            FilledButton(onPressed: onCreate, child: const Text('Add goal')),
+            const SizedBox(height: 8),
+            const Text('What are you saving for? Set a goal and Hami will help you get there.'),
+            const SizedBox(height: 14),
+            Align(
+              alignment: Alignment.centerLeft,
+              child: FilledButton(onPressed: onCreate, child: const Text('Add goal')),
+            ),
           ],
         ),
       ),
