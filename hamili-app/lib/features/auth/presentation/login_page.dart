@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/theme/app_colors.dart';
-import '../../../shared/widgets/animated_finance_preview.dart';
+import '../../../shared/widgets/hamili_logo.dart';
 import '../../../shared/widgets/primary_button.dart';
 import 'auth_providers.dart';
 
@@ -20,6 +20,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLoading = false;
+  bool _obscure = true;
   String? _errorMessage;
 
   @override
@@ -48,6 +49,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     }
   }
 
+  void _forgotPassword() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Password reset is coming soon.')),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,7 +64,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           if (wide) {
             return Row(
               children: [
-                Expanded(flex: 6, child: _HeroPanel()),
+                const Expanded(flex: 6, child: _HeroPanel()),
                 Expanded(
                   flex: 5,
                   child: Center(
@@ -73,18 +80,27 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ],
             );
           }
-          // Mobile: compact hero header stacked above the form.
+          // Mobile: compact brand header stacked above the form.
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Column(
                 children: [
-                  const SizedBox(height: 16),
-                  const SizedBox(height: 190, child: AnimatedFinancePreview())
-                      .animate()
-                      .fadeIn(duration: 500.ms)
-                      .slideY(begin: 0.1, end: 0, curve: Curves.easeOutCubic),
-                  const SizedBox(height: 28),
+                  const SizedBox(height: 36),
+                  const AnimatedHamiliLogo(size: 84),
+                  const SizedBox(height: 14),
+                  Text('hamili',
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.w800)),
+                  const SizedBox(height: 4),
+                  Text('Handle money. Achieve life.',
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyMedium
+                          ?.copyWith(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6))),
+                  const SizedBox(height: 32),
                   _buildForm(context),
                   const SizedBox(height: 16),
                 ],
@@ -97,49 +113,66 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 
   Widget _buildForm(BuildContext context) {
+    final muted = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6);
     return Form(
       key: _formKey,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          Text('Welcome back', style: Theme.of(context).textTheme.headlineMedium),
+          Text('Welcome back.', style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 6),
-          Text(
-            "Hami's been keeping an eye on things.",
-            style: Theme.of(context).textTheme.bodyMedium,
-          ),
+          Text('Handle money. Achieve life.',
+              style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: muted)),
           const SizedBox(height: 28),
           TextFormField(
             controller: _emailController,
             keyboardType: TextInputType.emailAddress,
             textInputAction: TextInputAction.next,
-            decoration: const InputDecoration(labelText: 'Email'),
+            decoration: const InputDecoration(labelText: 'Email', hintText: 'you@email.com'),
             validator: (value) => (value == null || !value.contains('@')) ? 'Enter a valid email' : null,
           ),
           const SizedBox(height: 16),
           TextFormField(
             controller: _passwordController,
-            obscureText: true,
+            obscureText: _obscure,
             textInputAction: TextInputAction.done,
             onFieldSubmitted: (_) {
               if (!_isLoading) _handleLogin();
             },
-            decoration: const InputDecoration(labelText: 'Password'),
+            decoration: InputDecoration(
+              labelText: 'Password',
+              suffixIcon: IconButton(
+                icon: Icon(_obscure ? Icons.visibility_outlined : Icons.visibility_off_outlined),
+                tooltip: _obscure ? 'Show password' : 'Hide password',
+                onPressed: () => setState(() => _obscure = !_obscure),
+              ),
+            ),
             validator: (value) =>
                 (value == null || value.length < 8) ? 'Password must be at least 8 characters' : null,
           ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: TextButton(onPressed: _forgotPassword, child: const Text('Forgot password?')),
+          ),
           if (_errorMessage != null) ...[
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
             Text(_errorMessage!, style: const TextStyle(color: AppColors.expense)),
           ],
-          const SizedBox(height: 24),
-          PrimaryButton(label: 'Log in', onPressed: _handleLogin, isLoading: _isLoading),
-          const SizedBox(height: 12),
+          const SizedBox(height: 16),
+          PrimaryButton(label: 'Sign in', onPressed: _handleLogin, isLoading: _isLoading),
+          const SizedBox(height: 16),
           Center(
-            child: TextButton(
-              onPressed: () => context.go('/register'),
-              child: const Text("Don't have an account? Sign up"),
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Text('New to Hamili? ', style: TextStyle(color: muted)),
+                TextButton(
+                  onPressed: () => context.go('/register'),
+                  child: const Text('Create an account'),
+                ),
+              ],
             ),
           ),
         ],
@@ -148,9 +181,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 }
 
-/// Dark premium hero (wide screens): brand, headline, the live finance
-/// preview, and a status footer — echoing a fintech sign-in split layout.
+/// Brand hero (wide screens): the animated Hamili mark, wordmark, welcome
+/// line, and tagline on a green→navy gradient panel.
 class _HeroPanel extends StatelessWidget {
+  const _HeroPanel();
+
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
@@ -158,7 +193,7 @@ class _HeroPanel extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [Color(0xFF141824), Color(0xFF0B0D14)],
+          colors: [Color(0xFF16A34A), Color(0xFF0F172A)],
         ),
       ),
       child: Padding(
@@ -166,56 +201,38 @@ class _HeroPanel extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Row(
+            const Row(
               children: [
-                Container(
-                  width: 34,
-                  height: 34,
-                  decoration: const BoxDecoration(color: AppColors.primary, shape: BoxShape.circle),
-                  alignment: Alignment.center,
-                  child: const Text('₱', style: TextStyle(color: Color(0xFF241A05), fontWeight: FontWeight.w900)),
-                ),
-                const SizedBox(width: 10),
-                const Text('Hamili',
-                    style: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w800)),
+                HamiliLogo(size: 40),
+                SizedBox(width: 12),
+                Text('hamili',
+                    style: TextStyle(color: Colors.white, fontSize: 24, fontWeight: FontWeight.w800)),
               ],
             ),
             const Spacer(),
-            RichText(
-              text: const TextSpan(
-                style: TextStyle(fontSize: 38, fontWeight: FontWeight.w800, height: 1.1, color: Colors.white),
-                children: [
-                  TextSpan(text: 'Precision tracking\nfor '),
-                  TextSpan(text: 'every peso.', style: TextStyle(color: AppColors.primary)),
-                ],
-              ),
-            ).animate().fadeIn(duration: 500.ms).slideX(begin: -0.08, end: 0, curve: Curves.easeOutCubic),
+            const Center(child: AnimatedHamiliLogo(size: 132)),
+            const SizedBox(height: 40),
+            const Text('Welcome back.',
+                    style: TextStyle(fontSize: 38, fontWeight: FontWeight.w800, height: 1.1, color: Colors.white))
+                .animate()
+                .fadeIn(duration: 500.ms)
+                .slideX(begin: -0.08, end: 0, curve: Curves.easeOutCubic),
             const SizedBox(height: 14),
             Text(
-              'Budgets, goals, and proactive AI insights from Hami — your money, finally in focus.',
-              style: TextStyle(color: Colors.white.withValues(alpha: 0.6), fontSize: 15, height: 1.5),
+              'Handle money. Achieve life. Budgets, goals, and proactive insights from Hami — your money, finally in focus.',
+              style: TextStyle(color: Colors.white.withValues(alpha: 0.72), fontSize: 15, height: 1.5),
             ).animate(delay: 120.ms).fadeIn(duration: 500.ms),
-            const SizedBox(height: 28),
-            Expanded(
-              child: const AnimatedFinancePreview()
-                  .animate(delay: 200.ms)
-                  .fadeIn(duration: 600.ms)
-                  .slideY(begin: 0.06, end: 0, curve: Curves.easeOutCubic),
-            ),
-            const SizedBox(height: 20),
+            const Spacer(),
             Row(
               children: [
                 Container(
                   width: 7,
                   height: 7,
-                  decoration: const BoxDecoration(color: AppColors.income, shape: BoxShape.circle),
+                  decoration: const BoxDecoration(color: AppColors.primaryLight, shape: BoxShape.circle),
                 ),
                 const SizedBox(width: 6),
-                Text('SYSTEMS NOMINAL',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.4), fontSize: 10, letterSpacing: 2)),
-                const Spacer(),
-                Text('VERSION 1.0.0',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.3), fontSize: 10, letterSpacing: 2)),
+                Text('Trust · Growth · Simplicity',
+                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 11, letterSpacing: 1.5)),
               ],
             ),
           ],
