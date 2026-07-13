@@ -46,6 +46,9 @@ dependencies:
   # Brand logo — crisp vector mark rendered from a tiny SVG asset
   flutter_svg: ^2.0.10
 
+  # Short cheerful "ding" when Hami adds income (bundled WAV asset)
+  audioplayers: ^6.1.0
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
@@ -61,6 +64,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/logo/
+    - assets/sounds/
 
 # Launcher icons generated from the brand mark: `dart run flutter_launcher_icons`
 flutter_launcher_icons:

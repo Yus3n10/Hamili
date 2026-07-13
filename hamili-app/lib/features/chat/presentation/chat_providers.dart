@@ -1,3 +1,4 @@
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
@@ -19,9 +20,27 @@ final chatIsRespondingProvider = StateProvider<bool>((ref) => false);
 /// screen uses it to show the mascot "sleeping".
 final chatServersDownProvider = StateProvider<bool>((ref) => false);
 
-/// Bumped once each time Hami completes an action, so the chat mascot can
-/// play its coin-flip. A counter (not a bool) so repeated actions each fire.
-final hamiCoinFlipProvider = StateProvider<int>((ref) => 0);
+/// Signal for the chat mascot's coin animation. `seq` bumps once per completed
+/// action (so repeats each fire); `reverse` plays the coin coming *out* of the
+/// piggy (expense) instead of dropping *in* (income).
+class CoinFlip {
+  const CoinFlip(this.seq, this.reverse);
+  final int seq;
+  final bool reverse;
+}
+
+final hamiCoinFlipProvider = StateProvider<CoinFlip>((ref) => const CoinFlip(0, false));
+
+/// Cheerful "ding" played when Hami adds income — trains a positive association
+/// with gaining money. Reused single player; failures (e.g. web autoplay gate)
+/// are swallowed so a missing sound never breaks the chat.
+final AudioPlayer _dingPlayer = AudioPlayer();
+Future<void> _playDing() async {
+  try {
+    await _dingPlayer.stop();
+    await _dingPlayer.play(AssetSource('sounds/ding.wav'));
+  } catch (_) {}
+}
 
 final chatMessagesProvider = StateNotifierProvider<ChatMessagesNotifier, List<ChatMessage>>(
   (ref) {
@@ -46,6 +65,7 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
       // If Hami performed an action, refresh the affected tabs so the change
       // is visible when the user navigates there.
       final changed = (response.data['changed'] as List?)?.cast<String>() ?? const [];
+      final effect = response.data['effect'] as String?; // "income" / "expense" / null
       for (final area in changed) {
         switch (area) {
           case 'goals':
@@ -71,7 +91,11 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
         ChatMessage('assistant', response.data['reply'] as String, actionDone: changed.isNotEmpty),
       ];
       if (changed.isNotEmpty) {
-        ref.read(hamiCoinFlipProvider.notifier).state++;
+        // Coin drops in for income, comes out for expense; other actions flip in.
+        ref.read(hamiCoinFlipProvider.notifier).update((c) => CoinFlip(c.seq + 1, effect == 'expense'));
+      }
+      if (effect == 'income') {
+        _playDing(); // cheerful cue for gaining money
       }
     } catch (_) {
       state = [
