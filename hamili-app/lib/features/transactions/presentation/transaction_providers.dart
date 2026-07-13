@@ -40,7 +40,22 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
     ref.watch(sessionIdProvider);
     final filter = ref.watch(transactionFilterProvider);
     final repo = ref.read(transactionRepositoryProvider);
+    final unfiltered = filter.categoryId == null && (filter.search == null || filter.search!.isEmpty);
+    if (unfiltered) {
+      final cached = await repo.cached();
+      if (cached != null) {
+        Future.microtask(() => _refreshSilently(filter));
+        return cached;
+      }
+    }
     return repo.list(categoryId: filter.categoryId, search: filter.search);
+  }
+
+  Future<void> _refreshSilently(TransactionFilter filter) async {
+    final repo = ref.read(transactionRepositoryProvider);
+    try {
+      state = AsyncData(await repo.list(categoryId: filter.categoryId, search: filter.search));
+    } catch (_) {}
   }
 
   Future<void> addTransaction({
@@ -120,17 +135,18 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
 
   Future<void> deleteTransaction(int id) async {
     final repo = ref.read(transactionRepositoryProvider);
+    final current = state.valueOrNull ?? [];
+    state = AsyncData(current.where((t) => t.id != id).toList());
     try {
       await repo.delete(id);
-      ref.invalidateSelf();
       ref.invalidate(budgetsProvider);
       ref.invalidate(budgetTransactionsProvider);
       invalidateAnalytics(ref);
-      await future;
+      _refreshSilently(ref.read(transactionFilterProvider));
     } on OfflineQueuedException {
-
-      final current = state.valueOrNull ?? [];
-      state = AsyncData(current.where((t) => t.id != id).toList());
+      return;
+    } catch (_) {
+      ref.invalidateSelf();
     }
   }
 }

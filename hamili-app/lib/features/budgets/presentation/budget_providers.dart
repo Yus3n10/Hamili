@@ -32,22 +32,39 @@ class BudgetsNotifier extends AsyncNotifier<List<AppBudget>> {
     ref.watch(sessionIdProvider);
     final period = ref.watch(budgetPeriodProvider);
     final repo = ref.read(budgetRepositoryProvider);
+    final cached = await repo.cached(month: period.month, year: period.year);
+    if (cached != null) {
+      Future.microtask(_refreshSilently);
+      return cached;
+    }
     return repo.list(month: period.month, year: period.year);
+  }
+
+  Future<void> _refreshSilently() async {
+    final period = ref.read(budgetPeriodProvider);
+    final repo = ref.read(budgetRepositoryProvider);
+    try {
+      state = AsyncData(await repo.list(month: period.month, year: period.year));
+    } catch (_) {}
   }
 
   Future<void> setBudget({required int categoryId, required double limitAmount}) async {
     final period = ref.read(budgetPeriodProvider);
-    final repo = ref.read(budgetRepositoryProvider);
-    await repo.setBudget(categoryId: categoryId, month: period.month, year: period.year, limitAmount: limitAmount);
-    ref.invalidateSelf();
-    await future;
+    await ref
+        .read(budgetRepositoryProvider)
+        .setBudget(categoryId: categoryId, month: period.month, year: period.year, limitAmount: limitAmount);
+    await _refreshSilently();
   }
 
   Future<void> deleteBudget(int id) async {
-    final repo = ref.read(budgetRepositoryProvider);
-    await repo.delete(id);
-    ref.invalidateSelf();
-    await future;
+    final current = state.valueOrNull ?? [];
+    state = AsyncData(current.where((b) => b.id != id).toList());
+    try {
+      await ref.read(budgetRepositoryProvider).delete(id);
+      await _refreshSilently();
+    } catch (_) {
+      ref.invalidateSelf();
+    }
   }
 }
 

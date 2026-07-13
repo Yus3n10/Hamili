@@ -10,30 +10,41 @@ class GoalsNotifier extends AsyncNotifier<List<AppSavingsGoal>> {
   @override
   Future<List<AppSavingsGoal>> build() async {
     ref.watch(sessionIdProvider);
-    return ref.read(goalRepositoryProvider).list();
+    final repo = ref.read(goalRepositoryProvider);
+    final cached = await repo.cached();
+    if (cached != null) {
+      Future.microtask(_refreshSilently);
+      return cached;
+    }
+    return repo.list();
+  }
+
+  Future<void> _refreshSilently() async {
+    try {
+      state = AsyncData(await ref.read(goalRepositoryProvider).list());
+    } catch (_) {}
   }
 
   Future<void> addGoal({required String title, required double targetAmount, DateTime? targetDate}) async {
-    final repo = ref.read(goalRepositoryProvider);
-    await repo.create(title: title, targetAmount: targetAmount, targetDate: targetDate);
-    ref.invalidateSelf();
-    await future;
+    await ref.read(goalRepositoryProvider).create(title: title, targetAmount: targetAmount, targetDate: targetDate);
+    await _refreshSilently();
   }
 
-
   Future<AppSavingsGoal> contribute(int id, double amount) async {
-    final repo = ref.read(goalRepositoryProvider);
-    final updated = await repo.contribute(id, amount);
-    ref.invalidateSelf();
-    await future;
+    final updated = await ref.read(goalRepositoryProvider).contribute(id, amount);
+    await _refreshSilently();
     return updated;
   }
 
   Future<void> deleteGoal(int id) async {
-    final repo = ref.read(goalRepositoryProvider);
-    await repo.delete(id);
-    ref.invalidateSelf();
-    await future;
+    final current = state.valueOrNull ?? [];
+    state = AsyncData(current.where((g) => g.id != id).toList());
+    try {
+      await ref.read(goalRepositoryProvider).delete(id);
+      await _refreshSilently();
+    } catch (_) {
+      ref.invalidateSelf();
+    }
   }
 }
 

@@ -121,4 +121,11 @@ class TransactionRepository {
     final decoded = jsonDecode(raw) as List;
     return decoded.map((json) => AppTransaction.fromJson(json)).toList();
   }
+
+  Future<List<AppTransaction>?> cached() async {
+    final box = await Hive.openBox<String>(_boxName);
+    final raw = box.get(_cacheKey);
+    if (raw == null) return null;
+    return (jsonDecode(raw) as List).map((json) => AppTransaction.fromJson(json)).toList();
+  }
 }

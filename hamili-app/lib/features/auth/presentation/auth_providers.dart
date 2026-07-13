@@ -1,6 +1,8 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/session/session_provider.dart';
+import '../../budgets/presentation/budget_providers.dart';
+import '../../goals/presentation/goal_providers.dart';
 import '../../recurring/presentation/recurring_providers.dart';
 import '../../transactions/presentation/transaction_providers.dart';
 import '../data/auth_repository.dart';
@@ -49,6 +51,8 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
 
     await ref.read(transactionRepositoryProvider).clearCache();
     await ref.read(recurringRepositoryProvider).clearCache();
+    await ref.read(budgetRepositoryProvider).clearCache();
+    await ref.read(goalRepositoryProvider).clearCache();
     state = const AsyncData(null);
     _startNewSession();
   }
