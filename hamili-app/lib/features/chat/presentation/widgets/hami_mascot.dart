@@ -64,7 +64,7 @@ class _PiggyPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
-    const dark = Color(0xFF3A2A0A);
+    const dark = AppColors.secondary; // brand navy for the eye/details
 
     // Gentle bob (slower & deeper while asleep).
     final bob = math.sin(idle * 2 * math.pi) * (sleeping ? 1.4 : 0.8);
