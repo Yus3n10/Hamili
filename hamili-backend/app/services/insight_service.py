@@ -4,6 +4,7 @@ from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from app.db.session import SessionLocal
 from app.models.ai import AIInsight
 from app.models.budget import Budget
 from app.models.goal import SavingsGoal
@@ -120,13 +121,6 @@ class InsightService:
             self.db.refresh(insight)
         return created
 
-    def ensure_daily(self, user: User) -> list[AIInsight]:
-        """Return active insights, generating today's batch first if none
-        has been generated yet today."""
-        if not self._has_todays_batch(user):
-            self.generate_and_store(user)
-        return self.list_active(user)
-
     def dismiss(self, user: User, insight_id: int) -> None:
         insight = (
             self.db.query(AIInsight)
@@ -137,3 +131,16 @@ class InsightService:
             raise HTTPException(status.HTTP_404_NOT_FOUND, "Insight not found")
         insight.is_read = True
         self.db.commit()
+
+
+def generate_daily_insights_for(user_id: int) -> None:
+    db = SessionLocal()
+    try:
+        user = db.get(User, user_id)
+        if user is None:
+            return
+        service = InsightService(db)
+        if not service._has_todays_batch(user):
+            service.generate_and_store(user)
+    finally:
+        db.close()

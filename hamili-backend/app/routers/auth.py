@@ -1,8 +1,15 @@
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user
-from app.core.rate_limit import LOGIN_LIMIT, limiter
+from app.core.rate_limit import (
+    REGISTER_LIMIT,
+    ensure_login_allowed,
+    limiter,
+    record_login_failure,
+    reset_login_failures,
+)
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import TokenPair, UserLogin, UserOut, UserRegister, UserUpdate
@@ -12,15 +19,23 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @router.post("/register", response_model=UserOut, status_code=201)
-@limiter.limit(LOGIN_LIMIT)
+@limiter.limit(REGISTER_LIMIT)
 def register(request: Request, payload: UserRegister, db: Session = Depends(get_db)):
     return AuthService(db).register(payload)
 
 
 @router.post("/login", response_model=TokenPair)
-@limiter.limit(LOGIN_LIMIT)
 def login(request: Request, payload: UserLogin, db: Session = Depends(get_db)):
-    return AuthService(db).login(payload)
+    ip = get_remote_address(request)
+    ensure_login_allowed(ip)
+    try:
+        result = AuthService(db).login(payload)
+    except HTTPException as exc:
+        if exc.status_code == status.HTTP_401_UNAUTHORIZED:
+            record_login_failure(ip)
+        raise
+    reset_login_failures(ip)
+    return result
 
 
 @router.get("/me", response_model=UserOut)
