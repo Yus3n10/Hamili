@@ -87,29 +87,30 @@ class _PiggyPainter extends CustomPainter {
     final body = Paint()..color = _body;
     final dark = Paint()..color = _darkPink;
 
-    // Ear — a small soft rounded bump (no spike).
-    canvas.drawOval(Rect.fromLTWH(w * 0.24, h * 0.26, w * 0.16, h * 0.14), dark);
-
     // Legs
     canvas.drawRRect(
-        RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.24, h * 0.70, w * 0.12, h * 0.14), Radius.circular(w * 0.04)),
+        RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.24, h * 0.72, w * 0.12, h * 0.14), Radius.circular(w * 0.03)),
         dark);
     canvas.drawRRect(
-        RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.60, h * 0.70, w * 0.12, h * 0.14), Radius.circular(w * 0.04)),
+        RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.62, h * 0.72, w * 0.12, h * 0.14), Radius.circular(w * 0.03)),
         dark);
 
-    // Oval body
-    canvas.drawOval(Rect.fromLTWH(w * 0.10, h * 0.34, w * 0.80, h * 0.44), body);
+    // Body (rounded rectangle — the original shape, minus the triangle)
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.12, h * 0.33, w * 0.76, h * 0.45), Radius.circular(h * 0.22)),
+        body);
 
-    // Snout (oval, front-right) with nostrils
-    canvas.drawOval(Rect.fromLTWH(w * 0.66, h * 0.48, w * 0.22, h * 0.18), Paint()..color = _snout);
-    canvas.drawCircle(Offset(w * 0.74, h * 0.57), w * 0.017, dark);
-    canvas.drawCircle(Offset(w * 0.80, h * 0.57), w * 0.017, dark);
+    // Snout with nostrils
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.70, h * 0.49, w * 0.20, h * 0.19), Radius.circular(h * 0.07)),
+        Paint()..color = _snout);
+    canvas.drawCircle(Offset(w * 0.77, h * 0.585), w * 0.018, dark);
+    canvas.drawCircle(Offset(w * 0.83, h * 0.585), w * 0.018, dark);
 
     // Coin slot
     canvas.drawLine(
-      Offset(w * 0.42, h * 0.39),
-      Offset(w * 0.58, h * 0.39),
+      Offset(w * 0.42, h * 0.355),
+      Offset(w * 0.58, h * 0.355),
       Paint()
         ..color = _darkPink
         ..strokeWidth = h * 0.02
@@ -122,8 +123,8 @@ class _PiggyPainter extends CustomPainter {
     if (sleeping || blinking) {
       canvas.drawPath(
         Path()
-          ..moveTo(w * 0.53, h * 0.48)
-          ..quadraticBezierTo(w * 0.58, h * 0.52, w * 0.63, h * 0.48),
+          ..moveTo(w * 0.55, h * 0.46)
+          ..quadraticBezierTo(w * 0.60, h * 0.50, w * 0.65, h * 0.46),
         Paint()
           ..color = _eye
           ..style = PaintingStyle.stroke
@@ -131,14 +132,14 @@ class _PiggyPainter extends CustomPainter {
           ..strokeCap = StrokeCap.round,
       );
     } else {
-      canvas.drawCircle(Offset(w * 0.58, h * 0.48), w * 0.032, Paint()..color = _eye);
+      canvas.drawCircle(Offset(w * 0.60, h * 0.46), w * 0.032, Paint()..color = _eye);
     }
 
     // Coin animation: income drops the coin into the slot; expense lifts it out
     // (and fades) — "taking a coin from inside him".
     if (flip > 0.0 && flip < 1.0) {
       final top = h * 0.02;
-      final slot = h * 0.32;
+      final slot = h * 0.30;
       final e = Curves.easeIn.transform(flip);
       final y = reverse ? slot + (top - slot) * e : top + (slot - top) * e;
       final scaleX = math.cos(flip * 4 * math.pi).abs().clamp(0.18, 1.0);
