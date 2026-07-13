@@ -60,4 +60,4 @@ def send_message(
     db.add(assistant_message)
     db.commit()
 
-    return ChatReply(reply=reply_text, changed=result.get("changed", []))
+    return ChatReply(reply=reply_text, changed=result.get("changed", []), effect=result.get("effect"))

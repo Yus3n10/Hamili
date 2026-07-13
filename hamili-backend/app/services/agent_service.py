@@ -54,7 +54,16 @@ class AgentService:
                 "reply": "I couldn't quite complete that — mind trying again with a little more detail?",
                 "changed": [],
             }
-        return {"reply": reply, "changed": changed}
+        # `effect` lets the client react to the *kind* of money movement — e.g.
+        # a cheerful sound + coin-in animation for income, a coin-out for expense.
+        return {"reply": reply, "changed": changed, "effect": self._effect_for(action, params)}
+
+    @staticmethod
+    def _effect_for(action: str, params: dict) -> str | None:
+        """The money-movement kind for the client's sound/animation cue."""
+        if action == "add_transaction":
+            return params.get("type") or "expense"
+        return None
 
     def _execute(self, user: User, action: str, params: dict) -> list[str]:
         if action == "add_savings_goal":

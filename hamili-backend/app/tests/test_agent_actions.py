@@ -15,6 +15,14 @@ from app.services.agent_service import AgentService
 client = TestClient(app)
 
 
+def test_effect_for_transactions():
+    assert AgentService._effect_for("add_transaction", {"type": "income"}) == "income"
+    assert AgentService._effect_for("add_transaction", {"type": "expense"}) == "expense"
+    assert AgentService._effect_for("add_transaction", {}) == "expense"  # defaults to expense
+    assert AgentService._effect_for("set_budget", {"limit_amount": 100}) is None
+    assert AgentService._effect_for("add_savings_goal", {"title": "x"}) is None
+
+
 def _register(email: str) -> None:
     client.post(
         "/auth/register",
