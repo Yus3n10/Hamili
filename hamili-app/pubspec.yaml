@@ -43,6 +43,9 @@ dependencies:
   # Profile picture picking (crop/adjust done in-app, no heavy cropper dep)
   image_picker: ^1.1.2
 
+  # Brand logo — crisp vector mark rendered from a tiny SVG asset
+  flutter_svg: ^2.0.10
+
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
@@ -51,6 +54,10 @@ dev_dependencies:
   flutter_lints: ^4.0.0
   hive_generator: ^2.0.1
   build_runner: ^2.4.11
+  # Generates Android/iOS launcher icons from the brand mark
+  flutter_launcher_icons: ^0.13.1
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/logo/

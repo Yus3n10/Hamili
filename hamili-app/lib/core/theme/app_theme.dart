@@ -7,16 +7,15 @@ import 'app_colors.dart';
 /// between them based on system brightness or a user toggle (see
 /// `themeModeProvider` in core/theme/theme_provider.dart).
 ///
-/// Design language: bright, friendly fintech. Nunito (rounded, warm) for
-/// headings, DM Sans (clean, geometric) for body; white cards floating on a
-/// soft background with gentle shadows and generous corner radii.
+/// Design language: modern green fintech. Inter throughout (clean, highly
+/// legible) with 700-weight headings; white cards (light) / navy cards (dark)
+/// floating with soft shadows, generous radii, and pill buttons.
 class AppTheme {
   AppTheme._();
 
-  // On-primary is intentionally near-black: white text on the gold brand
-  // fails WCAG contrast, whereas dark text on gold passes comfortably and
-  // reads as bold and modern.
-  static const Color _onPrimary = Color(0xFF241A05);
+  // The green brand is dark enough that white foreground passes WCAG contrast
+  // comfortably, so on-primary is white.
+  static const Color _onPrimary = Color(0xFFFFFFFF);
 
   static ThemeData get light => _build(
         brightness: Brightness.light,
@@ -35,23 +34,22 @@ class AppTheme {
       );
 
   static TextTheme _textTheme(TextTheme base, Color textPrimary) {
-    // DM Sans everywhere, then Nunito (heavier, rounded) for display/heading/
-    // title roles to give headings their friendly character.
-    final body = GoogleFonts.dmSansTextTheme(base).apply(
+    // Inter everywhere; 700-weight for display/heading/title roles.
+    final body = GoogleFonts.interTextTheme(base).apply(
       bodyColor: textPrimary,
       displayColor: textPrimary,
     );
     TextStyle heading(TextStyle? s, FontWeight w) =>
-        GoogleFonts.nunito(textStyle: s, fontWeight: w, color: textPrimary);
+        GoogleFonts.inter(textStyle: s, fontWeight: w, color: textPrimary);
     return body.copyWith(
-      displayLarge: heading(body.displayLarge, FontWeight.w800),
-      displayMedium: heading(body.displayMedium, FontWeight.w800),
-      displaySmall: heading(body.displaySmall, FontWeight.w800),
-      headlineLarge: heading(body.headlineLarge, FontWeight.w800),
-      headlineMedium: heading(body.headlineMedium, FontWeight.w800),
+      displayLarge: heading(body.displayLarge, FontWeight.w700),
+      displayMedium: heading(body.displayMedium, FontWeight.w700),
+      displaySmall: heading(body.displaySmall, FontWeight.w700),
+      headlineLarge: heading(body.headlineLarge, FontWeight.w700),
+      headlineMedium: heading(body.headlineMedium, FontWeight.w700),
       headlineSmall: heading(body.headlineSmall, FontWeight.w700),
       titleLarge: heading(body.titleLarge, FontWeight.w700),
-      titleMedium: heading(body.titleMedium, FontWeight.w700),
+      titleMedium: heading(body.titleMedium, FontWeight.w600),
     );
   }
 
@@ -95,7 +93,7 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0.5,
         centerTitle: false,
-        titleTextStyle: GoogleFonts.nunito(
+        titleTextStyle: GoogleFonts.inter(
           fontWeight: FontWeight.w800,
           fontSize: 22,
           color: textPrimary,
@@ -121,8 +119,8 @@ class AppTheme {
           foregroundColor: _onPrimary,
           elevation: 0,
           minimumSize: const Size.fromHeight(54), // large touch target
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          textStyle: GoogleFonts.nunito(fontWeight: FontWeight.w700, fontSize: 16),
+          shape: const StadiumBorder(),
+          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16),
         ),
       ),
       filledButtonTheme: FilledButtonThemeData(
@@ -130,8 +128,8 @@ class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: _onPrimary,
           minimumSize: const Size.fromHeight(52),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          textStyle: GoogleFonts.nunito(fontWeight: FontWeight.w700, fontSize: 15),
+          shape: const StadiumBorder(),
+          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -139,14 +137,14 @@ class AppTheme {
           foregroundColor: textPrimary,
           minimumSize: const Size.fromHeight(52),
           side: BorderSide(color: textSecondary.withValues(alpha: 0.25)),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-          textStyle: GoogleFonts.nunito(fontWeight: FontWeight.w700, fontSize: 15),
+          shape: const StadiumBorder(),
+          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 15),
         ),
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
           foregroundColor: AppColors.primaryDark,
-          textStyle: GoogleFonts.nunito(fontWeight: FontWeight.w700),
+          textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700),
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -194,7 +192,7 @@ class AppTheme {
         height: 66,
         indicatorColor: AppColors.primary.withValues(alpha: 0.18),
         labelTextStyle: WidgetStatePropertyAll(
-          GoogleFonts.dmSans(fontWeight: FontWeight.w600, fontSize: 12, color: textPrimary),
+          GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: textPrimary),
         ),
       ),
       // RefreshIndicator already uses colorScheme.primary in Material 3.

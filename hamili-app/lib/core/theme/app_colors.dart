@@ -3,47 +3,48 @@ import 'package:flutter/material.dart';
 /// Central color palette. Never hardcode a hex value in a widget —
 /// reference these instead, so a rebrand touches one file.
 ///
-/// Bright fintech direction (design pass): warm gold brand (the Hami coin),
-/// a friendly blue accent for info/charts, fresh green / coral red for
-/// income vs expense, on soft bright neutrals with white floating cards.
+/// Green brand identity (the Hamili "H" + rising path + star): a confident
+/// green primary with a deep-navy secondary and a fresh mint accent, on white
+/// (light) / navy (dark) surfaces. Coral for expense, teal for income so
+/// positive amounts stay distinct from the brand green.
 class AppColors {
   AppColors._();
 
-  // Brand — warm gold echoes the Hami coin mascot
-  static const Color primary = Color(0xFFF6A821);
-  static const Color primaryDark = Color(0xFFE0890A);
-  static const Color primaryLight = Color(0xFFFFD37E);
-  static const Color secondary = Color(0xFF4F7CFF); // friendly blue accent
+  // Brand — green identity (H + rising path + star)
+  static const Color primary = Color(0xFF16A34A);
+  static const Color primaryDark = Color(0xFF15803D);
+  static const Color primaryLight = Color(0xFF6EE7B7); // mint accent
+  static const Color secondary = Color(0xFF0F172A); // deep navy
 
   // Semantic
-  static const Color income = Color(0xFF16B364); // fresh green
+  static const Color income = Color(0xFF0EA5A4); // teal — distinct from brand green
   static const Color expense = Color(0xFFF5455C); // coral red
   static const Color warning = Color(0xFFF59E0B);
 
-  // Light theme neutrals — bright, soft (never pure white background)
-  static const Color lightBackground = Color(0xFFF5F6FB);
+  // Light theme neutrals — clean white surfaces on a soft tint
+  static const Color lightBackground = Color(0xFFF4F7FA);
   static const Color lightSurface = Color(0xFFFFFFFF);
-  static const Color lightTextPrimary = Color(0xFF171A21);
-  static const Color lightTextSecondary = Color(0xFF6B7280);
+  static const Color lightTextPrimary = Color(0xFF0F172A);
+  static const Color lightTextSecondary = Color(0xFF64748B);
 
-  // Dark theme neutrals — premium navy matching the login hero.
-  static const Color darkBackground = Color(0xFF0C0E15);
-  static const Color darkSurface = Color(0xFF161A24);
-  static const Color darkTextPrimary = Color(0xFFF4F6FA);
-  static const Color darkTextSecondary = Color(0xFF98A0B0);
+  // Dark theme neutrals — brand navy
+  static const Color darkBackground = Color(0xFF0F172A);
+  static const Color darkSurface = Color(0xFF161E2E);
+  static const Color darkTextPrimary = Color(0xFFF1F5F9);
+  static const Color darkTextSecondary = Color(0xFF94A3B8);
 
-  // Warm gold gradient for the balance hero card
-  static const List<Color> brandGradient = [Color(0xFFFFB63D), Color(0xFFF08C00)];
+  // Brand gradient (logo bg): light green -> deep green
+  static const List<Color> brandGradient = [Color(0xFF22C55E), Color(0xFF15803D)];
 
   // Distinct, accessible series colors for charts (donut/legend).
   static const List<Color> chartPalette = [
-    Color(0xFFF6A821), // gold
-    Color(0xFF4F7CFF), // blue
-    Color(0xFF16B364), // green
+    Color(0xFF16A34A), // green
+    Color(0xFF0EA5A4), // teal
+    Color(0xFF6EE7B7), // mint
     Color(0xFFF5455C), // coral
+    Color(0xFF3B82F6), // blue
     Color(0xFF9B6DFF), // violet
-    Color(0xFF15C1C7), // teal
-    Color(0xFFFF8A3D), // orange
+    Color(0xFFF59E0B), // amber
     Color(0xFFEC4899), // pink
   ];
 }
