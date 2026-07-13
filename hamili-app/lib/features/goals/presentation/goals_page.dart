@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/skeleton.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../core/utils/thousands_separator_formatter.dart';
 import '../../../shared/widgets/primary_button.dart';
@@ -101,6 +102,7 @@ class GoalsPage extends ConsumerWidget {
                               child: Text(goal.title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 16)),
                             ),
                             IconButton(
+                              tooltip: 'Delete goal',
                               icon: const Icon(Icons.delete_outline, size: 20),
                               onPressed: () => ref.read(goalsProvider.notifier).deleteGoal(goal.id),
                             ),
@@ -157,7 +159,7 @@ class GoalsPage extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const SingleChildScrollView(child: SkeletonList()),
         error: (_, __) => const Center(child: Text("Couldn't load savings goals.")),
       ),
     );

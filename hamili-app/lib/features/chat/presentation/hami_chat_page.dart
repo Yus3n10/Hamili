@@ -131,7 +131,7 @@ class _HamiChatPageState extends ConsumerState<HamiChatPage> {
                     ),
                   ),
                   const SizedBox(width: 8),
-                  IconButton.filled(onPressed: _send, icon: const Icon(Icons.send)),
+                  IconButton.filled(tooltip: 'Send', onPressed: _send, icon: const Icon(Icons.send)),
                 ],
               ),
             ),

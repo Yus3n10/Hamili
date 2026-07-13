@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../shared/widgets/skeleton.dart';
 import 'add_edit_transaction_page.dart';
 import 'transaction_providers.dart';
 import 'widgets/transaction_tile.dart';
@@ -64,7 +65,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
       appBar: AppBar(
         title: const Text('Transactions'),
         actions: [
-          IconButton(onPressed: _openCategoryFilter, icon: const Icon(Icons.filter_list)),
+          IconButton(tooltip: 'Filter by category', onPressed: _openCategoryFilter, icon: const Icon(Icons.filter_list)),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -122,7 +123,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                   ),
                 );
               },
-              loading: () => const Center(child: CircularProgressIndicator()),
+              loading: () => const SkeletonList(),
               error: (_, __) => const Center(child: Text("Couldn't load transactions.")),
             ),
           ),

@@ -3,6 +3,7 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../../shared/widgets/skeleton.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../shared/widgets/category_visuals.dart';
 import '../../transactions/presentation/transaction_providers.dart';
@@ -81,6 +82,7 @@ class BudgetsPage extends ConsumerWidget {
                               ),
                             ),
                             IconButton(
+                              tooltip: 'Delete budget',
                               icon: const Icon(Icons.delete_outline, size: 20),
                               onPressed: () => ref.read(budgetsProvider.notifier).deleteBudget(budget.id),
                             ),
@@ -133,7 +135,7 @@ class BudgetsPage extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const SingleChildScrollView(child: SkeletonList()),
         error: (_, __) => const Center(child: Text("Couldn't load budgets.")),
       ),
     );

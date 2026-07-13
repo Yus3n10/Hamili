@@ -6,6 +6,7 @@ import '../../../core/network/offline_queue.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../core/utils/currency_formatter.dart';
 import '../../../shared/widgets/hamili_logo.dart';
+import '../../../shared/widgets/skeleton.dart';
 import '../../analytics/presentation/analytics_providers.dart';
 import '../../auth/presentation/auth_providers.dart';
 import '../../budgets/domain/budget.dart';
@@ -193,7 +194,22 @@ class DashboardPage extends ConsumerWidget {
             ),
           );
         },
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => ListView(
+          padding: const EdgeInsets.all(16),
+          children: const [
+            SkeletonCard(height: 120),
+            SizedBox(height: 12),
+            SkeletonCard(height: 88),
+            SizedBox(height: 12),
+            Row(children: [
+              Expanded(child: SkeletonCard(height: 78)),
+              SizedBox(width: 12),
+              Expanded(child: SkeletonCard(height: 78)),
+            ]),
+            SizedBox(height: 16),
+            SkeletonList(count: 4),
+          ],
+        ),
         error: (_, __) => const Center(child: Text("Couldn't load your data. Pull down to retry.")),
       ),
     );

@@ -55,9 +55,15 @@ class AnalyticsPage extends ConsumerWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                IconButton(onPressed: () => _shiftMonth(ref, -1), icon: const Icon(Icons.chevron_left)),
+                IconButton(
+                    tooltip: 'Previous month',
+                    onPressed: () => _shiftMonth(ref, -1),
+                    icon: const Icon(Icons.chevron_left)),
                 Text(monthLabel, style: Theme.of(context).textTheme.titleMedium),
-                IconButton(onPressed: () => _shiftMonth(ref, 1), icon: const Icon(Icons.chevron_right)),
+                IconButton(
+                    tooltip: 'Next month',
+                    onPressed: () => _shiftMonth(ref, 1),
+                    icon: const Icon(Icons.chevron_right)),
               ],
             ),
             const SizedBox(height: 8),

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../core/utils/currency_formatter.dart';
+import '../../../shared/widgets/skeleton.dart';
 import '../../../shared/widgets/category_visuals.dart';
 import '../../transactions/domain/category.dart';
 import '../../transactions/presentation/transaction_providers.dart';
@@ -51,7 +52,7 @@ class RecurringPage extends ConsumerWidget {
         child: const Icon(Icons.add),
       ),
       body: recurringAsync.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
+        loading: () => const SingleChildScrollView(child: SkeletonList()),
         error: (_, __) => Center(
           child: Column(
             mainAxisSize: MainAxisSize.min,
