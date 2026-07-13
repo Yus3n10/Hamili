@@ -20,6 +20,7 @@ import '../../transactions/presentation/transaction_providers.dart';
 import '../../transactions/presentation/transactions_page.dart';
 import '../../transactions/presentation/widgets/transaction_tile.dart';
 import 'widgets/insights_card.dart';
+import 'widgets/spending_chart.dart';
 import 'widgets/summary_card.dart';
 
 /// Goal-first dashboard: greeting → active goal → balance → this-month tiles →
@@ -152,6 +153,8 @@ class DashboardPage extends ConsumerWidget {
                     ),
                   ],
                 ),
+                const SizedBox(height: 12),
+                SpendingChart(transactions: transactions),
                 const SizedBox(height: 12),
                 const InsightsCard(),
                 const SizedBox(height: 12),
