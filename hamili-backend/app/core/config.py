@@ -11,20 +11,16 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    # --- Database ---
     database_url: str
 
-    # --- Security ---
     secret_key: str
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 60
     refresh_token_expire_days: int = 30
 
-    # --- AI Provider ---
     ai_provider: str = "gemini"
     gemini_api_key: str = ""
 
-    # --- App ---
     environment: str = "development"
     cors_origins: str = "http://localhost:3000"
 

@@ -9,9 +9,7 @@ import '../../transactions/domain/category.dart';
 import '../domain/budget.dart';
 import 'budget_providers.dart';
 
-/// Read-only drill-down for a single budget: shows the spent/limit summary
-/// and the actual expense transactions in this category/month/year that
-/// add up to the spent amount. Reached by tapping a card on BudgetsPage.
+
 class BudgetDetailPage extends ConsumerWidget {
   const BudgetDetailPage({super.key, required this.budget, required this.category});
 
@@ -104,8 +102,8 @@ class BudgetDetailPage extends ConsumerWidget {
                 ),
               ),
               data: (all) {
-                // Narrow to this budget's period and expenses only — the
-                // same rule the backend uses to compute spent_amount.
+
+
                 final txns = all
                     .where((t) =>
                         t.type == 'expense' &&

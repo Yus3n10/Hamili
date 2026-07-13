@@ -6,9 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../../core/network/api_client.dart';
 import '../domain/category.dart';
 
-/// Categories barely ever change (they're seeded defaults), so this
-/// repository is a good candidate for aggressive caching — read from Hive
-/// first, refresh from network in the background.
+
 class CategoryRepository {
   CategoryRepository({Dio? dio}) : _dio = dio ?? ApiClient.instance.dio;
 
@@ -25,11 +23,8 @@ class CategoryRepository {
       return categories;
     } catch (error) {
       final cached = await _readCache();
-      // Only fall back silently if we actually have something cached —
-      // an empty cache means we genuinely don't know if this is "no
-      // categories exist" or "the request failed", so re-throw and let
-      // the UI show a real error + retry instead of a misleading
-      // "no categories available" empty state.
+
+
       if (cached.isEmpty) rethrow;
 
       if (type != null) return cached.where((c) => c.type == type).toList();

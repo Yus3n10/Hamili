@@ -49,13 +49,11 @@ class AgentService:
         try:
             changed = self._execute(user, action, params)
         except Exception:  # noqa: BLE001 — don't claim success if execution failed
-            self.db.rollback()  # clear the poisoned session so the caller can still commit
+            self.db.rollback()
             return {
                 "reply": "I couldn't quite complete that — mind trying again with a little more detail?",
                 "changed": [],
             }
-        # `effect` lets the client react to the *kind* of money movement — e.g.
-        # a cheerful sound + coin-in animation for income, a coin-out for expense.
         return {"reply": reply, "changed": changed, "effect": self._effect_for(action, params)}
 
     @staticmethod
@@ -79,8 +77,6 @@ class AgentService:
 
         if action == "edit_savings_goal":
             goal = self._find_goal(user, params.get("title"))
-            # Only include fields the user actually gave, so unspecified ones
-            # (which arrive as null) don't overwrite the existing goal.
             updates: dict = {}
             if params.get("new_title") is not None:
                 updates["title"] = params["new_title"]
@@ -144,8 +140,6 @@ class AgentService:
                     transaction_date=params.get("date") or date.today().isoformat(),
                 ),
             )
-            # An expense changes its category's budget usage, so the client
-            # must refresh budgets too — not just the transactions list.
             return ["transactions", "budgets"] if t_type == "expense" else ["transactions"]
 
         if action == "update_profile":

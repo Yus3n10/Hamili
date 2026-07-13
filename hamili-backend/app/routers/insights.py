@@ -12,7 +12,6 @@ router = APIRouter(prefix="/insights", tags=["insights"])
 
 @router.get("", response_model=list[AIInsightOut])
 def list_insights(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
-    # Generates today's batch on first access of the day, then reuses it.
     return InsightService(db).ensure_daily(current_user)
 
 

@@ -3,9 +3,7 @@ import 'package:dio/dio.dart';
 import '../../../core/network/api_client.dart';
 import '../domain/ai_insight.dart';
 
-/// Proactive insights are online, AI-generated views — no offline cache.
-/// `get` may trigger a once-daily generation server-side; `refresh` forces
-/// a new batch; `dismiss` hides one.
+
 class InsightsRepository {
   InsightsRepository({Dio? dio}) : _dio = dio ?? ApiClient.instance.dio;
 

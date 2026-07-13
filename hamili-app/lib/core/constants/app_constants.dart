@@ -1,6 +1,5 @@
-/// Compile-time environment switch. In real deployment this should come
-/// from --dart-define, not be hardcoded — flagged here as a Milestone 8
-/// deployment task.
+
+
 class AppConstants {
   AppConstants._();
 

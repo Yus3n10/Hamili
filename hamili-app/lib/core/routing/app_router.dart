@@ -17,21 +17,14 @@ import '../../features/recurring/presentation/recurring_page.dart';
 import '../../features/transactions/presentation/transactions_page.dart';
 import '../../shared/widgets/main_shell.dart';
 
-/// Bridges Riverpod's currentUserProvider to GoRouter's refreshListenable.
-/// Without this, GoRouter only re-evaluates its redirect logic when
-/// navigation happens — so logging out from a screen like "More" (which
-/// doesn't itself navigate anywhere) would leave you stranded there
-/// until you happened to tap a different tab. This makes login/logout
-/// redirect immediately, the moment auth state changes.
+
 class _AuthChangeNotifier extends ChangeNotifier {
   _AuthChangeNotifier(Ref ref) {
     ref.listen<AsyncValue<dynamic>>(currentUserProvider, (_, __) => notifyListeners());
   }
 }
 
-/// Route config lives in one file so the navigation graph is visible at a
-/// glance. Each bottom-nav tab is its own StatefulShellBranch, which
-/// preserves scroll position / state when switching tabs.
+
 final routerProvider = Provider<GoRouter>((ref) {
   final authChangeNotifier = _AuthChangeNotifier(ref);
 
@@ -79,7 +72,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   );
 });
 
-/// Slide-from-right + fade for pushed detail routes.
+
 CustomTransitionPage<void> _slideFade(Widget child, GoRouterState state) {
   return CustomTransitionPage<void>(
     key: state.pageKey,
@@ -99,7 +92,7 @@ CustomTransitionPage<void> _slideFade(Widget child, GoRouterState state) {
   );
 }
 
-/// Gentle fade-through for auth/onboarding swaps.
+
 CustomTransitionPage<void> _fade(Widget child, GoRouterState state) {
   return CustomTransitionPage<void>(
     key: state.pageKey,

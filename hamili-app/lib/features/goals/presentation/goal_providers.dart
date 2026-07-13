@@ -20,9 +20,7 @@ class GoalsNotifier extends AsyncNotifier<List<AppSavingsGoal>> {
     await future;
   }
 
-  /// Returns the updated goal so the UI can check `isCompleted` and
-  /// trigger the celebration exactly once, right after the contribution
-  /// that pushed it over the line.
+
   Future<AppSavingsGoal> contribute(int id, double amount) async {
     final repo = ref.read(goalRepositoryProvider);
     final updated = await repo.contribute(id, amount);

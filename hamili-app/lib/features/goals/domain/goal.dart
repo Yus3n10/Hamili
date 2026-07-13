@@ -7,7 +7,7 @@ class AppSavingsGoal {
   final double progressPercentage;
   final DateTime? targetDate;
   final DateTime? estimatedCompletionDate;
-  final String status; // "in_progress" | "completed"
+  final String status;
 
   const AppSavingsGoal({
     required this.id,

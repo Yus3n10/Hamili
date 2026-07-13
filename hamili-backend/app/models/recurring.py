@@ -17,10 +17,10 @@ class RecurringItem(Base):
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
 
-    type: Mapped[str] = mapped_column(String(10), nullable=False)  # "income" | "expense"
+    type: Mapped[str] = mapped_column(String(10), nullable=False)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
-    frequency: Mapped[str] = mapped_column(String(20), nullable=False)  # weekly | monthly | yearly
+    frequency: Mapped[str] = mapped_column(String(20), nullable=False)
     next_due_date: Mapped[date] = mapped_column(Date, nullable=False)
     active: Mapped[bool] = mapped_column(Boolean, default=True)
 

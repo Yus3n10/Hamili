@@ -8,10 +8,7 @@ import '../../transactions/presentation/transaction_providers.dart';
 import 'budget_alert_provider.dart';
 import 'budget_providers.dart';
 
-/// Floating, closable alerts shown near the bottom of every authenticated screen
-/// whenever a budget is over its limit. Reddish and translucent so it never fully
-/// obstructs the content behind it. Mounted inside MainShell, so it follows the
-/// user across tabs but never appears on login/onboarding.
+
 class BudgetAlertOverlay extends ConsumerWidget {
   const BudgetAlertOverlay({super.key});
 

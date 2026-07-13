@@ -10,8 +10,6 @@ from app.models.user import User
 from app.repositories.recurring_repository import RecurringRepository
 from app.schemas.recurring import RecurringItemCreate, RecurringItemUpdate
 
-# Guard against an item accidentally dated years in the past generating
-# hundreds of rows in a single catch-up pass.
 MAX_BACKFILL_PERIODS = 60
 
 
@@ -82,7 +80,6 @@ class RecurringService:
                 item.next_due_date = advance_date(item.next_due_date, item.frequency)
                 count += 1
                 promoted += 1
-            # If still overdue after the cap, skip ahead without creating rows.
             while item.next_due_date <= today:
                 item.next_due_date = advance_date(item.next_due_date, item.frequency)
         self.db.commit()

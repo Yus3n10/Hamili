@@ -5,8 +5,7 @@ import '../../../core/constants/app_constants.dart';
 import '../../../core/network/api_client.dart';
 import '../domain/app_user.dart';
 
-/// Only class in the app that knows about HTTP paths for auth. Providers
-/// and widgets call these methods and never touch Dio directly.
+
 class AuthRepository {
   AuthRepository({Dio? dio, FlutterSecureStorage? storage})
       : _dio = dio ?? ApiClient.instance.dio,
@@ -64,9 +63,7 @@ class AuthRepository {
     await clearStoredSession();
   }
 
-  /// Removes any persisted tokens. Called on logout, and also at app
-  /// startup so a session never silently resumes across app launches
-  /// (see main.dart) — the user must re-authenticate every time.
+
   Future<void> clearStoredSession() async {
     await _storage.delete(key: AppConstants.accessTokenKey);
     await _storage.delete(key: AppConstants.refreshTokenKey);

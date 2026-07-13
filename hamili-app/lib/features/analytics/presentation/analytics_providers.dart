@@ -15,14 +15,13 @@ class AnalyticsPeriod {
       AnalyticsPeriod(month: month ?? this.month, year: year ?? this.year);
 }
 
-/// Month the Analytics page is viewing (default: current month). The
-/// dashboard summary ignores this and is always all-time.
+
 final analyticsPeriodProvider = StateProvider<AnalyticsPeriod>((ref) {
   final now = DateTime.now();
   return AnalyticsPeriod(month: now.month, year: now.year);
 });
 
-/// All-time summary for the dashboard's balance/income/expense.
+
 final dashboardSummaryProvider = FutureProvider<AnalyticsSummary>((ref) {
   ref.watch(sessionIdProvider);
   return ref.read(analyticsRepositoryProvider).summary();
@@ -46,8 +45,7 @@ final trendProvider = FutureProvider<List<TrendPoint>>((ref) {
   return ref.read(analyticsRepositoryProvider).trend(month: p.month, year: p.year);
 });
 
-/// Called by any notifier that changes transactions (directly or via
-/// recurring promotion) so the dashboard totals and every chart refetch.
+
 void invalidateAnalytics(Ref ref) {
   ref.invalidate(dashboardSummaryProvider);
   ref.invalidate(monthlySummaryProvider);

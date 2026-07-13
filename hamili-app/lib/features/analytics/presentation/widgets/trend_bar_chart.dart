@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/analytics_models.dart';
 
-/// Income vs expense per month over the trend window. Two rods per group.
+
 class TrendBarChart extends StatelessWidget {
   const TrendBarChart({super.key, required this.points});
 

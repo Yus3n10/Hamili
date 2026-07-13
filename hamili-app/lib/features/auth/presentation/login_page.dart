@@ -80,7 +80,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ],
             );
           }
-          // Mobile: compact brand header stacked above the form.
+
           return SafeArea(
             child: SingleChildScrollView(
               padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -181,8 +181,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 }
 
-/// Brand hero (wide screens): the animated Hamili mark, wordmark, welcome
-/// line, and tagline on a green→navy gradient panel.
+
 class _HeroPanel extends StatelessWidget {
   const _HeroPanel();
 

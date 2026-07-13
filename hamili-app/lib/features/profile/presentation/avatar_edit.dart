@@ -9,9 +9,7 @@ import 'package:image_picker/image_picker.dart';
 
 import 'avatar_providers.dart';
 
-/// Pick an image, let the user pan/zoom it inside a circular frame, then
-/// capture the framed result to a base64 PNG and store it. Uses only
-/// image_picker + an in-app RepaintBoundary capture — no heavy cropper.
+
 Future<void> pickAndSetAvatar(BuildContext context, WidgetRef ref) async {
   final picked = await ImagePicker().pickImage(source: ImageSource.gallery, maxWidth: 1000, imageQuality: 90);
   if (picked == null || !context.mounted) return;

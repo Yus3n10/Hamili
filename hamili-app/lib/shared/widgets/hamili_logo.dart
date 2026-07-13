@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// The Hamili mark (H + rising path + star), rendered from the brand SVG.
+
 class HamiliLogo extends StatelessWidget {
   const HamiliLogo({super.key, this.size = 48});
 
@@ -14,9 +14,7 @@ class HamiliLogo extends StatelessWidget {
   }
 }
 
-/// Animated brand mark for the login/splash: scales + fades in, catches a soft
-/// shimmer, and a small star twinkles over the corner. Asset-light — the static
-/// gradient mark is the SVG, the motion is layered with flutter_animate.
+
 class AnimatedHamiliLogo extends StatelessWidget {
   const AnimatedHamiliLogo({super.key, this.size = 96});
 

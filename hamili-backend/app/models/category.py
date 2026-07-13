@@ -9,7 +9,7 @@ class Category(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     name: Mapped[str] = mapped_column(String(100), nullable=False)
-    type: Mapped[str] = mapped_column(String(10), nullable=False)  # "income" | "expense"
+    type: Mapped[str] = mapped_column(String(10), nullable=False)
     icon: Mapped[str | None] = mapped_column(String(50), nullable=True)
     is_default: Mapped[bool] = mapped_column(Boolean, default=True)
 

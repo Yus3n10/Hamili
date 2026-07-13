@@ -12,15 +12,12 @@ import '../domain/transaction.dart';
 final transactionRepositoryProvider = Provider<TransactionRepository>((ref) => TransactionRepository());
 final categoryRepositoryProvider = Provider<CategoryRepository>((ref) => CategoryRepository());
 
-/// All categories, loaded once and cached — every picker in the app reads
-/// this instead of hitting the network repeatedly.
+
 final categoriesProvider = FutureProvider<List<AppCategory>>((ref) {
   return ref.read(categoryRepositoryProvider).getCategories();
 });
 
-/// Search/filter state driving the transactions list. Kept separate from
-/// the list notifier so changing a filter doesn't require rebuilding the
-/// whole async-state machine — it just triggers a refetch.
+
 class TransactionFilter {
   final int? categoryId;
   final String? search;
@@ -36,9 +33,7 @@ class TransactionFilter {
 
 final transactionFilterProvider = StateProvider<TransactionFilter>((ref) => const TransactionFilter());
 
-/// The transaction list itself. Watches the filter provider so any filter
-/// change automatically triggers a refetch through AsyncNotifier's
-/// dependency tracking.
+
 class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
   @override
   Future<List<AppTransaction>> build() async {
@@ -65,17 +60,15 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
         note: note,
       );
       ref.invalidateSelf();
-      // Budgets compute spent_amount live from transactions, so a new
-      // expense here means every budget's usage figure is now stale until
-      // this refetches. The per-budget drill-down list is derived the same
-      // way, so invalidate the whole family too or it serves a stale cache.
+
+
       ref.invalidate(budgetsProvider);
       ref.invalidate(budgetTransactionsProvider);
       invalidateAnalytics(ref);
       await future;
     } on OfflineQueuedException {
-      // Queued offline — show it immediately with a temporary negative id;
-      // the real row replaces it when the queue syncs and the list refetches.
+
+
       final temp = AppTransaction(
         id: -DateTime.now().millisecondsSinceEpoch,
         categoryId: categoryId,
@@ -85,7 +78,7 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
         transactionDate: transactionDate,
       );
       state = AsyncData([temp, ...(state.valueOrNull ?? [])]);
-      rethrow; // let the form surface a "saved offline" message
+      rethrow;
     }
   }
 
@@ -105,7 +98,7 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
       invalidateAnalytics(ref);
       await future;
     } on OfflineQueuedException {
-      // Optimistic local edit until the queued update syncs.
+
       final current = state.valueOrNull ?? [];
       state = AsyncData([
         for (final t in current)
@@ -135,7 +128,7 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
       invalidateAnalytics(ref);
       await future;
     } on OfflineQueuedException {
-      // Keep it removed optimistically; the queued delete syncs later.
+
       final current = state.valueOrNull ?? [];
       state = AsyncData(current.where((t) => t.id != id).toList());
     }

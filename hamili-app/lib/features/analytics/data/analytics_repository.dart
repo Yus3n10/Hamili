@@ -3,8 +3,7 @@ import 'package:dio/dio.dart';
 import '../../../core/network/api_client.dart';
 import '../domain/analytics_models.dart';
 
-/// Analytics are online, server-computed views — no Hive cache (unlike
-/// transactions). A failed fetch surfaces as an error to the UI.
+
 class AnalyticsRepository {
   AnalyticsRepository({Dio? dio}) : _dio = dio ?? ApiClient.instance.dio;
 

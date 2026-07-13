@@ -54,9 +54,7 @@ class _HamiChatPageState extends ConsumerState<HamiChatPage> {
     final messages = ref.watch(chatMessagesProvider);
     final isThinking = ref.watch(chatIsRespondingProvider);
 
-    // Auto-scroll whenever a new message arrives or the thinking bubble
-    // appears/disappears — runs after the frame so the list has already
-    // grown before we measure maxScrollExtent.
+
     ref.listen(chatMessagesProvider, (_, __) {
       WidgetsBinding.instance.addPostFrameCallback((_) => _scrollToBottom());
     });
@@ -221,8 +219,7 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
-/// Small confirmation chip shown under an assistant reply that performed an
-/// action (added a goal, changed the profile, etc.).
+
 class _DoneChip extends StatelessWidget {
   const _DoneChip();
 

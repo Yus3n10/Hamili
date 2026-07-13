@@ -4,10 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../../core/session/session_provider.dart';
 import '../../auth/presentation/auth_providers.dart';
 
-/// The current account's profile picture as a base64 PNG (or null). Stored
-/// per-account in the 'avatars' Hive box — a lightweight, device-local
-/// avatar (no backend image storage needed). Keyed by user id so multiple
-/// accounts on one device keep separate pictures.
+
 class AvatarNotifier extends Notifier<String?> {
   static const _boxName = 'avatars';
 

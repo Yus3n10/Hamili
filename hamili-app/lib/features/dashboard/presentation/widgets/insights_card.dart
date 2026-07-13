@@ -5,10 +5,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../insight_providers.dart';
 import '../insights_enabled_provider.dart';
 
-/// "Insights from Hami" — proactive, AI-generated nudges on the dashboard.
-/// Renders nothing when there are no insights and nothing is loading, to
-/// keep the dashboard uncluttered; loads independently so it never blocks
-/// the balance/transactions from rendering.
+
 class InsightsCard extends ConsumerWidget {
   const InsightsCard({super.key});
 

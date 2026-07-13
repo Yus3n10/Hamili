@@ -6,10 +6,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import '../../../core/network/api_client.dart';
 import '../domain/recurring_item.dart';
 
-/// Mirrors TransactionRepository: successful list fetches overwrite a
-/// Hive box; on fetch failure we fall back to the cache ONLY when it
-/// actually holds data, so a real error is never masked as an empty
-/// state. Writes require the network (Milestone 7 adds a queue).
+
 class RecurringRepository {
   RecurringRepository({Dio? dio}) : _dio = dio ?? ApiClient.instance.dio;
 
@@ -75,8 +72,7 @@ class RecurringRepository {
     await _dio.delete('/recurring/$id');
   }
 
-  /// Promotes any due items server-side; returns how many transactions
-  /// were created so the UI can confirm the outcome.
+
   Future<int> runDue() async {
     final response = await _dio.post('/recurring/run-due');
     return (response.data['promoted'] as num).toInt();

@@ -6,9 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import 'goal_alert_provider.dart';
 import 'goal_providers.dart';
 
-/// Green, semi-transparent celebration toasts shown near the bottom of every
-/// authenticated screen when a savings goal is met. Mirrors the red budget
-/// over-limit overlay; closable by × or swipe, session-dismissed.
+
 class GoalAlertOverlay extends ConsumerWidget {
   const GoalAlertOverlay({super.key});
 
@@ -61,7 +59,7 @@ class _GoalToast extends StatelessWidget {
         color: Colors.transparent,
         child: Container(
           decoration: BoxDecoration(
-            // Green + semi-transparent so it celebrates without blocking the view.
+
             color: AppColors.primary.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(14),
             boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 12, offset: Offset(0, 4))],

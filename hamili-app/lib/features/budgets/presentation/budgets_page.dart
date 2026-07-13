@@ -58,8 +58,8 @@ class BudgetsPage extends ConsumerWidget {
                   margin: const EdgeInsets.only(bottom: 12),
                   clipBehavior: Clip.antiAlias,
                   child: InkWell(
-                    // Tap a budget to see the transactions that make up its
-                    // spent amount for this month.
+
+
                     onTap: () => Navigator.of(context).push(
                       MaterialPageRoute(
                         builder: (_) => BudgetDetailPage(budget: budget, category: category),

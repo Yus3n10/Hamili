@@ -68,8 +68,8 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        // Push on the root navigator so the form covers the whole shell (nav bar
-        // included) — it can't be left stranded behind a tab switch.
+
+
         onPressed: () => Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(builder: (_) => const AddEditTransactionPage()),
         ),

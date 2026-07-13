@@ -5,10 +5,7 @@ import '../../features/transactions/domain/category.dart';
 import '../../features/transactions/presentation/transaction_providers.dart';
 import 'category_visuals.dart';
 
-/// Bottom-sheet category picker. Watches `categoriesProvider` directly
-/// (rather than taking a pre-fetched list) so it always shows a loading
-/// spinner if the fetch is still in flight, and an error state with a
-/// retry if it failed — instead of silently rendering an empty list.
+
 Future<AppCategory?> showCategoryPicker(
   BuildContext context, {
   required String type,

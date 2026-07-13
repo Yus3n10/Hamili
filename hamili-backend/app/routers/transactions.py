@@ -18,8 +18,6 @@ def list_transactions(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    # Recurring items are promoted lazily; do it here so the dashboard
-    # (which is computed client-side from this list) is always current.
     RecurringService(db).promote_due(current_user)
     return TransactionService(db).list(current_user, category_id, search)
 

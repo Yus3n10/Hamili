@@ -16,7 +16,7 @@ class SavingsGoal(Base):
     target_amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
     current_amount: Mapped[float] = mapped_column(Numeric(12, 2), default=0)
     target_date: Mapped[date | None] = mapped_column(Date, nullable=True)
-    status: Mapped[str] = mapped_column(String(20), default="in_progress")  # in_progress | completed
+    status: Mapped[str] = mapped_column(String(20), default="in_progress")
 
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 

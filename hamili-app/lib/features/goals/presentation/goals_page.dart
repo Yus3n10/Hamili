@@ -164,9 +164,7 @@ class GoalsPage extends ConsumerWidget {
   }
 }
 
-/// Goal-completion celebration: the reached-goal message with a confetti
-/// burst raining from the top. The controller lives with the dialog so it
-/// is disposed cleanly when dismissed.
+
 class _CelebrationDialog extends StatefulWidget {
   const _CelebrationDialog({required this.goal});
 

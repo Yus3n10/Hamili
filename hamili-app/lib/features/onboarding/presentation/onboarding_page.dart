@@ -6,9 +6,7 @@ import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/primary_button.dart';
 import '../../auth/presentation/auth_providers.dart';
 
-/// Shown once, right after registration (register -> /onboarding ->
-/// /dashboard). Not gated on every login, so it never nags returning
-/// users; anything skipped here can be set later in Profile.
+
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
 

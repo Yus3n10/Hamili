@@ -5,10 +5,7 @@ import 'package:intl/intl.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../domain/analytics_models.dart';
 
-/// Cumulative net (running income − expense) across the trend window, so
-/// you can see whether you're net saving or net spending over time. The
-/// line starts from the window's first month, not all-time — it shows the
-/// trajectory over the shown months, not the absolute dashboard balance.
+
 class NetBalanceLineChart extends StatelessWidget {
   const NetBalanceLineChart({super.key, required this.points});
 
@@ -53,9 +50,8 @@ class NetBalanceLineChart extends StatelessWidget {
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-                // One label per month. Without a fixed interval, fl_chart
-                // draws labels at fractional x positions that truncate to
-                // the same index, producing repeated month names.
+
+
                 interval: 1,
                 getTitlesWidget: (value, meta) {
                   if (value != value.roundToDouble()) return const SizedBox.shrink();

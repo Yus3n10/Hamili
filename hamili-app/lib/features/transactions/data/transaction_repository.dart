@@ -7,11 +7,7 @@ import '../../../core/network/api_client.dart';
 import '../../../core/network/offline_queue.dart';
 import '../domain/transaction.dart';
 
-/// Every successful list fetch overwrites the local cache, so the app has
-/// something to show immediately on next launch even with no connection.
-/// Writes (create/update/delete) require network for now — Milestone 7
-/// adds a proper offline write queue; for now a failed write just
-/// surfaces an error to the UI rather than silently queuing.
+
 class TransactionRepository {
   TransactionRepository({Dio? dio}) : _dio = dio ?? ApiClient.instance.dio;
 
@@ -27,8 +23,7 @@ class TransactionRepository {
       });
       final transactions = (response.data as List).map((json) => AppTransaction.fromJson(json)).toList();
 
-      // Only cache the unfiltered list, so the cache always represents
-      // the full picture regardless of what filter triggered this call.
+
       if (categoryId == null && (search == null || search.isEmpty)) {
         await _cacheTransactions(transactions);
       }
@@ -107,9 +102,7 @@ class TransactionRepository {
     }
   }
 
-  /// Clears the offline cache entirely. Called on logout so a second
-  /// account signing in on the same device never sees the previous
-  /// account's cached transactions before its first successful fetch.
+
   Future<void> clearCache() async {
     final box = await Hive.openBox<String>(_boxName);
     await box.delete(_cacheKey);

@@ -42,8 +42,8 @@ class AnalyticsPage extends ConsumerWidget {
       appBar: AppBar(title: const Text('Analytics')),
       body: RefreshIndicator(
         onRefresh: () async {
-          // WidgetRef.invalidate here (invalidateAnalytics takes a provider
-          // Ref, used by the notifiers); refetch this page's providers.
+
+
           ref.invalidate(monthlySummaryProvider);
           ref.invalidate(categoryBreakdownProvider);
           ref.invalidate(trendProvider);

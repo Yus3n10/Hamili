@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Maps backend icon identifiers (see seed.py) to Flutter icons and a
-/// consistent accent color per category. Central mapping means adding a
-/// new category later means one entry here, not scattered switch cases.
+
 class CategoryVisuals {
   CategoryVisuals._();
 

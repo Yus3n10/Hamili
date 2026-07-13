@@ -1,10 +1,10 @@
 class RecurringItem {
   final int id;
-  final String type; // "income" | "expense"
+  final String type;
   final String name;
   final double amount;
   final int categoryId;
-  final String frequency; // "weekly" | "monthly" | "yearly"
+  final String frequency;
   final DateTime nextDueDate;
   final bool active;
 

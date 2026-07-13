@@ -12,12 +12,11 @@ final recurringRepositoryProvider = Provider<RecurringRepository>((ref) => Recur
 class RecurringNotifier extends AsyncNotifier<List<RecurringItem>> {
   @override
   Future<List<RecurringItem>> build() async {
-    ref.watch(sessionIdProvider); // reset on login/logout (account isolation)
+    ref.watch(sessionIdProvider);
     return ref.read(recurringRepositoryProvider).list();
   }
 
-  /// Promotion (and an item first due today) creates real transactions,
-  /// so balance and every budget's live-computed usage go stale.
+
   void _invalidateDerived() {
     ref.invalidate(transactionsProvider);
     ref.invalidate(budgetsProvider);
@@ -80,7 +79,7 @@ class RecurringNotifier extends AsyncNotifier<List<RecurringItem>> {
     await future;
   }
 
-  /// Returns the number of transactions created, for the UI's snackbar.
+
   Future<int> runDue() async {
     final promoted = await ref.read(recurringRepositoryProvider).runDue();
     ref.invalidateSelf();

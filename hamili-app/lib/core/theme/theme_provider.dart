@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-/// Holds the user's theme preference (System / Light / Dark), persisted in
-/// the `app_settings` Hive box so it survives app restarts. This is a
-/// device-level UI preference — deliberately NOT account-scoped, so it is
-/// not cleared on logout/session reset.
+
 class ThemeModeNotifier extends Notifier<ThemeMode> {
   static const _boxName = 'app_settings';
   static const _key = 'theme_mode';
 
   @override
   ThemeMode build() {
-    // The box is opened in main() before runApp, so this read is synchronous.
+
     return _decode(Hive.box<String>(_boxName).get(_key));
   }
 
@@ -27,8 +24,8 @@ class ThemeModeNotifier extends Notifier<ThemeMode> {
         return ThemeMode.light;
       case 'system':
         return ThemeMode.system;
-      // Default (no saved preference) is the dark premium look that matches
-      // the login — the user can still switch to Light/System in Profile.
+
+
       default:
         return ThemeMode.dark;
     }

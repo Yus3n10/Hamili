@@ -10,8 +10,6 @@ from app.schemas.chat import ChatMessageCreate, ChatMessageOut, ChatReply
 from app.services.agent_service import AgentService
 from app.services.ai.base_provider import AIProviderUnavailable
 
-# Shown when Gemini's quota is exhausted — "tomorrow" because the free-tier
-# quota resets daily.
 _SERVERS_DOWN_REPLY = "Hami's servers are down right now, try again tomorrow. 💤"
 
 router = APIRouter(prefix="/chat", tags=["chat"])
@@ -35,12 +33,10 @@ def send_message(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    # Persist the user's message first
     user_message = AIChatMessage(user_id=current_user.id, role="user", content=payload.content)
     db.add(user_message)
     db.commit()
 
-    # Build history for context, then ask Hami
     history = (
         db.query(AIChatMessage)
         .filter(AIChatMessage.user_id == current_user.id)
@@ -50,12 +46,8 @@ def send_message(
     message_history = [{"role": m.role, "content": m.content} for m in history]
 
     try:
-        # The agent may answer normally OR perform an action (add a goal,
-        # change the profile, etc.) and tell us which app areas changed.
         result = AgentService(db).respond(current_user, message_history)
     except AIProviderUnavailable:
-        # Quota exhausted — surface a friendly message and don't persist it as
-        # real chat history (the user's question stays; Hami just couldn't answer).
         return ChatReply(reply=_SERVERS_DOWN_REPLY, available=False)
 
     reply_text = result["reply"]

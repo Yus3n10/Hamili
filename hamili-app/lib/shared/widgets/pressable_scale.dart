@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Wraps a tappable widget with a subtle spring-scale on press (0.96),
-/// per the ui-ux-pro-max `scale-feedback` guideline. Non-blocking and
-/// interruptible — the scale just tracks the press state.
+
 class PressableScale extends StatefulWidget {
   const PressableScale({super.key, required this.child, this.onTap, this.pressedScale = 0.96});
 

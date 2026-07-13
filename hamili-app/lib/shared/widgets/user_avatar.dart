@@ -2,8 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
-/// Circular avatar showing a base64 profile picture, falling back to the
-/// user's initial on the brand color when none is set.
+
 class UserAvatar extends StatelessWidget {
   const UserAvatar({super.key, required this.base64, required this.fallbackInitial, this.radius = 28});
 

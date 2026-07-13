@@ -4,9 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-/// Thrown by a repository when a write couldn't reach the server because
-/// the device is offline, but was queued for replay. Callers treat this
-/// as a "saved, will sync" outcome rather than a failure.
+
 class OfflineQueuedException implements Exception {
   const OfflineQueuedException();
 }
@@ -29,13 +27,7 @@ class QueuedOp {
       );
 }
 
-/// A durable, in-order queue of mutating requests that failed because the
-/// device was offline. Persisted in Hive so pending writes survive an app
-/// restart, and drained (replayed) the next time a request succeeds.
-///
-/// Scope note: currently wired into transaction writes (the primary write
-/// path). Other features still require connectivity; extending them is a
-/// matter of the same enqueue-on-connection-error pattern.
+
 class OfflineQueue {
   OfflineQueue._();
   static final OfflineQueue instance = OfflineQueue._();
@@ -43,7 +35,7 @@ class OfflineQueue {
   static const _boxName = 'offline_queue_v1';
   static const _key = 'ops';
 
-  /// Number of writes waiting to sync — drives the UI's offline banner.
+
   final ValueNotifier<int> pendingCount = ValueNotifier<int>(0);
   bool _flushing = false;
 
@@ -64,7 +56,7 @@ class OfflineQueue {
     pendingCount.value = ops.length;
   }
 
-  /// Load the persisted pending count at startup.
+
   Future<void> init() async {
     pendingCount.value = (await _read()).length;
   }
@@ -80,10 +72,7 @@ class OfflineQueue {
     await _write(ops);
   }
 
-  /// Replay queued ops in order. Stops at the first connection error (still
-  /// offline) and keeps the rest; drops an op that fails with a real server
-  /// error (e.g. 4xx) since retrying it would never succeed. Reentrancy is
-  /// guarded so the success interceptor can call this freely.
+
   Future<void> flush(Dio dio) async {
     if (_flushing) return;
     _flushing = true;
@@ -97,7 +86,7 @@ class OfflineQueue {
           await _write(ops);
         } on DioException catch (e) {
           if (isConnectionError(e)) break;
-          ops = ops.sublist(1); // permanent failure — drop it and move on
+          ops = ops.sublist(1);
           await _write(ops);
         }
       }

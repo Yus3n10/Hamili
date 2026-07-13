@@ -13,9 +13,7 @@ class _Bucket {
   final double value;
 }
 
-/// A compact spending bar chart with a Week / Month / Year toggle. Buckets are
-/// computed client-side from the already-fetched transaction list (expenses
-/// only), so it needs no extra network call.
+
 class SpendingChart extends StatefulWidget {
   const SpendingChart({super.key, required this.transactions});
 

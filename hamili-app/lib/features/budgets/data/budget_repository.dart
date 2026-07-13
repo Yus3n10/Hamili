@@ -16,8 +16,7 @@ class BudgetRepository {
     return (response.data as List).map((json) => AppBudget.fromJson(json)).toList();
   }
 
-  /// POST /budgets is an upsert on the backend — safe to call whether or
-  /// not a budget already exists for this category/month/year.
+
   Future<AppBudget> setBudget({
     required int categoryId,
     required int month,

@@ -1,7 +1,7 @@
 class AppCategory {
   final int id;
   final String name;
-  final String type; // "income" | "expense"
+  final String type;
   final String? icon;
 
   const AppCategory({required this.id, required this.name, required this.type, this.icon});

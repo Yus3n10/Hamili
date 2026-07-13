@@ -10,9 +10,7 @@ import '../domain/category.dart';
 import '../domain/transaction.dart';
 import 'transaction_providers.dart';
 
-/// Handles both "add new" (transaction == null) and "edit existing"
-/// (transaction != null) in one form — keeps validation and layout in
-/// sync instead of maintaining two near-identical screens.
+
 class AddEditTransactionPage extends ConsumerStatefulWidget {
   const AddEditTransactionPage({super.key, this.transaction});
 
@@ -37,9 +35,7 @@ class _AddEditTransactionPageState extends ConsumerState<AddEditTransactionPage>
 
   bool get _isEditing => widget.transaction != null;
 
-  /// "Others" is a catch-all category — selecting it reveals a required
-  /// "Specify category" field, and whatever's typed there is what shows
-  /// up in place of "Others" everywhere in the UI (see TransactionTile).
+
   bool get _isOthersCategory => _selectedCategory?.name.toLowerCase() == 'others';
 
   @override
@@ -60,12 +56,7 @@ class _AddEditTransactionPageState extends ConsumerState<AddEditTransactionPage>
     super.dispose();
   }
 
-  /// When editing, we only have the transaction's categoryId — the full
-  /// AppCategory (needed to know its name, e.g. to detect "Others")
-  /// only becomes available once categoriesProvider loads. This runs
-  /// once categories are available and fills in the category field
-  /// (which previously always showed "Select a category" even for an
-  /// existing transaction) plus the correct note/custom-label field.
+
   void _prefillCategoryIfNeeded(List<AppCategory> categories) {
     if (_categoryPrefilled || widget.transaction == null || categories.isEmpty) return;
     _categoryPrefilled = true;
@@ -101,15 +92,14 @@ class _AddEditTransactionPageState extends ConsumerState<AddEditTransactionPage>
     if (picked != null) {
       setState(() {
         _selectedCategory = picked;
-        // Switching category away from Others (or into it) should not
-        // carry over a stale value from the other field.
+
+
         if (picked.name.toLowerCase() != 'others') _customCategoryController.clear();
       });
     }
   }
 
-  /// Combines the custom Others label with the general note into a
-  /// single string for the backend (which only has one `note` column).
+
   String _buildNoteForSubmission() {
     if (!_isOthersCategory) return _noteController.text.trim();
 
@@ -130,7 +120,7 @@ class _AddEditTransactionPageState extends ConsumerState<AddEditTransactionPage>
       _errorMessage = null;
     });
 
-    // Captured before any pop so the snackbar can still show afterward.
+
     final messenger = ScaffoldMessenger.of(context);
     final navigator = Navigator.of(context);
 
@@ -159,7 +149,7 @@ class _AddEditTransactionPageState extends ConsumerState<AddEditTransactionPage>
 
       if (mounted) navigator.pop();
     } on OfflineQueuedException {
-      // Not a failure — it's saved locally and will sync on reconnect.
+
       if (mounted) navigator.pop();
       messenger.showSnackBar(
         const SnackBar(content: Text('Saved offline — it’ll sync when you’re back online.')),
@@ -192,7 +182,7 @@ class _AddEditTransactionPageState extends ConsumerState<AddEditTransactionPage>
                   ],
                   selected: {_type},
                   onSelectionChanged: _isEditing
-                      ? null // type is fixed once created — matches backend TransactionUpdate schema
+                      ? null
                       : (selection) => setState(() {
                             _type = selection.first;
                             _selectedCategory = null;
@@ -219,9 +209,8 @@ class _AddEditTransactionPageState extends ConsumerState<AddEditTransactionPage>
                     child: Text(_selectedCategory?.name ?? 'Select a category'),
                   ),
                 ),
-                // Pops into view the moment "Others" is picked — a
-                // distinct field appearing right here, not a relabeled
-                // field buried further down the form.
+
+
                 if (_isOthersCategory) ...[
                   const SizedBox(height: 16),
                   TextFormField(

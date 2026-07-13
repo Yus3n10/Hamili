@@ -9,7 +9,7 @@ class RecurringItemCreate(BaseModel):
     amount: float = Field(gt=0, le=1_000_000_000_000)
     category_id: int
     frequency: str = Field(pattern="^(weekly|monthly|yearly)$")
-    next_due_date: date  # the first date this should fire
+    next_due_date: date
     active: bool = True
 
 

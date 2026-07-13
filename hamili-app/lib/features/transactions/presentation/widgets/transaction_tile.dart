@@ -27,9 +27,7 @@ class TransactionTile extends StatelessWidget {
     final amountColor = isExpense ? AppColors.expense : AppColors.income;
     final sign = isExpense ? '-' : '+';
 
-    // "Others" is a catch-all category — the note field doubles as a
-    // user-typed specific label in that case, so show it as the title
-    // instead of the generic "Others" text.
+
     final isOthersWithLabel = category?.name.toLowerCase() == 'others' && (transaction.note?.isNotEmpty ?? false);
     final title = isOthersWithLabel ? transaction.note! : (category?.name ?? 'Uncategorized');
     final subtitle = isOthersWithLabel

@@ -10,7 +10,7 @@ import '../../transactions/presentation/transaction_providers.dart';
 import '../domain/recurring_item.dart';
 import 'recurring_providers.dart';
 
-/// One form for both add (item == null) and edit (item != null).
+
 class AddEditRecurringPage extends ConsumerStatefulWidget {
   const AddEditRecurringPage({super.key, this.item});
 
@@ -54,9 +54,7 @@ class _AddEditRecurringPageState extends ConsumerState<AddEditRecurringPage> {
     super.dispose();
   }
 
-  /// Editing only carries categoryId; resolve the full AppCategory once
-  /// categoriesProvider loads so the field shows the real name instead of
-  /// "Select a category" (the bug #12 class — edit never pre-selecting).
+
   void _prefillCategoryIfNeeded(List<AppCategory> categories) {
     if (_categoryPrefilled || widget.item == null || categories.isEmpty) return;
     _categoryPrefilled = true;
@@ -73,7 +71,7 @@ class _AddEditRecurringPageState extends ConsumerState<AddEditRecurringPage> {
       context: context,
       initialDate: _nextDue,
       firstDate: DateTime(2020),
-      lastDate: DateTime(2100), // recurring dates are usually in the future
+      lastDate: DateTime(2100),
     );
     if (picked != null) setState(() => _nextDue = picked);
   }
@@ -143,7 +141,7 @@ class _AddEditRecurringPageState extends ConsumerState<AddEditRecurringPage> {
                   ],
                   selected: {_type},
                   onSelectionChanged: _isEditing
-                      ? null // type is fixed once created (matches backend update schema)
+                      ? null
                       : (selection) => setState(() {
                             _type = selection.first;
                             _selectedCategory = null;

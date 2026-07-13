@@ -19,7 +19,7 @@ class Transaction(Base):
     category_id: Mapped[int] = mapped_column(ForeignKey("categories.id"))
 
     amount: Mapped[float] = mapped_column(Numeric(12, 2), nullable=False)
-    type: Mapped[str] = mapped_column(String(10), nullable=False)  # "income" | "expense"
+    type: Mapped[str] = mapped_column(String(10), nullable=False)
     note: Mapped[str | None] = mapped_column(String(255), nullable=True)
     transaction_date: Mapped[date] = mapped_column(Date, nullable=False)
 

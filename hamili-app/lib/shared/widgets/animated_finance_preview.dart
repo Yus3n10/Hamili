@@ -5,9 +5,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/utils/currency_formatter.dart';
 
-/// A self-animating "live portfolio" chart — a continuously scrolling area
-/// line on a dark grid, with a pulsing lead dot, a counting value, and a
-/// gains pill. Custom-painted (no assets), used as the login hero preview.
+
 class AnimatedFinancePreview extends StatefulWidget {
   const AnimatedFinancePreview({super.key});
 
@@ -32,7 +30,7 @@ class _AnimatedFinancePreviewState extends State<AnimatedFinancePreview>
       animation: _controller,
       builder: (context, _) {
         final t = _controller.value;
-        // A gently "live" value that drifts with the animation phase.
+
         final value = 128450 + math.sin(t * 2 * math.pi) * 900 + t * 300;
         return DecoratedBox(
           decoration: BoxDecoration(
@@ -49,7 +47,7 @@ class _AnimatedFinancePreviewState extends State<AnimatedFinancePreview>
             child: Stack(
               children: [
                 Positioned.fill(child: CustomPaint(painter: _WavePainter(t))),
-                // Header: label + live value + gains pill
+
                 Positioned(
                   left: 18,
                   top: 16,
@@ -106,7 +104,7 @@ class _AnimatedFinancePreviewState extends State<AnimatedFinancePreview>
                     ],
                   ),
                 ),
-                // Footer status line, echoing the reference "systems nominal".
+
                 Positioned(
                   left: 18,
                   bottom: 14,
@@ -174,7 +172,7 @@ class _WavePainter extends CustomPainter {
       final y = base -
           amp * math.sin(progress * 3 * 2 * math.pi + phase) -
           amp * 0.4 * math.sin(progress * 7 * 2 * math.pi + phase * 1.6) -
-          progress * size.height * 0.16; // gentle upward trend
+          progress * size.height * 0.16;
       points.add(Offset(x, y));
     }
 

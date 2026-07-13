@@ -11,8 +11,6 @@ from app.routers import analytics, auth, budgets, categories, chat, goals, insig
 
 settings = get_settings()
 
-# Reject request bodies larger than this before they are parsed (defense against
-# oversized/malicious payloads). All Hamili endpoints exchange small JSON.
 _MAX_BODY_BYTES = 512 * 1024
 
 app = FastAPI(
@@ -51,8 +49,6 @@ app.include_router(recurring.router)
 app.include_router(analytics.router)
 app.include_router(insights.router)
 app.include_router(chat.router)
-# Milestone 4+: recurring, analytics routers plug in the same way — each
-# is self-contained, so this file stays a thin registry.
 
 
 @app.get("/health", tags=["health"])

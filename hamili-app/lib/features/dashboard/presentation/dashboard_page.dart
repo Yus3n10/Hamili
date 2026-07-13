@@ -23,10 +23,7 @@ import 'widgets/insights_card.dart';
 import 'widgets/spending_chart.dart';
 import 'widgets/summary_card.dart';
 
-/// Goal-first dashboard: greeting → active goal → balance → this-month tiles →
-/// AI insights → budgets → recent activity. All figures come from the existing
-/// providers (summary, monthly summary, goals, budgets, transactions) — no
-/// data-layer change.
+
 class DashboardPage extends ConsumerWidget {
   const DashboardPage({super.key});
 
@@ -81,8 +78,8 @@ class DashboardPage extends ConsumerWidget {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        // Root navigator so the form covers the shell (nav bar included) and
-        // can't linger behind a tab switch.
+
+
         onPressed: () => Navigator.of(context, rootNavigator: true).push(
           MaterialPageRoute(builder: (_) => const AddEditTransactionPage()),
         ),
@@ -203,8 +200,7 @@ class DashboardPage extends ConsumerWidget {
   }
 }
 
-/// Goal-first hero: the goal closest to completion, its progress, and a way to
-/// add funds. Green brand accent.
+
 class _ActiveGoalCard extends StatelessWidget {
   const _ActiveGoalCard({required this.goal, required this.onAddFunds});
 
@@ -281,7 +277,7 @@ class _ActiveGoalCard extends StatelessWidget {
   }
 }
 
-/// Shown when the user has no goals yet — nudges toward creating one.
+
 class _NoGoalCard extends StatelessWidget {
   const _NoGoalCard({required this.onCreate});
 
@@ -327,7 +323,7 @@ class _SectionHeader extends StatelessWidget {
   }
 }
 
-/// A compact preview of the current month's budgets with usage bars.
+
 class _BudgetsMini extends StatelessWidget {
   const _BudgetsMini({required this.budgets, required this.categories});
 
@@ -391,8 +387,7 @@ class _BudgetsMini extends StatelessWidget {
   }
 }
 
-/// Balance hero: green brand gradient with two translucent orbs that slowly
-/// drift, a wallet chip, and a count-up figure. White text on green.
+
 class _BalanceHero extends StatelessWidget {
   const _BalanceHero({required this.balance});
 

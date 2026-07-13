@@ -67,7 +67,6 @@ class InsightService:
         snapshot = self.build_financial_snapshot(user)
         return self.provider.generate_insights(snapshot)
 
-    # --- Persisted, dashboard-surfaced insights (Milestone 6) -------------
 
     def list_active(self, user: User) -> list[AIInsight]:
         """Undismissed insights, newest first."""
@@ -106,7 +105,6 @@ class InsightService:
         if not messages:
             return []
 
-        # Replace the prior unread batch so the card shows only the latest.
         self.db.query(AIInsight).filter(
             AIInsight.user_id == user.id, AIInsight.is_read.is_(False)
         ).delete(synchronize_session=False)

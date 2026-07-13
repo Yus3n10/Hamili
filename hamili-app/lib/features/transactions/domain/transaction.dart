@@ -2,7 +2,7 @@ class AppTransaction {
   final int id;
   final int categoryId;
   final double amount;
-  final String type; // "income" | "expense"
+  final String type;
   final String? note;
   final DateTime transactionDate;
 

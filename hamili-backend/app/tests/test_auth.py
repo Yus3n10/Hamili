@@ -23,7 +23,7 @@ def test_register_and_login():
         "preferred_name": "Test User",
     }
     register_response = client.post("/auth/register", json=register_payload)
-    assert register_response.status_code in (201, 400)  # 400 if already seeded from a prior run
+    assert register_response.status_code in (201, 400)
 
     login_response = client.post(
         "/auth/login",

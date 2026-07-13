@@ -8,9 +8,7 @@ import '../domain/app_user.dart';
 
 final authRepositoryProvider = Provider<AuthRepository>((ref) => AuthRepository());
 
-/// Holds the logged-in user (or null). Every screen that needs
-/// personalization — dashboard greeting, chat context, profile — reads
-/// this instead of re-fetching /auth/me itself.
+
 class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
   @override
   Future<AppUser?> build() async {
@@ -31,8 +29,7 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
     _startNewSession();
   }
 
-  /// Update the profile (onboarding + profile editor) and reflect the
-  /// new values in the shared user state so the whole app updates.
+
   Future<void> updateProfile({
     String? preferredName,
     String? preferredCurrency,
@@ -48,21 +45,15 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
 
   Future<void> logout() async {
     await ref.read(authRepositoryProvider).logout();
-    // Offline cache is keyed globally, not per-account — clear it so a
-    // second account on the same device can't see the first account's
-    // cached transactions before its own first successful fetch.
+
+
     await ref.read(transactionRepositoryProvider).clearCache();
     await ref.read(recurringRepositoryProvider).clearCache();
     state = const AsyncData(null);
     _startNewSession();
   }
 
-  /// Bumping this single value is the ONLY reset step needed — every
-  /// user-scoped provider (transactions, budgets, goals, chat, and
-  /// anything added later) watches sessionIdProvider as the first line
-  /// of its build, so this one increment tears down and refetches all
-  /// of them. This replaces a manually maintained list of providers to
-  /// invalidate, which is easy to leave one off of as the app grows.
+
   void _startNewSession() {
     ref.read(sessionIdProvider.notifier).state++;
   }

@@ -6,9 +6,7 @@ import '../../../../core/utils/currency_formatter.dart';
 import '../../../transactions/domain/category.dart';
 import '../../domain/analytics_models.dart';
 
-/// Donut of spending-by-category plus a ranked legend. Colors come from a
-/// fixed palette assigned by rank, so the biggest slice is always the same
-/// hue regardless of category.
+
 class CategoryDonut extends StatelessWidget {
   const CategoryDonut({super.key, required this.breakdown, required this.categories});
 

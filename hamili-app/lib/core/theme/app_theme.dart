@@ -3,18 +3,11 @@ import 'package:google_fonts/google_fonts.dart';
 
 import 'app_colors.dart';
 
-/// Two full ThemeData objects — light and dark. MaterialApp switches
-/// between them based on system brightness or a user toggle (see
-/// `themeModeProvider` in core/theme/theme_provider.dart).
-///
-/// Design language: modern green fintech. Inter throughout (clean, highly
-/// legible) with 700-weight headings; white cards (light) / navy cards (dark)
-/// floating with soft shadows, generous radii, and pill buttons.
+
 class AppTheme {
   AppTheme._();
 
-  // The green brand is dark enough that white foreground passes WCAG contrast
-  // comfortably, so on-primary is white.
+
   static const Color _onPrimary = Color(0xFFFFFFFF);
 
   static ThemeData get light => _build(
@@ -34,7 +27,7 @@ class AppTheme {
       );
 
   static TextTheme _textTheme(TextTheme base, Color textPrimary) {
-    // Inter everywhere; 700-weight for display/heading/title roles.
+
     final body = GoogleFonts.interTextTheme(base).apply(
       bodyColor: textPrimary,
       displayColor: textPrimary,
@@ -101,12 +94,12 @@ class AppTheme {
       ),
       cardTheme: CardThemeData(
         color: surface,
-        // Soft, low floating shadow rather than a flat card, for depth.
+
         elevation: 4,
         shadowColor: Colors.black.withValues(alpha: isLight ? 0.07 : 0.4),
         surfaceTintColor: Colors.transparent,
-        // On the near-black dark background, shadows disappear — a hairline
-        // border gives cards definition and the premium navy look.
+
+
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(20),
           side: isLight ? BorderSide.none : BorderSide(color: Colors.white.withValues(alpha: 0.06)),
@@ -118,7 +111,7 @@ class AppTheme {
           backgroundColor: AppColors.primary,
           foregroundColor: _onPrimary,
           elevation: 0,
-          minimumSize: const Size.fromHeight(54), // large touch target
+          minimumSize: const Size.fromHeight(54),
           shape: const StadiumBorder(),
           textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700, fontSize: 16),
         ),
@@ -195,7 +188,7 @@ class AppTheme {
           GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: textPrimary),
         ),
       ),
-      // RefreshIndicator already uses colorScheme.primary in Material 3.
+
       progressIndicatorTheme: const ProgressIndicatorThemeData(color: AppColors.primary),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: surface,

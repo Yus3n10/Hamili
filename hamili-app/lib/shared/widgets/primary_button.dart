@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Standard full-width, large-touch-target button used across the app.
-/// Shows a loading spinner in place of the label when [isLoading] is true.
+
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({
     super.key,

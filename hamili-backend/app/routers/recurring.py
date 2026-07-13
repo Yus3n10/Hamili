@@ -13,7 +13,7 @@ router = APIRouter(prefix="/recurring", tags=["recurring"])
 @router.get("", response_model=list[RecurringItemOut])
 def list_recurring(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     service = RecurringService(db)
-    service.promote_due(current_user)  # catch up any due items before returning the list
+    service.promote_due(current_user)
     return service.list(current_user)
 
 

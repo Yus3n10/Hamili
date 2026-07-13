@@ -24,11 +24,6 @@ class GeminiProvider(AIProvider):
         self.model = genai.GenerativeModel(
             model_name=model_name,
             system_instruction=HAMI_SYSTEM_PROMPT,
-            # Hard cap on chat replies — backs up the prompt's brevity
-            # instructions with an actual structural limit, since a model
-            # can drift into long-windedness over a conversation even
-            # when told to be concise. ~200 tokens is roughly 3-4 short
-            # sentences, enough for a real answer without a wall of text.
             generation_config=genai.GenerationConfig(max_output_tokens=200),
         )
 

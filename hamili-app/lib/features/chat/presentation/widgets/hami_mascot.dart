@@ -6,10 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../chat_providers.dart';
 
-/// A lightweight, asset-free pink piggy-bank mascot for the chat header. Idles
-/// (gentle bob + blink), plays a coin animation when Hami completes an action
-/// (a gold coin drops *in* for income, rises *out* for expense), and sleeps
-/// (eyes closed + "z z z") when the AI backend is down.
+
 class HamiMascot extends ConsumerStatefulWidget {
   const HamiMascot({super.key, this.size = 52});
 
@@ -37,8 +34,7 @@ class _HamiMascotState extends ConsumerState<HamiMascot> with TickerProviderStat
   Widget build(BuildContext context) {
     final sleeping = ref.watch(chatServersDownProvider);
 
-    // Play the coin animation whenever the action signal changes (unless asleep).
-    // Expense actions play in reverse (coin taken out of the piggy).
+
     ref.listen<CoinFlip>(hamiCoinFlipProvider, (_, next) {
       if (!ref.read(chatServersDownProvider)) {
         _reverse = next.reverse;
@@ -62,32 +58,32 @@ class _HamiMascotState extends ConsumerState<HamiMascot> with TickerProviderStat
 class _PiggyPainter extends CustomPainter {
   _PiggyPainter({required this.idle, required this.flip, required this.reverse, required this.sleeping});
 
-  final double idle; // 0..1 looping
-  final double flip; // 0..1 one-shot (0 or 1 == inactive)
-  final bool reverse; // coin comes out (expense) instead of in (income)
+  final double idle;
+  final double flip;
+  final bool reverse;
   final bool sleeping;
 
-  // Normal pig pinks; coin stays gold so "money" reads against the pink.
+
   static const Color _body = Color(0xFFF4A6C0);
   static const Color _snout = Color(0xFFF8C6D8);
   static const Color _darkPink = Color(0xFFE07BA0);
   static const Color _coinFill = Color(0xFFFFD86B);
   static const Color _coinEdge = Color(0xFFE0A700);
-  static const Color _eye = AppColors.secondary; // brand navy
+  static const Color _eye = AppColors.secondary;
 
   @override
   void paint(Canvas canvas, Size size) {
     final w = size.width;
     final h = size.height;
 
-    // Gentle bob (slower & deeper while asleep).
+
     final bob = math.sin(idle * 2 * math.pi) * (sleeping ? 1.4 : 0.8);
     canvas.translate(0, bob);
 
     final body = Paint()..color = _body;
     final dark = Paint()..color = _darkPink;
 
-    // Legs
+
     canvas.drawRRect(
         RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.24, h * 0.72, w * 0.12, h * 0.14), Radius.circular(w * 0.03)),
         dark);
@@ -95,19 +91,19 @@ class _PiggyPainter extends CustomPainter {
         RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.62, h * 0.72, w * 0.12, h * 0.14), Radius.circular(w * 0.03)),
         dark);
 
-    // Body (rounded rectangle — the original shape, minus the triangle)
+
     canvas.drawRRect(
         RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.12, h * 0.33, w * 0.76, h * 0.45), Radius.circular(h * 0.22)),
         body);
 
-    // Snout with nostrils
+
     canvas.drawRRect(
         RRect.fromRectAndRadius(Rect.fromLTWH(w * 0.70, h * 0.49, w * 0.20, h * 0.19), Radius.circular(h * 0.07)),
         Paint()..color = _snout);
     canvas.drawCircle(Offset(w * 0.77, h * 0.585), w * 0.018, dark);
     canvas.drawCircle(Offset(w * 0.83, h * 0.585), w * 0.018, dark);
 
-    // Coin slot
+
     canvas.drawLine(
       Offset(w * 0.42, h * 0.355),
       Offset(w * 0.58, h * 0.355),
@@ -117,7 +113,7 @@ class _PiggyPainter extends CustomPainter {
         ..strokeCap = StrokeCap.round,
     );
 
-    // Eye — closed (arc) when sleeping or mid-blink, else a dot.
+
     final phase = (idle * 2 * math.pi) % (2 * math.pi);
     final blinking = !sleeping && phase > 6.0;
     if (sleeping || blinking) {
@@ -135,8 +131,7 @@ class _PiggyPainter extends CustomPainter {
       canvas.drawCircle(Offset(w * 0.60, h * 0.46), w * 0.032, Paint()..color = _eye);
     }
 
-    // Coin animation: income drops the coin into the slot; expense lifts it out
-    // (and fades) — "taking a coin from inside him".
+
     if (flip > 0.0 && flip < 1.0) {
       final top = h * 0.02;
       final slot = h * 0.30;
@@ -160,7 +155,7 @@ class _PiggyPainter extends CustomPainter {
       canvas.restore();
     }
 
-    // Sleeping "z z z"
+
     if (sleeping) {
       for (var i = 0; i < 3; i++) {
         final prog = (idle + i * 0.33) % 1.0;

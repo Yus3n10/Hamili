@@ -44,8 +44,7 @@ class _SetBudgetSheetState extends ConsumerState<_SetBudgetSheet> {
       return;
     }
 
-    // If this category already has a budget for the current period, ask
-    // whether to replace the limit or add the two amounts together.
+
     final budgets = ref.read(budgetsProvider).valueOrNull ?? const <AppBudget>[];
     AppBudget? existing;
     for (final b in budgets) {
@@ -58,7 +57,7 @@ class _SetBudgetSheetState extends ConsumerState<_SetBudgetSheet> {
     var finalAmount = amount;
     if (existing != null) {
       final choice = await _askReplaceOrAdd(existing.limitAmount, amount);
-      if (choice == null) return; // cancelled — keep the sheet open
+      if (choice == null) return;
       finalAmount = choice == _BudgetConflictChoice.add ? existing.limitAmount + amount : amount;
     }
 
