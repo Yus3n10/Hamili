@@ -13,7 +13,7 @@ services:
     # already current), so the schema is always in sync on the free plan
     # without a separate release phase.
     buildCommand: "pip install -r requirements.txt"
-    startCommand: "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT"
+    startCommand: "alembic upgrade head && uvicorn app.main:app --host 0.0.0.0 --port $PORT --proxy-headers --forwarded-allow-ips=*"
     envVars:
       - key: PYTHON_VERSION
         value: "3.11.9"
