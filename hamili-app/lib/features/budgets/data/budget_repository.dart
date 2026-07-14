@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/network/offline_queue.dart';
 import '../domain/budget.dart';
 
 class BudgetRepository {
@@ -42,18 +43,27 @@ class BudgetRepository {
     required int month,
     required int year,
     required double limitAmount,
-  }) async {
-    final response = await _dio.post('/budgets', data: {
+  }) {
+    final data = {
       'category_id': categoryId,
       'month': month,
       'year': year,
       'limit_amount': limitAmount,
-    });
-    return AppBudget.fromJson(response.data);
+    };
+    return OfflineQueue.instance.guardWrite(
+      () async => AppBudget.fromJson((await _dio.post('/budgets', data: data)).data),
+      method: 'POST',
+      path: '/budgets',
+      data: data,
+    );
   }
 
   Future<void> delete(int id) async {
-    await _dio.delete('/budgets/$id');
+    await OfflineQueue.instance.guardWrite(
+      () => _dio.delete('/budgets/$id'),
+      method: 'DELETE',
+      path: '/budgets/$id',
+    );
   }
 
   Future<void> clearCache() async {

@@ -72,6 +72,23 @@ class OfflineQueue {
     await _write(ops);
   }
 
+  Future<T> guardWrite<T>(
+    Future<T> Function() request, {
+    required String method,
+    required String path,
+    Map<String, dynamic>? data,
+  }) async {
+    try {
+      return await request();
+    } on DioException catch (e) {
+      if (isConnectionError(e)) {
+        await enqueue(method: method, path: path, data: data);
+        throw const OfflineQueuedException();
+      }
+      rethrow;
+    }
+  }
+
 
   Future<void> flush(Dio dio) async {
     if (_flushing) return;

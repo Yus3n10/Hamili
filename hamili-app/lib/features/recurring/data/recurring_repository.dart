@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/network/offline_queue.dart';
 import '../domain/recurring_item.dart';
 
 
@@ -35,8 +36,8 @@ class RecurringRepository {
     required String frequency,
     required DateTime nextDueDate,
     bool active = true,
-  }) async {
-    final response = await _dio.post('/recurring', data: {
+  }) {
+    final data = {
       'type': type,
       'name': name,
       'amount': amount,
@@ -44,8 +45,13 @@ class RecurringRepository {
       'frequency': frequency,
       'next_due_date': nextDueDate.toIso8601String().split('T').first,
       'active': active,
-    });
-    return RecurringItem.fromJson(response.data);
+    };
+    return OfflineQueue.instance.guardWrite(
+      () async => RecurringItem.fromJson((await _dio.post('/recurring', data: data)).data),
+      method: 'POST',
+      path: '/recurring',
+      data: data,
+    );
   }
 
   Future<RecurringItem> update(
@@ -56,20 +62,29 @@ class RecurringRepository {
     String? frequency,
     DateTime? nextDueDate,
     bool? active,
-  }) async {
-    final response = await _dio.patch('/recurring/$id', data: {
+  }) {
+    final data = {
       if (name != null) 'name': name,
       if (amount != null) 'amount': amount,
       if (categoryId != null) 'category_id': categoryId,
       if (frequency != null) 'frequency': frequency,
       if (nextDueDate != null) 'next_due_date': nextDueDate.toIso8601String().split('T').first,
       if (active != null) 'active': active,
-    });
-    return RecurringItem.fromJson(response.data);
+    };
+    return OfflineQueue.instance.guardWrite(
+      () async => RecurringItem.fromJson((await _dio.patch('/recurring/$id', data: data)).data),
+      method: 'PATCH',
+      path: '/recurring/$id',
+      data: data,
+    );
   }
 
   Future<void> delete(int id) async {
-    await _dio.delete('/recurring/$id');
+    await OfflineQueue.instance.guardWrite(
+      () => _dio.delete('/recurring/$id'),
+      method: 'DELETE',
+      path: '/recurring/$id',
+    );
   }
 
 

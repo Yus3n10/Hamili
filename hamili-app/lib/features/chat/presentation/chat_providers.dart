@@ -1,7 +1,9 @@
 import 'package:audioplayers/audioplayers.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/network/offline_queue.dart';
 import '../../../core/session/session_provider.dart';
 import '../../analytics/presentation/analytics_providers.dart';
 import '../../auth/presentation/auth_providers.dart';
@@ -90,6 +92,17 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
       if (effect == 'income') {
         _playDing();
       }
+    } on DioException catch (e) {
+      final offline = OfflineQueue.isConnectionError(e);
+      state = [
+        ...state,
+        ChatMessage(
+          'assistant',
+          offline
+              ? "I need a connection to chat. Your transactions, budgets, and goals still work offline — I'll be here when you're back online."
+              : "Hmm, I couldn't reach my brain just now. Try again in a bit?",
+        ),
+      ];
     } catch (_) {
       state = [
         ...state,

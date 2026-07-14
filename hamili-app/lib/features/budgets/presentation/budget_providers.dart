@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/offline_queue.dart';
 import '../../../core/session/session_provider.dart';
 import '../../transactions/domain/transaction.dart';
 import '../../transactions/presentation/transaction_providers.dart';
@@ -50,10 +51,25 @@ class BudgetsNotifier extends AsyncNotifier<List<AppBudget>> {
 
   Future<void> setBudget({required int categoryId, required double limitAmount}) async {
     final period = ref.read(budgetPeriodProvider);
-    await ref
-        .read(budgetRepositoryProvider)
-        .setBudget(categoryId: categoryId, month: period.month, year: period.year, limitAmount: limitAmount);
-    await _refreshSilently();
+    try {
+      await ref
+          .read(budgetRepositoryProvider)
+          .setBudget(categoryId: categoryId, month: period.month, year: period.year, limitAmount: limitAmount);
+      await _refreshSilently();
+    } on OfflineQueuedException {
+      final temp = AppBudget(
+        id: -DateTime.now().millisecondsSinceEpoch,
+        categoryId: categoryId,
+        month: period.month,
+        year: period.year,
+        limitAmount: limitAmount,
+        spentAmount: 0,
+        remainingAmount: limitAmount,
+        percentageUsed: 0,
+      );
+      final current = (state.valueOrNull ?? []).where((b) => b.categoryId != categoryId).toList();
+      state = AsyncData([...current, temp]);
+    }
   }
 
   Future<void> deleteBudget(int id) async {
@@ -62,6 +78,8 @@ class BudgetsNotifier extends AsyncNotifier<List<AppBudget>> {
     try {
       await ref.read(budgetRepositoryProvider).delete(id);
       await _refreshSilently();
+    } on OfflineQueuedException {
+      return;
     } catch (_) {
       ref.invalidateSelf();
     }

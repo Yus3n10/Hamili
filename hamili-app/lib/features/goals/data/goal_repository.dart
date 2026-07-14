@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../core/network/api_client.dart';
+import '../../../core/network/offline_queue.dart';
 import '../domain/goal.dart';
 
 class GoalRepository {
@@ -33,22 +34,36 @@ class GoalRepository {
     }
   }
 
-  Future<AppSavingsGoal> create({required String title, required double targetAmount, DateTime? targetDate}) async {
-    final response = await _dio.post('/goals', data: {
+  Future<AppSavingsGoal> create({required String title, required double targetAmount, DateTime? targetDate}) {
+    final data = {
       'title': title,
       'target_amount': targetAmount,
       if (targetDate != null) 'target_date': targetDate.toIso8601String().split('T').first,
-    });
-    return AppSavingsGoal.fromJson(response.data);
+    };
+    return OfflineQueue.instance.guardWrite(
+      () async => AppSavingsGoal.fromJson((await _dio.post('/goals', data: data)).data),
+      method: 'POST',
+      path: '/goals',
+      data: data,
+    );
   }
 
-  Future<AppSavingsGoal> contribute(int id, double amount) async {
-    final response = await _dio.post('/goals/$id/contribute', data: {'amount': amount});
-    return AppSavingsGoal.fromJson(response.data);
+  Future<AppSavingsGoal> contribute(int id, double amount) {
+    final data = {'amount': amount};
+    return OfflineQueue.instance.guardWrite(
+      () async => AppSavingsGoal.fromJson((await _dio.post('/goals/$id/contribute', data: data)).data),
+      method: 'POST',
+      path: '/goals/$id/contribute',
+      data: data,
+    );
   }
 
   Future<void> delete(int id) async {
-    await _dio.delete('/goals/$id');
+    await OfflineQueue.instance.guardWrite(
+      () => _dio.delete('/goals/$id'),
+      method: 'DELETE',
+      path: '/goals/$id',
+    );
   }
 
   Future<void> clearCache() async {
