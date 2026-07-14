@@ -12,7 +12,7 @@ from app.core.rate_limit import (
 )
 from app.db.session import get_db
 from app.models.user import User
-from app.schemas.user import TokenPair, UserLogin, UserOut, UserRegister, UserUpdate
+from app.schemas.user import TokenPair, TokenRefresh, UserLogin, UserOut, UserRegister, UserUpdate
 from app.services.auth_service import AuthService
 
 router = APIRouter(prefix="/auth", tags=["auth"])
@@ -36,6 +36,11 @@ def login(request: Request, payload: UserLogin, db: Session = Depends(get_db)):
         raise
     reset_login_failures(ip)
     return result
+
+
+@router.post("/refresh", response_model=TokenPair)
+def refresh(payload: TokenRefresh, db: Session = Depends(get_db)):
+    return AuthService(db).refresh(payload.refresh_token)
 
 
 @router.get("/me", response_model=UserOut)

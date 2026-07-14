@@ -6,7 +6,6 @@ import 'core/network/offline_queue.dart';
 import 'core/routing/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
-import 'features/auth/data/auth_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -14,9 +13,6 @@ Future<void> main() async {
   await Hive.openBox<String>('app_settings');
   await Hive.openBox<String>('avatars');
   await OfflineQueue.instance.init();
-
-
-  await AuthRepository().clearStoredSession();
 
   runApp(const ProviderScope(child: HamiliApp()));
 }
