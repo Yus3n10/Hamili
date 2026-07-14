@@ -60,7 +60,7 @@ class _GoalToast extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
 
-            color: AppColors.primary.withValues(alpha: 0.8),
+            color: context.accent.withValues(alpha: 0.8),
             borderRadius: BorderRadius.circular(14),
             boxShadow: const [BoxShadow(color: Colors.black26, blurRadius: 12, offset: Offset(0, 4))],
           ),

@@ -70,10 +70,10 @@ class NetBalanceLineChart extends StatelessWidget {
             LineChartBarData(
               spots: [for (var i = 0; i < cumulative.length; i++) FlSpot(i.toDouble(), cumulative[i])],
               isCurved: true,
-              color: AppColors.primary,
+              color: context.accent,
               barWidth: 3,
               dotData: const FlDotData(show: true),
-              belowBarData: BarAreaData(show: true, color: AppColors.primary.withValues(alpha: 0.12)),
+              belowBarData: BarAreaData(show: true, color: context.accent.withValues(alpha: 0.12)),
             ),
           ],
         ),

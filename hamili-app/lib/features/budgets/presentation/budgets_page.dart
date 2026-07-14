@@ -53,7 +53,7 @@ class BudgetsPage extends ConsumerWidget {
                     ? AppColors.expense
                     : isNearLimit
                         ? AppColors.warning
-                        : AppColors.primary;
+                        : context.accent;
 
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),

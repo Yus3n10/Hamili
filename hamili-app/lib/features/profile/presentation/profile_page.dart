@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/theme/accent_palette.dart';
+import '../../../core/theme/accent_provider.dart';
 import '../../../core/theme/theme_provider.dart';
 import '../../dashboard/presentation/insights_enabled_provider.dart';
 import '../../../shared/widgets/user_avatar.dart';
@@ -113,6 +115,41 @@ class ProfilePage extends ConsumerWidget {
                       showSelectedIcon: false,
                       onSelectionChanged: (selection) =>
                           ref.read(themeModeProvider.notifier).setThemeMode(selection.first),
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.only(left: 16, bottom: 12),
+                    child: Text('Accent color', style: Theme.of(context).textTheme.titleMedium),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Wrap(
+                      spacing: 14,
+                      runSpacing: 14,
+                      children: [
+                        for (final a in appAccents)
+                          GestureDetector(
+                            onTap: () => ref.read(accentProvider.notifier).setAccent(a),
+                            child: Container(
+                              width: 44,
+                              height: 44,
+                              decoration: BoxDecoration(
+                                color: a.primary,
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: ref.watch(accentProvider).name == a.name
+                                      ? Theme.of(context).colorScheme.onSurface
+                                      : Colors.transparent,
+                                  width: 3,
+                                ),
+                              ),
+                              child: ref.watch(accentProvider).name == a.name
+                                  ? const Icon(Icons.check, color: Colors.white, size: 22)
+                                  : null,
+                            ),
+                          ),
+                      ],
                     ),
                   ),
                   const Divider(height: 32),

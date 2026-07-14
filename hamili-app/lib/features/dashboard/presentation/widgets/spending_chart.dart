@@ -146,10 +146,10 @@ class _SpendingChartState extends State<SpendingChart> {
                             toY: buckets[i].value,
                             width: 14,
                             borderRadius: BorderRadius.circular(6),
-                            gradient: const LinearGradient(
+                            gradient: LinearGradient(
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
-                              colors: [AppColors.primaryDark, AppColors.primary],
+                              colors: [context.accentDark, context.accent],
                             ),
                           ),
                         ],

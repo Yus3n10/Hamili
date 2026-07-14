@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
+import 'accent_palette.dart';
 import 'app_colors.dart';
 
 
@@ -10,7 +11,8 @@ class AppTheme {
 
   static const Color _onPrimary = Color(0xFFFFFFFF);
 
-  static ThemeData get light => _build(
+  static ThemeData light(AppAccent accent) => _build(
+        accent: accent,
         brightness: Brightness.light,
         background: AppColors.lightBackground,
         surface: AppColors.lightSurface,
@@ -18,7 +20,8 @@ class AppTheme {
         textSecondary: AppColors.lightTextSecondary,
       );
 
-  static ThemeData get dark => _build(
+  static ThemeData dark(AppAccent accent) => _build(
+        accent: accent,
         brightness: Brightness.dark,
         background: AppColors.darkBackground,
         surface: AppColors.darkSurface,
@@ -47,6 +50,7 @@ class AppTheme {
   }
 
   static ThemeData _build({
+    required AppAccent accent,
     required Brightness brightness,
     required Color background,
     required Color surface,
@@ -58,10 +62,10 @@ class AppTheme {
     final isLight = brightness == Brightness.light;
 
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: AppColors.primary,
+      seedColor: accent.primary,
       brightness: brightness,
     ).copyWith(
-      primary: AppColors.primary,
+      primary: accent.primary,
       onPrimary: _onPrimary,
       secondary: AppColors.secondary,
       onSecondary: Colors.white,
@@ -75,6 +79,9 @@ class AppTheme {
       scaffoldBackgroundColor: background,
       colorScheme: colorScheme,
       textTheme: textTheme,
+      extensions: <ThemeExtension<dynamic>>[
+        BrandTheme(dark: accent.dark, gradient: accent.gradient),
+      ],
       dividerTheme: DividerThemeData(
         color: textSecondary.withValues(alpha: 0.12),
         thickness: 1,
@@ -108,7 +115,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: accent.primary,
           foregroundColor: _onPrimary,
           elevation: 0,
           minimumSize: const Size.fromHeight(54),
@@ -118,7 +125,7 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: AppColors.primary,
+          backgroundColor: accent.primary,
           foregroundColor: _onPrimary,
           minimumSize: const Size.fromHeight(52),
           shape: const StadiumBorder(),
@@ -136,12 +143,12 @@ class AppTheme {
       ),
       textButtonTheme: TextButtonThemeData(
         style: TextButton.styleFrom(
-          foregroundColor: AppColors.primaryDark,
+          foregroundColor: accent.dark,
           textStyle: GoogleFonts.inter(fontWeight: FontWeight.w700),
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: AppColors.primary,
+        backgroundColor: accent.primary,
         foregroundColor: _onPrimary,
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
@@ -153,7 +160,7 @@ class AppTheme {
           ),
           backgroundColor: WidgetStateProperty.resolveWith(
             (states) => states.contains(WidgetState.selected)
-                ? AppColors.primary.withValues(alpha: 0.16)
+                ? accent.primary.withValues(alpha: 0.16)
                 : Colors.transparent,
           ),
         ),
@@ -176,20 +183,20 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: AppColors.primary, width: 1.6),
+          borderSide: BorderSide(color: accent.primary, width: 1.6),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surface,
         elevation: 0,
         height: 66,
-        indicatorColor: AppColors.primary.withValues(alpha: 0.18),
+        indicatorColor: accent.primary.withValues(alpha: 0.18),
         labelTextStyle: WidgetStatePropertyAll(
           GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: textPrimary),
         ),
       ),
 
-      progressIndicatorTheme: const ProgressIndicatorThemeData(color: AppColors.primary),
+      progressIndicatorTheme: ProgressIndicatorThemeData(color: accent.primary),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: surface,
         shape: const RoundedRectangleBorder(

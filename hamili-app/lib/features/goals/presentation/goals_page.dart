@@ -83,7 +83,7 @@ class GoalsPage extends ConsumerWidget {
               itemCount: goals.length,
               itemBuilder: (context, index) {
                 final goal = goals[index];
-                final progressColor = goal.isCompleted ? AppColors.income : AppColors.primary;
+                final progressColor = goal.isCompleted ? AppColors.income : context.accent;
 
                 return Card(
                   margin: const EdgeInsets.only(bottom: 12),
@@ -209,12 +209,12 @@ class _CelebrationDialogState extends State<_CelebrationDialog> {
               minBlastForce: 8,
               maxBlastForce: 26,
               gravity: 0.3,
-              colors: const [
-                AppColors.primary,
+              colors: [
+                context.accent,
                 AppColors.income,
                 AppColors.secondary,
-                Color(0xFFEC4899),
-                Color(0xFF9B6DFF),
+                const Color(0xFFEC4899),
+                const Color(0xFF9B6DFF),
               ],
             ),
           ),

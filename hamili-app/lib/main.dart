@@ -4,6 +4,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 
 import 'core/network/offline_queue.dart';
 import 'core/routing/app_router.dart';
+import 'core/theme/accent_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
 
@@ -24,12 +25,13 @@ class HamiliApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final router = ref.watch(routerProvider);
     final themeMode = ref.watch(themeModeProvider);
+    final accent = ref.watch(accentProvider);
 
     return MaterialApp.router(
       title: 'Hamili',
       debugShowCheckedModeBanner: false,
-      theme: AppTheme.light,
-      darkTheme: AppTheme.dark,
+      theme: AppTheme.light(accent),
+      darkTheme: AppTheme.dark(accent),
       themeMode: themeMode,
       routerConfig: router,
     );

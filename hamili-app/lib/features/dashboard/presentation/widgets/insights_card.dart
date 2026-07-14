@@ -19,7 +19,7 @@ class InsightsCard extends ConsumerWidget {
     if (insights.isEmpty && !isLoading) return const SizedBox.shrink();
 
     return Card(
-      color: AppColors.primary.withValues(alpha: 0.08),
+      color: context.accent.withValues(alpha: 0.08),
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 8, 12),
         child: Column(
@@ -27,7 +27,7 @@ class InsightsCard extends ConsumerWidget {
           children: [
             Row(
               children: [
-                const Icon(Icons.tips_and_updates_outlined, size: 20, color: AppColors.primaryDark),
+                Icon(Icons.tips_and_updates_outlined, size: 20, color: context.accentDark),
                 const SizedBox(width: 8),
                 const Expanded(
                   child: Text('Insights from Hami', style: TextStyle(fontWeight: FontWeight.w600)),
@@ -48,9 +48,9 @@ class InsightsCard extends ConsumerWidget {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Padding(
-                      padding: EdgeInsets.only(top: 2),
-                      child: Icon(Icons.circle, size: 6, color: AppColors.primaryDark),
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Icon(Icons.circle, size: 6, color: context.accentDark),
                     ),
                     const SizedBox(width: 10),
                     Expanded(child: Text(insight.message)),

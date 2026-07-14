@@ -227,7 +227,7 @@ class _HeroPanel extends StatelessWidget {
                 Container(
                   width: 7,
                   height: 7,
-                  decoration: const BoxDecoration(color: AppColors.primaryLight, shape: BoxShape.circle),
+                  decoration: BoxDecoration(color: context.accent.withValues(alpha: 0.55), shape: BoxShape.circle),
                 ),
                 const SizedBox(width: 6),
                 Text('Trust · Growth · Simplicity',

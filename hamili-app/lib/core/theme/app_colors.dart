@@ -1,5 +1,15 @@
 import 'package:flutter/material.dart';
 
+import 'accent_palette.dart';
+
+
+extension BrandContext on BuildContext {
+  Color get accent => Theme.of(this).colorScheme.primary;
+  Color get accentDark => Theme.of(this).extension<BrandTheme>()?.dark ?? accent;
+  List<Color> get accentGradient =>
+      Theme.of(this).extension<BrandTheme>()?.gradient ?? [accent, accent];
+}
+
 
 class AppColors {
   AppColors._();

@@ -46,7 +46,7 @@ class _AnimatedFinancePreviewState extends State<AnimatedFinancePreview>
             borderRadius: BorderRadius.circular(18),
             child: Stack(
               children: [
-                Positioned.fill(child: CustomPaint(painter: _WavePainter(t))),
+                Positioned.fill(child: CustomPaint(painter: _WavePainter(t, context.accent))),
 
                 Positioned(
                   left: 18,
@@ -147,9 +147,10 @@ class _AnimatedFinancePreviewState extends State<AnimatedFinancePreview>
 }
 
 class _WavePainter extends CustomPainter {
-  _WavePainter(this.t);
+  _WavePainter(this.t, this.accent);
 
   final double t;
+  final Color accent;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -195,23 +196,23 @@ class _WavePainter extends CustomPainter {
         ..shader = LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppColors.primary.withValues(alpha: 0.32), AppColors.primary.withValues(alpha: 0.0)],
+          colors: [accent.withValues(alpha: 0.32), accent.withValues(alpha: 0.0)],
         ).createShader(Offset.zero & size),
     );
     canvas.drawPath(
       line,
       Paint()
-        ..color = AppColors.primary
+        ..color = accent
         ..style = PaintingStyle.stroke
         ..strokeWidth = 2.5
         ..strokeCap = StrokeCap.round,
     );
 
     final lead = points.last;
-    canvas.drawCircle(lead, 9, Paint()..color = AppColors.primary.withValues(alpha: 0.25));
-    canvas.drawCircle(lead, 4.5, Paint()..color = AppColors.primary);
+    canvas.drawCircle(lead, 9, Paint()..color = accent.withValues(alpha: 0.25));
+    canvas.drawCircle(lead, 4.5, Paint()..color = accent);
   }
 
   @override
-  bool shouldRepaint(_WavePainter old) => old.t != t;
+  bool shouldRepaint(_WavePainter old) => old.t != t || old.accent != accent;
 }

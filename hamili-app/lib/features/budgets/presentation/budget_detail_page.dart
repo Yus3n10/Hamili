@@ -28,7 +28,7 @@ class BudgetDetailPage extends ConsumerWidget {
         ? AppColors.expense
         : isNear
             ? AppColors.warning
-            : AppColors.primary;
+            : context.accent;
 
     return Scaffold(
       appBar: AppBar(title: Text(categoryName)),

@@ -234,13 +234,13 @@ class _ActiveGoalCard extends StatelessWidget {
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
-        gradient: const LinearGradient(
+        gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: AppColors.brandGradient,
+          colors: context.accentGradient,
         ),
         boxShadow: [
-          BoxShadow(color: AppColors.primary.withValues(alpha: 0.30), blurRadius: 20, offset: const Offset(0, 10)),
+          BoxShadow(color: context.accent.withValues(alpha: 0.30), blurRadius: 20, offset: const Offset(0, 10)),
         ],
       ),
       child: Column(
@@ -285,7 +285,7 @@ class _ActiveGoalCard extends StatelessWidget {
               onPressed: onAddFunds,
               style: FilledButton.styleFrom(
                 backgroundColor: Colors.white,
-                foregroundColor: AppColors.primaryDark,
+                foregroundColor: context.accentDark,
               ),
               child: const Text('Add funds'),
             ),
@@ -311,12 +311,12 @@ class _NoGoalCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Row(
+            Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(Icons.flag_outlined, color: AppColors.primary),
-                SizedBox(width: 10),
-                Text('Set a savings goal', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
+                Icon(Icons.flag_outlined, color: context.accent),
+                const SizedBox(width: 10),
+                const Text('Set a savings goal', style: TextStyle(fontWeight: FontWeight.w700, fontSize: 16)),
               ],
             ),
             const SizedBox(height: 8),
@@ -387,7 +387,7 @@ class _BudgetsMini extends StatelessWidget {
     final name = matches.isNotEmpty ? matches.first.name : 'Uncategorized';
     final pct = (b.percentageUsed / 100).clamp(0.0, 1.0);
     final over = b.spentAmount > b.limitAmount;
-    final color = over ? AppColors.expense : (b.percentageUsed >= 80 ? AppColors.warning : AppColors.primary);
+    final color = over ? AppColors.expense : (b.percentageUsed >= 80 ? AppColors.warning : context.accent);
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -434,18 +434,18 @@ class _BalanceHero extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(color: AppColors.primary.withValues(alpha: 0.35), blurRadius: 22, offset: const Offset(0, 10)),
+          BoxShadow(color: context.accent.withValues(alpha: 0.35), blurRadius: 22, offset: const Offset(0, 10)),
         ],
       ),
       child: ClipRRect(
         borderRadius: BorderRadius.circular(24),
         child: Stack(
           children: [
-            const Positioned.fill(
+            Positioned.fill(
               child: DecoratedBox(
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: AppColors.brandGradient,
+                    colors: context.accentGradient,
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                   ),
