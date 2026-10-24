@@ -192,7 +192,7 @@ class AppTheme {
         height: 66,
         indicatorColor: accent.primary.withValues(alpha: 0.18),
         labelTextStyle: WidgetStatePropertyAll(
-          GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 12, color: textPrimary),
+          GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, letterSpacing: -0.1, color: textPrimary),
         ),
       ),
 
