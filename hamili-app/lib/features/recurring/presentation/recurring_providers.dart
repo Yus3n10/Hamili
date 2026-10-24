@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/offline_queue.dart';
+import '../../../core/network/offline_sync_provider.dart';
 import '../../../core/session/session_provider.dart';
 import '../../analytics/presentation/analytics_providers.dart';
 import '../../budgets/presentation/budget_providers.dart';
@@ -14,6 +15,7 @@ class RecurringNotifier extends AsyncNotifier<List<RecurringItem>> {
   @override
   Future<List<RecurringItem>> build() async {
     ref.watch(sessionIdProvider);
+    ref.watch(offlineSyncProvider);
     return ref.read(recurringRepositoryProvider).list();
   }
 

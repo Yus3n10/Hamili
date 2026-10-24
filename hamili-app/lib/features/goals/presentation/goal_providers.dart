@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/offline_queue.dart';
+import '../../../core/network/offline_sync_provider.dart';
 import '../../../core/session/session_provider.dart';
 import '../data/goal_repository.dart';
 import '../domain/goal.dart';
@@ -11,6 +12,7 @@ class GoalsNotifier extends AsyncNotifier<List<AppSavingsGoal>> {
   @override
   Future<List<AppSavingsGoal>> build() async {
     ref.watch(sessionIdProvider);
+    ref.watch(offlineSyncProvider);
     final repo = ref.read(goalRepositoryProvider);
     final cached = await repo.cached();
     if (cached != null) {

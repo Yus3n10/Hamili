@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/offline_queue.dart';
+import '../../../core/network/offline_sync_provider.dart';
 import '../../../core/session/session_provider.dart';
 import '../../transactions/domain/transaction.dart';
 import '../../transactions/presentation/transaction_providers.dart';
@@ -12,6 +13,7 @@ final budgetRepositoryProvider = Provider<BudgetRepository>((ref) => BudgetRepos
 
 final budgetTransactionsProvider = FutureProvider.family<List<AppTransaction>, int>((ref, categoryId) {
   ref.watch(sessionIdProvider);
+  ref.watch(offlineSyncProvider);
   return ref.read(transactionRepositoryProvider).list(categoryId: categoryId);
 });
 
@@ -31,6 +33,7 @@ class BudgetsNotifier extends AsyncNotifier<List<AppBudget>> {
   @override
   Future<List<AppBudget>> build() async {
     ref.watch(sessionIdProvider);
+    ref.watch(offlineSyncProvider);
     final period = ref.watch(budgetPeriodProvider);
     final repo = ref.read(budgetRepositoryProvider);
     final cached = await repo.cached(month: period.month, year: period.year);

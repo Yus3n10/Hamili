@@ -58,8 +58,9 @@ class TransactionRepository {
       return AppTransaction.fromJson(response.data);
     } on DioException catch (e) {
       if (OfflineQueue.isConnectionError(e)) {
-        await OfflineQueue.instance.enqueue(method: 'POST', path: '/transactions', data: data);
-        throw const OfflineQueuedException();
+        final localId = -DateTime.now().microsecondsSinceEpoch;
+        await OfflineQueue.instance.enqueue(method: 'POST', path: '/transactions', data: data, localId: localId);
+        throw OfflineQueuedException(localId);
       }
       rethrow;
     }
@@ -78,6 +79,10 @@ class TransactionRepository {
       if (note != null) 'note': note,
       if (transactionDate != null) 'transaction_date': transactionDate.toIso8601String().split('T').first,
     };
+    if (_isUnsynced(id)) {
+      if (await OfflineQueue.instance.amendQueued(id, data)) throw OfflineQueuedException(id);
+      throw const _StillSyncingException();
+    }
     try {
       final response = await _dio.patch('/transactions/$id', data: data);
       return AppTransaction.fromJson(response.data);
@@ -91,6 +96,10 @@ class TransactionRepository {
   }
 
   Future<void> delete(int id) async {
+    if (_isUnsynced(id)) {
+      if (await OfflineQueue.instance.discardQueued(id)) throw OfflineQueuedException(id);
+      throw const _StillSyncingException();
+    }
     try {
       await _dio.delete('/transactions/$id');
     } on DioException catch (e) {
@@ -102,6 +111,9 @@ class TransactionRepository {
     }
   }
 
+
+  // Offline-created rows carry a negative temporary id until they sync.
+  bool _isUnsynced(int id) => id < 0;
 
   Future<void> clearCache() async {
     final box = await Hive.openBox<String>(_boxName);
@@ -128,4 +140,11 @@ class TransactionRepository {
     if (raw == null) return null;
     return (jsonDecode(raw) as List).map((json) => AppTransaction.fromJson(json)).toList();
   }
+}
+
+class _StillSyncingException implements Exception {
+  const _StillSyncingException();
+
+  @override
+  String toString() => 'This transaction is still syncing. Try again in a moment.';
 }

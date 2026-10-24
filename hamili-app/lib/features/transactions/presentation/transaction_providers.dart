@@ -1,6 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/offline_queue.dart';
+import '../../../core/network/offline_sync_provider.dart';
 import '../../../core/session/session_provider.dart';
 import '../../analytics/presentation/analytics_providers.dart';
 import '../../budgets/presentation/budget_providers.dart';
@@ -38,6 +39,7 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
   @override
   Future<List<AppTransaction>> build() async {
     ref.watch(sessionIdProvider);
+    ref.watch(offlineSyncProvider);
     final filter = ref.watch(transactionFilterProvider);
     final repo = ref.read(transactionRepositoryProvider);
     final unfiltered = filter.categoryId == null && (filter.search == null || filter.search!.isEmpty);
@@ -81,11 +83,11 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
       ref.invalidate(budgetTransactionsProvider);
       invalidateAnalytics(ref);
       await future;
-    } on OfflineQueuedException {
+    } on OfflineQueuedException catch (e) {
 
 
       final temp = AppTransaction(
-        id: -DateTime.now().millisecondsSinceEpoch,
+        id: e.localId ?? -DateTime.now().millisecondsSinceEpoch,
         categoryId: categoryId,
         amount: amount,
         type: type,
