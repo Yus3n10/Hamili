@@ -6,6 +6,8 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import '../constants/app_constants.dart';
 import 'offline_queue.dart';
 
+enum _RefreshResult { refreshed, rejected, unavailable }
+
 
 class ApiClient {
   ApiClient._internal() {
@@ -34,12 +36,13 @@ class ApiClient {
         },
         onError: (error, handler) async {
           if (await _shouldRefresh(error)) {
-            if (await _refreshToken()) {
+            final result = await _refreshToken();
+            if (result == _RefreshResult.refreshed) {
               try {
                 handler.resolve(await _retry(error.requestOptions));
                 return;
               } catch (_) {}
-            } else {
+            } else if (result == _RefreshResult.rejected) {
               await _clearSession();
             }
           }
@@ -56,7 +59,7 @@ class ApiClient {
   Dio get dio => _dio;
 
   bool _refreshing = false;
-  Completer<bool>? _refreshWaiter;
+  Completer<_RefreshResult>? _refreshWaiter;
 
   bool _isAuthPath(String path) =>
       path.contains('/auth/login') ||
@@ -70,31 +73,40 @@ class ApiClient {
     return (await _storage.read(key: AppConstants.refreshTokenKey)) != null;
   }
 
-  Future<bool> _refreshToken() async {
+  // Only a server that answers and refuses the refresh token ends the session.
+  // Offline, timeouts and 5xx (e.g. a free-tier cold start) keep the saved
+  // login so the next request can try again.
+  Future<_RefreshResult> _refreshToken() async {
     if (_refreshing) return _refreshWaiter!.future;
     _refreshing = true;
-    final waiter = _refreshWaiter = Completer<bool>();
+    final waiter = _refreshWaiter = Completer<_RefreshResult>();
+    var result = _RefreshResult.unavailable;
     try {
       final refreshToken = await _storage.read(key: AppConstants.refreshTokenKey);
       if (refreshToken == null) {
-        waiter.complete(false);
-        return false;
+        result = _RefreshResult.rejected;
+        return result;
       }
-      final response = await Dio(
+      final refreshDio = Dio(
         BaseOptions(
           baseUrl: AppConstants.apiBaseUrl,
           connectTimeout: const Duration(seconds: 30),
           receiveTimeout: const Duration(seconds: 60),
         ),
-      ).post('/auth/refresh', data: {'refresh_token': refreshToken});
+      )..httpClientAdapter = _dio.httpClientAdapter;
+      final response = await refreshDio.post('/auth/refresh', data: {'refresh_token': refreshToken});
       await _storage.write(key: AppConstants.accessTokenKey, value: response.data['access_token']);
       await _storage.write(key: AppConstants.refreshTokenKey, value: response.data['refresh_token']);
-      waiter.complete(true);
-      return true;
+      result = _RefreshResult.refreshed;
+      return result;
+    } on DioException catch (e) {
+      final status = e.response?.statusCode;
+      if (status != null && status >= 400 && status < 500) result = _RefreshResult.rejected;
+      return result;
     } catch (_) {
-      waiter.complete(false);
-      return false;
+      return result;
     } finally {
+      waiter.complete(result);
       _refreshing = false;
     }
   }

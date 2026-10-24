@@ -28,4 +28,14 @@ class AppUser {
       financialGoalText: json['financial_goal_text'] as String?,
     );
   }
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'email': email,
+        'preferred_name': preferredName,
+        'preferred_currency': preferredCurrency,
+        'monthly_salary': monthlySalary,
+        'allowance': allowance,
+        'financial_goal_text': financialGoalText,
+      };
 }

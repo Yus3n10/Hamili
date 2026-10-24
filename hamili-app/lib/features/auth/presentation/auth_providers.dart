@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/network/offline_queue.dart';
@@ -17,13 +18,25 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
   Future<AppUser?> build() async {
     final repo = ref.read(authRepositoryProvider);
     if (!await repo.hasStoredSession()) return null;
+    AppUser? user;
     try {
-      final user = await repo.getCurrentUser();
-      await OfflineQueue.instance.beginSession(user.id, restored: true);
-      return user;
+      user = await repo.getCurrentUser();
+      await repo.cacheUser(user);
+    } on DioException catch (e) {
+      // A 401 here means the refresh token was refused too. Anything else
+      // (offline, timeout, 5xx cold start) resumes the last signed-in user.
+      if (e.response?.statusCode == 401) {
+        await repo.clearCachedUser();
+        return null;
+      }
+      user = await repo.cachedUser();
     } catch (_) {
-      return null;
+      user = await repo.cachedUser();
     }
+    if (user != null) {
+      await OfflineQueue.instance.beginSession(user.id, restored: true);
+    }
+    return user;
   }
 
   Future<void> login({required String email, required String password}) async {
@@ -32,6 +45,7 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
     final repo = ref.read(authRepositoryProvider);
     await repo.login(email: email, password: password);
     final user = await repo.getCurrentUser();
+    await repo.cacheUser(user);
     await OfflineQueue.instance.beginSession(user.id, restored: false);
     state = AsyncData(user);
     _startNewSession();
@@ -48,11 +62,13 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
           preferredCurrency: preferredCurrency,
           financialGoalText: financialGoalText,
         );
+    await ref.read(authRepositoryProvider).cacheUser(updated);
     state = AsyncData(updated);
   }
 
   Future<void> logout() async {
     await ref.read(authRepositoryProvider).logout();
+    await ref.read(authRepositoryProvider).clearCachedUser();
     await OfflineQueue.instance.endSession();
 
 

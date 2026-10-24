@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../../../core/constants/app_constants.dart';
 import '../../../core/network/api_client.dart';
@@ -13,6 +16,9 @@ class AuthRepository {
 
   final Dio _dio;
   final FlutterSecureStorage _storage;
+
+  static const _settingsBox = 'app_settings';
+  static const _cachedUserKey = 'current_user';
 
   Future<void> register({
     required String email,
@@ -63,6 +69,25 @@ class AuthRepository {
     await clearStoredSession();
   }
 
+
+  // The last signed-in user, so a stored session can be resumed when the
+  // server can't be reached at startup.
+  Future<void> cacheUser(AppUser user) async {
+    final box = await Hive.openBox<String>(_settingsBox);
+    await box.put(_cachedUserKey, jsonEncode(user.toJson()));
+  }
+
+  Future<AppUser?> cachedUser() async {
+    final box = await Hive.openBox<String>(_settingsBox);
+    final raw = box.get(_cachedUserKey);
+    if (raw == null) return null;
+    return AppUser.fromJson((jsonDecode(raw) as Map).cast<String, dynamic>());
+  }
+
+  Future<void> clearCachedUser() async {
+    final box = await Hive.openBox<String>(_settingsBox);
+    await box.delete(_cachedUserKey);
+  }
 
   Future<void> clearStoredSession() async {
     await _storage.delete(key: AppConstants.accessTokenKey);
