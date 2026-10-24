@@ -1,0 +1,19 @@
+// Pings the Render backend every 5 minutes so the free instance never hits
+// its 15-minute idle spin-down. GitHub's scheduled Actions were meant to do
+// this but ran only ~6 times a day.
+{
+  "name": "hamili-keep-warm",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-24",
+  "workers_dev": false,
+  "preview_urls": false,
+  "triggers": {
+    "crons": ["*/5 * * * *"]
+  },
+  "vars": {
+    "HEALTH_URL": "https://hamili-api-lu9g.onrender.com/health"
+  },
+  "observability": {
+    "enabled": true
+  }
+}

@@ -1,15 +1,24 @@
-name: Keep backend warm
+name: Backend health check
 
+# The 5-minute keep-warm ping lives in keep-warm-worker/ (a Cloudflare Cron
+# Trigger), because GitHub drops most frequent scheduled runs. This job is a
+# backup check that fails, and so sends a failure email, when the API is down.
 on:
   schedule:
-    - cron: "*/5 * * * *"
+    - cron: "17 * * * *"
   workflow_dispatch:
 
 jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping health endpoint
+      - name: Check health endpoint
         run: |
-          code=$(curl -s -m 90 -o /dev/null -w "%{http_code}" https://hamili-api-lu9g.onrender.com/health || echo "000")
-          echo "health check returned HTTP $code"
+          for attempt in 1 2 3; do
+            code=$(curl -s -m 90 -o /dev/null -w "%{http_code}" https://hamili-api-lu9g.onrender.com/health || echo "000")
+            echo "attempt $attempt: health check returned HTTP $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 20
+          done
+          echo "::error::Backend health check failed after 3 attempts (last HTTP $code)"
+          exit 1
