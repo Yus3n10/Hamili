@@ -6,10 +6,9 @@ domain services and reports which parts of the app changed so the client can
 refresh the right tabs.
 """
 
-from datetime import date
-
 from sqlalchemy.orm import Session
 
+from app.core.clock import local_today
 from app.models.category import Category
 from app.models.goal import SavingsGoal
 from app.models.user import User
@@ -37,7 +36,7 @@ class AgentService:
         app areas the client should refresh (goals/budgets/transactions/profile)."""
         snapshot = InsightService(self.db).build_financial_snapshot(user)
         category_names = [c.name for c in self.db.query(Category).all()]
-        result = self.provider.interpret(message_history, snapshot, category_names, date.today().isoformat())
+        result = self.provider.interpret(message_history, snapshot, category_names, local_today().isoformat())
 
         action = (result.get("action") or "none").strip()
         params = result.get("params") or {}
@@ -108,14 +107,14 @@ class AgentService:
                     amount=float(params["amount"]),
                     category_id=category_id,
                     frequency=params.get("frequency", "monthly"),
-                    next_due_date=params.get("next_due_date") or date.today().isoformat(),
+                    next_due_date=params.get("next_due_date") or local_today().isoformat(),
                 ),
             )
             return ["recurring"]
 
         if action == "set_budget":
             category_id = self._match_category(params.get("category"), "expense")
-            today = date.today()
+            today = local_today()
             BudgetService(self.db).create_or_update(
                 user,
                 BudgetCreate(
@@ -137,7 +136,7 @@ class AgentService:
                     amount=float(params["amount"]),
                     type=t_type,
                     note=params.get("note") or None,
-                    transaction_date=params.get("date") or date.today().isoformat(),
+                    transaction_date=params.get("date") or local_today().isoformat(),
                 ),
             )
             return ["transactions", "budgets"] if t_type == "expense" else ["transactions"]

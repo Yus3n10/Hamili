@@ -1,9 +1,7 @@
-from datetime import date
-
 from fastapi import HTTPException, status
-from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from app.core.clock import local_day_bounds_utc, local_today
 from app.db.session import SessionLocal
 from app.models.ai import AIInsight
 from app.models.budget import Budget
@@ -24,7 +22,7 @@ class InsightService:
         self.provider = get_ai_provider()
 
     def build_financial_snapshot(self, user: User) -> dict:
-        today = date.today()
+        today = local_today()
 
         recent_transactions = (
             self.db.query(Transaction)
@@ -82,12 +80,13 @@ class InsightService:
         """Whether any insight was generated today (read or not) — a batch
         the user has already dismissed still counts, so we don't regenerate
         (and re-charge a Gemini call) the same day."""
-        today = date.today()
+        start, end = local_day_bounds_utc(local_today())
         return (
             self.db.query(AIInsight)
             .filter(
                 AIInsight.user_id == user.id,
-                func.date(AIInsight.created_at) == today,
+                AIInsight.created_at >= start,
+                AIInsight.created_at < end,
             )
             .first()
             is not None

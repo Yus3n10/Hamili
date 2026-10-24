@@ -4,6 +4,7 @@ from datetime import date, timedelta
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.clock import local_today
 from app.models.recurring import RecurringItem
 from app.models.transaction import Transaction
 from app.models.user import User
@@ -62,7 +63,7 @@ class RecurringService:
         per missed period at that period's real date, advancing the item's
         next_due_date past today. Idempotent: a second call the same day is
         a no-op because next_due_date is now in the future."""
-        today = today or date.today()
+        today = today or local_today()
         promoted = 0
         for item in self.repo.list_due(user.id, today):
             count = 0

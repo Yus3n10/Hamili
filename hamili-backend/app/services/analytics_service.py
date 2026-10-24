@@ -1,7 +1,6 @@
-from datetime import date
-
 from sqlalchemy.orm import Session
 
+from app.core.clock import local_today
 from app.models.user import User
 from app.repositories.analytics_repository import AnalyticsRepository
 from app.schemas.analytics import AnalyticsSummaryOut, CategoryBreakdownOut, TrendPointOut
@@ -33,14 +32,14 @@ class AnalyticsService:
     def by_category(
         self, user: User, t_type: str, month: int | None, year: int | None
     ) -> list[CategoryBreakdownOut]:
-        today = date.today()
+        today = local_today()
         month = month or today.month
         year = year or today.year
         rows = self.repo.by_category(user.id, t_type, month, year)
         return [CategoryBreakdownOut(category_id=cid, total=total) for cid, total in rows]
 
     def trend(self, user: User, month: int | None, year: int | None, months: int) -> list[TrendPointOut]:
-        today = date.today()
+        today = local_today()
         end_month = month or today.month
         end_year = year or today.year
         window = month_window(end_year, end_month, months)

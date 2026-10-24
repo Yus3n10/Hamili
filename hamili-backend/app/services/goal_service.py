@@ -3,6 +3,7 @@ from datetime import date, timedelta
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
 
+from app.core.clock import local_today
 from app.models.goal import SavingsGoal
 from app.models.user import User
 from app.repositories.goal_repository import GoalRepository
@@ -84,11 +85,11 @@ class GoalService:
         if goal.status == "completed" or goal.current_amount <= 0:
             return None
 
-        months_elapsed = max((date.today() - goal.created_at.date()).days / 30.44, 1 / 30.44)
+        months_elapsed = max((local_today() - goal.created_at.date()).days / 30.44, 1 / 30.44)
         monthly_rate = float(goal.current_amount) / months_elapsed
         if monthly_rate <= 0:
             return None
 
         remaining = float(goal.target_amount) - float(goal.current_amount)
         months_needed = remaining / monthly_rate
-        return date.today() + timedelta(days=round(months_needed * 30.44))
+        return local_today() + timedelta(days=round(months_needed * 30.44))

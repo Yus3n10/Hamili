@@ -1,8 +1,7 @@
-from datetime import date
-
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 
+from app.core.clock import local_today
 from app.core.deps import get_current_user
 from app.db.session import get_db
 from app.models.user import User
@@ -19,7 +18,7 @@ def list_budgets(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    today = date.today()
+    today = local_today()
     return BudgetService(db).list(current_user, month or today.month, year or today.year)
 
 

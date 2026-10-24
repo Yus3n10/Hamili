@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     ai_provider: str = "gemini"
     gemini_api_key: str = ""
 
+    app_timezone: str = "Asia/Manila"
+
     environment: str = "development"
     cors_origins: str = "http://localhost:3000"
 
