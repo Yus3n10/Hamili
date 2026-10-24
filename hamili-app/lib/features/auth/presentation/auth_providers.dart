@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../core/network/offline_queue.dart';
 import '../../../core/session/session_provider.dart';
 import '../../budgets/presentation/budget_providers.dart';
 import '../../goals/presentation/goal_providers.dart';
@@ -17,7 +18,9 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
     final repo = ref.read(authRepositoryProvider);
     if (!await repo.hasStoredSession()) return null;
     try {
-      return await repo.getCurrentUser();
+      final user = await repo.getCurrentUser();
+      await OfflineQueue.instance.beginSession(user.id, restored: true);
+      return user;
     } catch (_) {
       return null;
     }
@@ -25,9 +28,12 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
 
   Future<void> login({required String email, required String password}) async {
     state = const AsyncLoading();
+    OfflineQueue.instance.suspend();
     final repo = ref.read(authRepositoryProvider);
     await repo.login(email: email, password: password);
-    state = AsyncData(await repo.getCurrentUser());
+    final user = await repo.getCurrentUser();
+    await OfflineQueue.instance.beginSession(user.id, restored: false);
+    state = AsyncData(user);
     _startNewSession();
   }
 
@@ -47,6 +53,7 @@ class CurrentUserNotifier extends AsyncNotifier<AppUser?> {
 
   Future<void> logout() async {
     await ref.read(authRepositoryProvider).logout();
+    await OfflineQueue.instance.endSession();
 
 
     await ref.read(transactionRepositoryProvider).clearCache();

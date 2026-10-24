@@ -14,16 +14,20 @@ class QueuedOp {
   final String method;
   final String path;
   final Map<String, dynamic>? data;
+  final int? userId;
 
-  QueuedOp({required this.id, required this.method, required this.path, this.data});
+  QueuedOp({required this.id, required this.method, required this.path, this.data, this.userId});
 
-  Map<String, dynamic> toJson() => {'id': id, 'method': method, 'path': path, 'data': data};
+  QueuedOp ownedBy(int owner) => QueuedOp(id: id, method: method, path: path, data: data, userId: owner);
+
+  Map<String, dynamic> toJson() => {'id': id, 'method': method, 'path': path, 'data': data, 'userId': userId};
 
   factory QueuedOp.fromJson(Map<String, dynamic> j) => QueuedOp(
         id: j['id'] as String,
         method: j['method'] as String,
         path: j['path'] as String,
         data: (j['data'] as Map?)?.cast<String, dynamic>(),
+        userId: j['userId'] as int?,
       );
 }
 
@@ -38,6 +42,10 @@ class OfflineQueue {
 
   final ValueNotifier<int> pendingCount = ValueNotifier<int>(0);
   bool _flushing = false;
+
+  // Queued writes replay under whichever token is stored when they flush, so
+  // each op is tagged with its owner and only the active owner's ops are sent.
+  int? _activeUserId;
 
   Future<Box<String>> _box() => Hive.openBox<String>(_boxName);
 
@@ -61,6 +69,31 @@ class OfflineQueue {
     pendingCount.value = (await _read()).length;
   }
 
+  // `restored` means the stored session was resumed on app start, so untagged
+  // ops written before ownership tracking existed belong to this user. On a
+  // fresh login their owner is unknown and they are discarded.
+  Future<void> beginSession(int userId, {required bool restored}) async {
+    final kept = <QueuedOp>[];
+    for (final op in await _read()) {
+      if (op.userId == userId) {
+        kept.add(op);
+      } else if (op.userId == null && restored) {
+        kept.add(op.ownedBy(userId));
+      }
+    }
+    await _write(kept);
+    _activeUserId = userId;
+  }
+
+  Future<void> endSession() async {
+    _activeUserId = null;
+    await _write([]);
+  }
+
+  void suspend() {
+    _activeUserId = null;
+  }
+
   Future<void> enqueue({required String method, required String path, Map<String, dynamic>? data}) async {
     final ops = await _read();
     ops.add(QueuedOp(
@@ -68,6 +101,7 @@ class OfflineQueue {
       method: method,
       path: path,
       data: data,
+      userId: _activeUserId,
     ));
     await _write(ops);
   }
@@ -91,25 +125,32 @@ class OfflineQueue {
 
 
   Future<void> flush(Dio dio) async {
-    if (_flushing) return;
+    final owner = _activeUserId;
+    if (_flushing || owner == null) return;
     _flushing = true;
     try {
-      var ops = await _read();
-      while (ops.isNotEmpty) {
-        final op = ops.first;
+      // Re-read storage each pass so a logout or a newly queued write made
+      // while a request is in flight is never overwritten by a stale copy.
+      while (_activeUserId == owner) {
+        final pending = (await _read()).where((o) => o.userId == owner);
+        if (pending.isEmpty) break;
+        final op = pending.first;
         try {
           await dio.request(op.path, data: op.data, options: Options(method: op.method));
-          ops = ops.sublist(1);
-          await _write(ops);
         } on DioException catch (e) {
           if (isConnectionError(e)) break;
-          ops = ops.sublist(1);
-          await _write(ops);
         }
+        await _remove(op.id);
       }
     } finally {
       _flushing = false;
     }
+  }
+
+  Future<void> _remove(String id) async {
+    final ops = await _read();
+    ops.removeWhere((o) => o.id == id);
+    await _write(ops);
   }
 
   static bool isConnectionError(DioException e) {

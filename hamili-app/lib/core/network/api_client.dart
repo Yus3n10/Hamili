@@ -105,6 +105,7 @@ class ApiClient {
   }
 
   Future<void> _clearSession() async {
+    OfflineQueue.instance.suspend();
     await _storage.delete(key: AppConstants.accessTokenKey);
     await _storage.delete(key: AppConstants.refreshTokenKey);
   }
