@@ -38,3 +38,7 @@ firebase-debug.log
 # ===== OS =====
 .DS_Store
 Thumbs.db
+
+# ===== Private working notes (kept on disk, never committed) =====
+docs/CONTEXT.md
+docs/superpowers/
