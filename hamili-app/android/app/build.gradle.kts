@@ -19,7 +19,7 @@ if (hasKeystore) {
 }
 
 android {
-    namespace = "com.example.hamili"
+    namespace = "io.github.yus3n10.hamili"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -29,8 +29,7 @@ android {
     }
 
     defaultConfig {
-        // TODO: change this to your own unique Application ID before publishing.
-        applicationId = "com.example.hamili"
+        applicationId = "io.github.yus3n10.hamili"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
