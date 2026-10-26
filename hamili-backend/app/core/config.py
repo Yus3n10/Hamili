@@ -34,10 +34,18 @@ class Settings(BaseSettings):
 
     app_timezone: str = "Asia/Manila"
 
+    # Comma-separated user ids allowed into the admin console. Ids, not
+    # emails, because anyone can register an unclaimed email.
+    admin_user_ids: str = ""
+
     environment: str = "development"
     cors_origins: str = "http://localhost:3000"
 
     model_config = SettingsConfigDict(env_file=".env", case_sensitive=False)
+
+    @property
+    def admin_id_set(self) -> set[int]:
+        return {int(part) for part in (p.strip() for p in self.admin_user_ids.split(",")) if part.isdigit()}
 
     @property
     def cors_origin_list(self) -> list[str]:

@@ -7,7 +7,7 @@ from slowapi.middleware import SlowAPIMiddleware
 
 from app.core.config import get_settings
 from app.core.rate_limit import limiter
-from app.routers import analytics, auth, budgets, categories, chat, goals, insights, recurring, transactions
+from app.routers import admin, analytics, auth, budgets, categories, chat, goals, insights, recurring, transactions
 
 settings = get_settings()
 
@@ -49,6 +49,7 @@ app.include_router(recurring.router)
 app.include_router(analytics.router)
 app.include_router(insights.router)
 app.include_router(chat.router)
+app.include_router(admin.router)
 
 
 @app.get("/health", tags=["health"])

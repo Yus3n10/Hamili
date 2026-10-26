@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, Request, status
 from slowapi.util import get_remote_address
 from sqlalchemy.orm import Session
 
+from app.core.config import get_settings
 from app.core.deps import get_current_user
 from app.core.rate_limit import (
     REGISTER_LIMIT,
@@ -43,9 +44,15 @@ def refresh(payload: TokenRefresh, db: Session = Depends(get_db)):
     return AuthService(db).refresh(payload.refresh_token)
 
 
+def _user_out(user: User) -> UserOut:
+    out = UserOut.model_validate(user)
+    out.is_admin = user.id in get_settings().admin_id_set
+    return out
+
+
 @router.get("/me", response_model=UserOut)
 def read_current_user(current_user: User = Depends(get_current_user)):
-    return current_user
+    return _user_out(current_user)
 
 
 @router.patch("/me", response_model=UserOut)
@@ -54,4 +61,4 @@ def update_current_user(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
-    return AuthService(db).update_profile(current_user, payload)
+    return _user_out(AuthService(db).update_profile(current_user, payload))

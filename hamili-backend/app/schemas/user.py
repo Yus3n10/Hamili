@@ -38,6 +38,7 @@ class UserOut(BaseModel):
     monthly_salary: float | None
     allowance: float | None
     financial_goal_text: str | None
+    is_admin: bool = False
 
 
 class TokenPair(BaseModel):
