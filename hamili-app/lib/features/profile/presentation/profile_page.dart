@@ -10,6 +10,7 @@ import '../../auth/presentation/auth_providers.dart';
 import 'avatar_edit.dart';
 import 'avatar_providers.dart';
 import 'edit_profile_page.dart';
+import 'privacy_notice_tile.dart';
 
 class ProfilePage extends ConsumerWidget {
   const ProfilePage({super.key});
@@ -164,6 +165,7 @@ class ProfilePage extends ConsumerWidget {
                     value: ref.watch(insightsEnabledProvider),
                     onChanged: (v) => ref.read(insightsEnabledProvider.notifier).setEnabled(v),
                   ),
+                  const PrivacyNoticeTile(),
                   const SizedBox(height: 28),
                   FilledButton.icon(
                     onPressed: () => Navigator.of(context).push(
