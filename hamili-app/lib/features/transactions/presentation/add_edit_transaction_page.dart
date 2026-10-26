@@ -152,7 +152,7 @@ class _AddEditTransactionPageState extends ConsumerState<AddEditTransactionPage>
 
       if (mounted) navigator.pop();
       messenger.showSnackBar(
-        const SnackBar(content: Text('Saved offline — it’ll sync when you’re back online.')),
+        const SnackBar(content: Text('Saved offline. It’ll sync when you’re back online.')),
       );
     } catch (_) {
       setState(() => _errorMessage = "Couldn't save. Check your connection and try again.");

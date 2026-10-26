@@ -11,7 +11,7 @@ const _suggestedPrompts = [
   'Can I afford a ₱2,000 purchase right now?',
   'How can I save ₱5,000 this month?',
   "What's my biggest expense so far?",
-  'What subscriptions should I consider cancelling?',
+  'Which subscriptions could I cancel?',
   'How am I doing against my budgets?',
 ];
 
@@ -195,7 +195,7 @@ class _EmptyState extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text(
-              "Hi! I'm Hami 🪙 Ask me anything about your money, or try one of these:",
+              "Hi! I'm Hami. Ask me anything about your money, or try one of these:",
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
@@ -232,12 +232,12 @@ class _DoneChip extends StatelessWidget {
         color: AppColors.income.withValues(alpha: 0.16),
         borderRadius: BorderRadius.circular(20),
       ),
-      child: const Row(
+      child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          Icon(Icons.check_circle, size: 13, color: AppColors.income),
-          SizedBox(width: 4),
-          Text('Done', style: TextStyle(color: AppColors.income, fontSize: 11, fontWeight: FontWeight.w700)),
+          Icon(Icons.check_circle, size: 13, color: context.incomeText),
+          const SizedBox(width: 4),
+          Text('Done', style: TextStyle(color: context.incomeText, fontSize: 11, fontWeight: FontWeight.w700)),
         ],
       ),
     );

@@ -74,11 +74,11 @@ class AnalyticsPage extends ConsumerWidget {
               error: (_, __) => const Text("Couldn't load summary."),
               data: (s) => Row(
                 children: [
-                  _tile(context, 'Income', s.income, AppColors.income),
+                  _tile(context, 'Income', s.income, context.incomeText),
                   const SizedBox(width: 8),
-                  _tile(context, 'Expenses', s.expense, AppColors.expense),
+                  _tile(context, 'Expenses', s.expense, context.expenseText),
                   const SizedBox(width: 8),
-                  _tile(context, 'Net', s.net, s.net >= 0 ? AppColors.income : AppColors.expense),
+                  _tile(context, 'Net', s.net, s.net >= 0 ? context.incomeText : context.expenseText),
                 ],
               ),
             ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../shared/widgets/primary_button.dart';
+import 'auth_error_message.dart';
 import 'auth_providers.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -40,8 +41,8 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             password: _passwordController.text,
           );
       if (mounted) context.go('/onboarding');
-    } catch (_) {
-      setState(() => _errorMessage = 'Something went wrong. Try a different email.');
+    } catch (e) {
+      if (mounted) setState(() => _errorMessage = authErrorMessage(e, registering: true));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
@@ -58,7 +59,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             child: ListView(
               children: [
                 const SizedBox(height: 48),
-                Text('Meet Hami 🪙', style: Theme.of(context).textTheme.headlineMedium),
+                Text('Meet Hami', style: Theme.of(context).textTheme.headlineMedium),
                 const SizedBox(height: 8),
                 Text(
                   "Let's set up your account so Hami knows what to call you.",

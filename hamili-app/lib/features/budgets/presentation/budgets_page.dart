@@ -10,6 +10,7 @@ import '../../transactions/presentation/transaction_providers.dart';
 import 'budget_detail_page.dart';
 import 'budget_providers.dart';
 import 'set_budget_sheet.dart';
+import '../../../shared/widgets/confirm_delete.dart';
 
 class BudgetsPage extends ConsumerWidget {
   const BudgetsPage({super.key});
@@ -40,7 +41,7 @@ class BudgetsPage extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () => ref.refresh(budgetsProvider.future),
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
               itemCount: budgets.length,
               itemBuilder: (context, index) {
                 final budget = budgets[index];
@@ -50,9 +51,9 @@ class BudgetsPage extends ConsumerWidget {
                 final isOverBudget = budget.percentageUsed >= 100;
                 final isNearLimit = budget.percentageUsed >= 80 && !isOverBudget;
                 final progressColor = isOverBudget
-                    ? AppColors.expense
+                    ? context.expenseText
                     : isNearLimit
-                        ? AppColors.warning
+                        ? context.warningText
                         : context.accent;
 
                 return Card(
@@ -84,7 +85,16 @@ class BudgetsPage extends ConsumerWidget {
                             IconButton(
                               tooltip: 'Delete budget',
                               icon: const Icon(Icons.delete_outline, size: 20),
-                              onPressed: () => ref.read(budgetsProvider.notifier).deleteBudget(budget.id),
+                              onPressed: () async {
+                                final name = category?.name ?? 'this category';
+                                if (await confirmDelete(
+                                  context,
+                                  title: 'Delete budget?',
+                                  message: 'Your $name budget for this month will be removed. Your transactions stay.',
+                                )) {
+                                  ref.read(budgetsProvider.notifier).deleteBudget(budget.id);
+                                }
+                              },
                             ),
                           ],
                         ),

@@ -5,9 +5,16 @@ import '../../../../shared/widgets/pressable_scale.dart';
 
 class SummaryCard extends StatelessWidget {
   const SummaryCard(
-      {super.key, required this.label, required this.amount, required this.color, this.icon, this.onTap});
+      {super.key,
+      required this.label,
+      required this.amount,
+      required this.color,
+      this.caption,
+      this.icon,
+      this.onTap});
 
   final String label;
+  final String? caption;
   final double amount;
   final Color color;
   final IconData? icon;
@@ -49,6 +56,10 @@ class SummaryCard extends StatelessWidget {
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800, color: color),
               ),
             ),
+            if (caption != null) ...[
+              const SizedBox(height: 2),
+              Text(caption!, style: Theme.of(context).textTheme.bodySmall),
+            ],
           ],
         ),
       ),

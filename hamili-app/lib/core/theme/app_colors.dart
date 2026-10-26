@@ -11,6 +11,17 @@ extension BrandContext on BuildContext {
 }
 
 
+// Text and icon colors for money states. The base AppColors shades are
+// bright fills that fail WCAG AA as text on light surfaces, so light mode
+// uses darker shades (all >= 4.5:1 on white and the light background).
+extension MoneyColors on BuildContext {
+  bool get _isLight => Theme.of(this).brightness == Brightness.light;
+  Color get incomeText => _isLight ? const Color(0xFF0F766E) : AppColors.income;
+  Color get expenseText => _isLight ? const Color(0xFFBE123C) : AppColors.expense;
+  Color get warningText => _isLight ? const Color(0xFFB45309) : AppColors.warning;
+}
+
+
 class AppColors {
   AppColors._();
 
@@ -43,12 +54,12 @@ class AppColors {
 
   static const List<Color> chartPalette = [
     Color(0xFF16A34A),
-    Color(0xFF0EA5A4),
-    Color(0xFF6EE7B7),
-    Color(0xFFF5455C),
     Color(0xFF3B82F6),
-    Color(0xFF9B6DFF),
     Color(0xFFF59E0B),
+    Color(0xFF9B6DFF),
+    Color(0xFF0EA5A4),
     Color(0xFFEC4899),
+    Color(0xFF64748B),
+    Color(0xFF6EE7B7),
   ];
 }

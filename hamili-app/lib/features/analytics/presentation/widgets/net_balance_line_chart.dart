@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../domain/analytics_models.dart';
 
 
@@ -42,16 +43,34 @@ class NetBalanceLineChart extends StatelessWidget {
           maxY: maxY,
           gridData: const FlGridData(show: true, drawVerticalLine: false),
           borderData: FlBorderData(show: false),
-          lineTouchData: const LineTouchData(enabled: true),
+          lineTouchData: LineTouchData(
+            touchTooltipData: LineTouchTooltipData(
+              getTooltipItems: (spots) => [
+                for (final s in spots)
+                  LineTooltipItem(
+                    CurrencyFormatter.format(s.y),
+                    const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+                  ),
+              ],
+            ),
+          ),
           titlesData: FlTitlesData(
-            leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+            leftTitles: AxisTitles(
+                sideTitles: SideTitles(
+                  showTitles: true,
+                  reservedSize: 44,
+                  getTitlesWidget: (value, meta) {
+                    // The edge labels collide with the chart bounds.
+                    if (value == meta.max || value == meta.min) return const SizedBox.shrink();
+                    return Text(CurrencyFormatter.compact(value), style: const TextStyle(fontSize: 10));
+                  },
+                ),
+              ),
             rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
             bottomTitles: AxisTitles(
               sideTitles: SideTitles(
                 showTitles: true,
-
-
                 interval: 1,
                 getTitlesWidget: (value, meta) {
                   if (value != value.roundToDouble()) return const SizedBox.shrink();
@@ -70,6 +89,8 @@ class NetBalanceLineChart extends StatelessWidget {
             LineChartBarData(
               spots: [for (var i = 0; i < cumulative.length; i++) FlSpot(i.toDouble(), cumulative[i])],
               isCurved: true,
+              // Without this the smoothing dips below real values (e.g. under ₱0).
+              preventCurveOverShooting: true,
               color: context.accent,
               barWidth: 3,
               dotData: const FlDotData(show: true),

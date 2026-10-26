@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/hamili_logo.dart';
 import '../../../shared/widgets/primary_button.dart';
+import 'auth_error_message.dart';
 import 'auth_providers.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -42,17 +43,11 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             password: _passwordController.text,
           );
       if (mounted) context.go('/dashboard');
-    } catch (_) {
-      setState(() => _errorMessage = "Couldn't log in. Check your email and password.");
+    } catch (e) {
+      if (mounted) setState(() => _errorMessage = authErrorMessage(e));
     } finally {
       if (mounted) setState(() => _isLoading = false);
     }
-  }
-
-  void _forgotPassword() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Password reset is coming soon.')),
-    );
   }
 
   @override
@@ -122,7 +117,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
         children: [
           Text('Welcome back.', style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 6),
-          Text('Handle money. Achieve life.',
+          Text('Sign in to pick up where you left off.',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: muted)),
           const SizedBox(height: 28),
           TextFormField(
@@ -151,13 +146,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             validator: (value) =>
                 (value == null || value.length < 8) ? 'Password must be at least 8 characters' : null,
           ),
-          Align(
-            alignment: Alignment.centerRight,
-            child: TextButton(onPressed: _forgotPassword, child: const Text('Forgot password?')),
-          ),
           if (_errorMessage != null) ...[
-            const SizedBox(height: 4),
-            Text(_errorMessage!, style: const TextStyle(color: AppColors.expense)),
+            const SizedBox(height: 12),
+            Text(_errorMessage!, style: TextStyle(color: context.expenseText)),
           ],
           const SizedBox(height: 16),
           PrimaryButton(label: 'Sign in', onPressed: _handleLogin, isLoading: _isLoading),
@@ -218,22 +209,10 @@ class _HeroPanel extends StatelessWidget {
                 .slideX(begin: -0.08, end: 0, curve: Curves.easeOutCubic),
             const SizedBox(height: 14),
             Text(
-              'Handle money. Achieve life. Budgets, goals, and proactive insights from Hami — your money, finally in focus.',
+              'Budgets, savings goals, and Hami, a money companion that reads your own numbers.',
               style: TextStyle(color: Colors.white.withValues(alpha: 0.72), fontSize: 15, height: 1.5),
             ).animate(delay: 120.ms).fadeIn(duration: 500.ms),
             const Spacer(),
-            Row(
-              children: [
-                Container(
-                  width: 7,
-                  height: 7,
-                  decoration: BoxDecoration(color: context.accent.withValues(alpha: 0.55), shape: BoxShape.circle),
-                ),
-                const SizedBox(width: 6),
-                Text('Trust · Growth · Simplicity',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.5), fontSize: 11, letterSpacing: 1.5)),
-              ],
-            ),
           ],
         ),
       ),

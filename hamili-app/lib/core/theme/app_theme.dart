@@ -60,12 +60,15 @@ class AppTheme {
     final base = ThemeData(brightness: brightness, useMaterial3: true);
     final textTheme = _textTheme(base.textTheme, textPrimary);
     final isLight = brightness == Brightness.light;
+    // Light mode uses the accent's darker shade so links and white button
+    // labels clear 4.5:1.
+    final primary = isLight ? accent.dark : accent.primary;
 
     final colorScheme = ColorScheme.fromSeed(
-      seedColor: accent.primary,
+      seedColor: primary,
       brightness: brightness,
     ).copyWith(
-      primary: accent.primary,
+      primary: primary,
       onPrimary: _onPrimary,
       secondary: AppColors.secondary,
       onSecondary: Colors.white,
@@ -115,7 +118,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: accent.primary,
+          backgroundColor: primary,
           foregroundColor: _onPrimary,
           elevation: 0,
           minimumSize: const Size.fromHeight(54),
@@ -125,7 +128,7 @@ class AppTheme {
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
-          backgroundColor: accent.primary,
+          backgroundColor: primary,
           foregroundColor: _onPrimary,
           minimumSize: const Size.fromHeight(52),
           shape: const StadiumBorder(),
@@ -148,7 +151,7 @@ class AppTheme {
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
-        backgroundColor: accent.primary,
+        backgroundColor: primary,
         foregroundColor: _onPrimary,
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
@@ -160,7 +163,7 @@ class AppTheme {
           ),
           backgroundColor: WidgetStateProperty.resolveWith(
             (states) => states.contains(WidgetState.selected)
-                ? accent.primary.withValues(alpha: 0.16)
+                ? primary.withValues(alpha: 0.16)
                 : Colors.transparent,
           ),
         ),
@@ -183,20 +186,20 @@ class AppTheme {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: BorderSide(color: accent.primary, width: 1.6),
+          borderSide: BorderSide(color: primary, width: 1.6),
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
         backgroundColor: surface,
         elevation: 0,
         height: 66,
-        indicatorColor: accent.primary.withValues(alpha: 0.18),
+        indicatorColor: primary.withValues(alpha: 0.18),
         labelTextStyle: WidgetStatePropertyAll(
           GoogleFonts.inter(fontWeight: FontWeight.w600, fontSize: 11, letterSpacing: -0.1, color: textPrimary),
         ),
       ),
 
-      progressIndicatorTheme: ProgressIndicatorThemeData(color: accent.primary),
+      progressIndicatorTheme: ProgressIndicatorThemeData(color: primary),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: surface,
         shape: const RoundedRectangleBorder(

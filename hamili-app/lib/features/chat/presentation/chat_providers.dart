@@ -99,7 +99,7 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
         ChatMessage(
           'assistant',
           offline
-              ? "I need a connection to chat. Your transactions, budgets, and goals still work offline — I'll be here when you're back online."
+              ? "I need a connection to chat. Your transactions, budgets, and goals still work offline, and I'll be here when you're back online."
               : "Hmm, I couldn't reach my brain just now. Try again in a bit?",
         ),
       ];

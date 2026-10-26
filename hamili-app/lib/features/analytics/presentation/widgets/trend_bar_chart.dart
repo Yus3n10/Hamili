@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/currency_formatter.dart';
 import '../../domain/analytics_models.dart';
 
 
@@ -30,11 +31,28 @@ class TrendBarChart extends StatelessWidget {
           child: BarChart(
             BarChartData(
               maxY: maxY,
-              barTouchData: BarTouchData(enabled: true),
-              gridData: const FlGridData(show: false),
+              barTouchData: BarTouchData(
+                touchTooltipData: BarTouchTooltipData(
+                  getTooltipItem: (group, _, rod, rodIndex) => BarTooltipItem(
+                    '${rodIndex == 0 ? 'Income' : 'Expenses'}\n${CurrencyFormatter.format(rod.toY)}',
+                    const TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 12),
+                  ),
+                ),
+              ),
+              gridData: const FlGridData(show: true, drawVerticalLine: false),
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
-                leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                leftTitles: AxisTitles(
+                  sideTitles: SideTitles(
+                    showTitles: true,
+                    reservedSize: 44,
+                    getTitlesWidget: (value, meta) {
+                      // The edge labels collide with the chart bounds.
+                      if (value == meta.max || value == meta.min) return const SizedBox.shrink();
+                      return Text(CurrencyFormatter.compact(value), style: const TextStyle(fontSize: 10));
+                    },
+                  ),
+                ),
                 rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 bottomTitles: AxisTitles(

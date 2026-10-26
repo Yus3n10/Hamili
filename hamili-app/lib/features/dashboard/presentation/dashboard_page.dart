@@ -102,7 +102,7 @@ class DashboardPage extends ConsumerWidget {
               return ref.refresh(transactionsProvider.future);
             },
             child: ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
               children: [
                 ValueListenableBuilder<int>(
                   valueListenable: OfflineQueue.instance.pendingCount,
@@ -117,7 +117,7 @@ class DashboardPage extends ConsumerWidget {
                       ),
                       child: Row(
                         children: [
-                          const Icon(Icons.cloud_off, size: 18, color: AppColors.warning),
+                          Icon(Icons.cloud_off, size: 18, color: context.warningText),
                           const SizedBox(width: 8),
                           Expanded(child: Text('$count change${count == 1 ? '' : 's'} waiting to sync')),
                         ],
@@ -136,8 +136,9 @@ class DashboardPage extends ConsumerWidget {
                     Expanded(
                       child: SummaryCard(
                         label: 'Income',
+                        caption: 'This month',
                         amount: mIncome,
-                        color: AppColors.income,
+                        color: context.incomeText,
                         icon: Icons.arrow_downward,
                         onTap: () => _push(context, const TransactionsPage()),
                       ),
@@ -146,8 +147,9 @@ class DashboardPage extends ConsumerWidget {
                     Expanded(
                       child: SummaryCard(
                         label: 'Spending',
+                        caption: 'This month',
                         amount: mSpend,
-                        color: AppColors.expense,
+                        color: context.expenseText,
                         icon: Icons.arrow_upward,
                         onTap: () => _push(context, const TransactionsPage()),
                       ),
@@ -173,7 +175,7 @@ class DashboardPage extends ConsumerWidget {
                 if (recent.isEmpty)
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 24),
-                    child: Center(child: Text('Nothing here yet — add your first transaction.')),
+                    child: Center(child: Text('No transactions yet. Tap + to add your first one.')),
                   )
                 else
                   Card(

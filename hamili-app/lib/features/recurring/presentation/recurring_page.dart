@@ -80,6 +80,7 @@ class RecurringPage extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () => ref.refresh(recurringProvider.future),
             child: ListView(
+              padding: const EdgeInsets.only(bottom: 96),
               children: [
                 if (income.isNotEmpty) _sectionHeader('Income'),
                 ...income.map((i) => _tile(context, ref, i, categories)),

@@ -103,6 +103,7 @@ class _TransactionsPageState extends ConsumerState<TransactionsPage> {
                 return RefreshIndicator(
                   onRefresh: () => ref.refresh(transactionsProvider.future),
                   child: ListView.builder(
+                    padding: const EdgeInsets.only(bottom: 96),
                     itemCount: transactions.length,
                     itemBuilder: (context, index) {
                       final transaction = transactions[index];

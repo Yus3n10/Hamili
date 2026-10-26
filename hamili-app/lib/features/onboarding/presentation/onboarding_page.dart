@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/primary_button.dart';
 import '../../auth/presentation/auth_providers.dart';
+import '../../chat/presentation/widgets/hami_mascot.dart';
 
 
 class OnboardingPage extends ConsumerStatefulWidget {
@@ -44,7 +45,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Couldn't save preferences — you can set them later in Profile.")),
+          const SnackBar(content: Text("Couldn't save your preferences. You can set them later in Profile.")),
         );
       }
     } finally {
@@ -103,13 +104,13 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('🪙', style: TextStyle(fontSize: 64)),
+          const HamiMascot(size: 72),
           const SizedBox(height: 16),
           Text('Hi, I’m Hami!', style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 12),
           Text(
-            'I’ll help you track spending, set budgets and goals, and spot patterns — '
-            'and I’ll nudge you with proactive insights along the way.',
+            'I’ll help you track spending, set budgets and goals, and spot patterns. '
+            'Along the way I’ll nudge you with insights from your own numbers.',
             style: Theme.of(context).textTheme.bodyLarge,
           ),
           const SizedBox(height: 32),

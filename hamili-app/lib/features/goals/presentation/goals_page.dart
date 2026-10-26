@@ -11,6 +11,7 @@ import '../../../shared/widgets/primary_button.dart';
 import '../domain/goal.dart';
 import 'add_goal_sheet.dart';
 import 'goal_providers.dart';
+import '../../../shared/widgets/confirm_delete.dart';
 
 class GoalsPage extends ConsumerWidget {
   const GoalsPage({super.key});
@@ -79,7 +80,7 @@ class GoalsPage extends ConsumerWidget {
           return RefreshIndicator(
             onRefresh: () => ref.refresh(goalsProvider.future),
             child: ListView.builder(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
               itemCount: goals.length,
               itemBuilder: (context, index) {
                 final goal = goals[index];
@@ -104,7 +105,15 @@ class GoalsPage extends ConsumerWidget {
                             IconButton(
                               tooltip: 'Delete goal',
                               icon: const Icon(Icons.delete_outline, size: 20),
-                              onPressed: () => ref.read(goalsProvider.notifier).deleteGoal(goal.id),
+                              onPressed: () async {
+                                if (await confirmDelete(
+                                  context,
+                                  title: 'Delete goal?',
+                                  message: '"${goal.title}" and its saved progress will be removed for good.',
+                                )) {
+                                  ref.read(goalsProvider.notifier).deleteGoal(goal.id);
+                                }
+                              },
                             ),
                           ],
                         ),

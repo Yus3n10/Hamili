@@ -25,9 +25,9 @@ class BudgetDetailPage extends ConsumerWidget {
     final isOver = budget.percentageUsed >= 100;
     final isNear = budget.percentageUsed >= 80 && !isOver;
     final progressColor = isOver
-        ? AppColors.expense
+        ? context.expenseText
         : isNear
-            ? AppColors.warning
+            ? context.warningText
             : context.accent;
 
     return Scaffold(
@@ -136,13 +136,13 @@ class BudgetDetailPage extends ConsumerWidget {
                       return ListTile(
                         leading: CircleAvatar(
                           backgroundColor: AppColors.expense.withValues(alpha: 0.15),
-                          child: Icon(CategoryVisuals.iconFor(category?.icon), color: AppColors.expense, size: 20),
+                          child: Icon(CategoryVisuals.iconFor(category?.icon), color: context.expenseText, size: 20),
                         ),
                         title: Text(title),
                         subtitle: Text(DateFormat.yMMMd().format(t.transactionDate)),
                         trailing: Text(
                           '-${CurrencyFormatter.format(t.amount)}',
-                          style: const TextStyle(color: AppColors.expense, fontWeight: FontWeight.w600),
+                          style: TextStyle(color: context.expenseText, fontWeight: FontWeight.w600),
                         ),
                       );
                     },
