@@ -4,7 +4,7 @@ recorded on authenticated requests, at most once per 15 minutes per user,
 plus one row per local day the user was active.
 """
 
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
 from fastapi.testclient import TestClient
 
@@ -72,5 +72,37 @@ def test_activity_day_is_recorded_once_per_day():
 
         rows = db.query(UserActivityDay).filter(UserActivityDay.user_id == user.id).all()
         assert len(rows) == 1
+    finally:
+        db.close()
+
+
+def test_tracking_failure_never_breaks_the_request(monkeypatch):
+    """Parallel first requests of the day can race on the unique day row.
+    Tracking is best effort: a failure there must not turn into a 500."""
+    from sqlalchemy.exc import IntegrityError
+
+    headers = _register("act_failsafe@example.com")
+
+    def boom(self, user, now=None):
+        raise IntegrityError("INSERT", {}, Exception("duplicate key value violates unique constraint"))
+
+    monkeypatch.setattr(ActivityService, "touch", boom)
+
+    assert client.get("/auth/me", headers=headers).status_code == 200
+
+
+def test_recording_a_day_that_already_exists_is_harmless():
+    """The insert itself must tolerate the row appearing after the check,
+    which is what a concurrent request does."""
+    _register("act_conflict@example.com")
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email == "act_conflict@example.com").one()
+        db.add(UserActivityDay(user_id=user.id, day=date(2030, 3, 4)))
+        db.commit()
+
+        ActivityService(db)._record_day(user.id, date(2030, 3, 4))
+
+        assert db.query(UserActivityDay).filter(UserActivityDay.user_id == user.id, UserActivityDay.day == date(2030, 3, 4)).count() == 1
     finally:
         db.close()

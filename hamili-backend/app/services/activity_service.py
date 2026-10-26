@@ -1,5 +1,6 @@
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 
+from sqlalchemy.dialects import postgresql, sqlite
 from sqlalchemy.orm import Session
 
 from app.core.clock import local_date
@@ -27,15 +28,18 @@ class ActivityService:
             return
 
         user.last_active_at = now
-        day = local_date(now)
-        exists = (
-            self.db.query(UserActivityDay.id)
-            .filter(UserActivityDay.user_id == user.id, UserActivityDay.day == day)
-            .first()
-        )
-        if exists is None:
-            self.db.add(UserActivityDay(user_id=user.id, day=day))
+        self._record_day(user.id, local_date(now))
         self.db.commit()
+
+    def _record_day(self, user_id: int, day: date) -> None:
+        # The dashboard fires several requests at once, so the first ones of a
+        # day race to insert the same row; let the database drop duplicates.
+        insert = postgresql.insert if self.db.get_bind().dialect.name == "postgresql" else sqlite.insert
+        self.db.execute(
+            insert(UserActivityDay)
+            .values(user_id=user_id, day=day)
+            .on_conflict_do_nothing(index_elements=["user_id", "day"])
+        )
 
     def record_ai_usage(self, user_id: int, kind: str, usage: AIUsage | None) -> None:
         """One row per AI call; kind is "chat" or "insight"."""

@@ -6,6 +6,7 @@ re-implementing auth checks.
 
 from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy.exc import SQLAlchemyError
 from sqlalchemy.orm import Session
 
 from app.core.security import decode_token
@@ -28,5 +29,9 @@ def get_current_user(
     user = UserRepository(db).get_by_id(int(payload["sub"]))
     if not user:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "User not found")
-    ActivityService(db).touch(user)
+    try:
+        ActivityService(db).touch(user)
+    except SQLAlchemyError:
+        # Activity tracking is best effort; it must never fail the request.
+        db.rollback()
     return user
