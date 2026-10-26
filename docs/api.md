@@ -51,7 +51,11 @@ Returns the full chat history for the current user, oldest first.
 ```json
 { "content": "Where am I overspending?" }
 ```
-**Response:** `{ "reply": "..." }`
+**Response:** `{ "reply": "...", "available": true, "changed": [], "effect": null, "answer": null }`
+
+- `changed`: app areas an action touched, so the client can refresh them.
+- `effect`: `income`, `expense` or `savings` when an action moved money.
+- `answer`: `affirmative`, `negative` or `warning` when the reply is a direct answer; it drives Hami's nod or head shake and is kept separate from the text. For "can I afford X?" the server works out the verdict and writes the reply itself from the real balance and this month's budget, so the words and the gesture always agree.
 
 Internally: the message is persisted, a financial snapshot is built from the user's recent transactions/budgets/goals/recurring items, and both are sent to the configured `AIProvider` (Gemini by default). The reply is persisted as well, so history is always complete on reload.
 
@@ -59,7 +63,7 @@ Internally: the message is persisted, a financial snapshot is built from the use
 
 ### `GET /budgets` 🔒
 Query params: `month`, `year` (both optional, default to current month/year).
-Returns each budget with **live-computed** `spent_amount`, `remaining_amount`, and `percentage_used` — these aren't stored, they're calculated from actual expense transactions in that category/month/year on every request.
+Returns each budget with **live-computed** `spent_amount`, `remaining_amount`, and `percentage_used`, plus an `alert_level` of `ok`, `approaching`, `high` or `over` from the `BUDGET_*_PERCENT` thresholds — these aren't stored, they're calculated from actual expense transactions in that category/month/year on every request.
 
 ### `POST /budgets` 🔒
 Upsert — setting a budget for a category/month/year that already has one updates it instead of erroring.

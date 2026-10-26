@@ -5,6 +5,7 @@ import '../../../core/network/offline_sync_provider.dart';
 import '../../../core/session/session_provider.dart';
 import '../../analytics/presentation/analytics_providers.dart';
 import '../../budgets/presentation/budget_providers.dart';
+import '../../hami/presentation/hami_events.dart';
 import '../data/category_repository.dart';
 import '../data/transaction_repository.dart';
 import '../domain/category.dart';
@@ -76,6 +77,12 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
         transactionDate: transactionDate,
         note: note,
       );
+      // Before the refresh below, so the budget tracker sees this spend land.
+      if (type == 'income') {
+        hamiOnIncome(ref, amount);
+      } else {
+        hamiOnSpending(ref);
+      }
       ref.invalidateSelf();
 
 
@@ -109,6 +116,7 @@ class TransactionsNotifier extends AsyncNotifier<List<AppTransaction>> {
     final repo = ref.read(transactionRepositoryProvider);
     try {
       await repo.update(id, categoryId: categoryId, amount: amount, note: note, transactionDate: transactionDate);
+      hamiOnSpending(ref);
       ref.invalidateSelf();
       ref.invalidate(budgetsProvider);
       ref.invalidate(budgetTransactionsProvider);

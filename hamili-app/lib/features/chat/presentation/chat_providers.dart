@@ -9,6 +9,9 @@ import '../../analytics/presentation/analytics_providers.dart';
 import '../../auth/presentation/auth_providers.dart';
 import '../../budgets/presentation/budget_providers.dart';
 import '../../goals/presentation/goal_providers.dart';
+import '../../hami/domain/hami_reaction.dart';
+import '../../hami/presentation/hami_controller.dart';
+import '../../hami/presentation/hami_events.dart';
 import '../../recurring/presentation/recurring_providers.dart';
 import '../../transactions/presentation/transaction_providers.dart';
 import '../domain/chat_message.dart';
@@ -92,6 +95,7 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
       if (effect == 'income') {
         _playDing();
       }
+      _reactToReply(response.data['answer'] as String?, effect, changed.isNotEmpty);
     } on DioException catch (e) {
       final offline = OfflineQueue.isConnectionError(e);
       state = [
@@ -110,6 +114,18 @@ class ChatMessagesNotifier extends StateNotifier<List<ChatMessage>> {
       ];
     } finally {
       ref.read(chatIsRespondingProvider.notifier).state = false;
+    }
+  }
+
+  // Hami's gesture comes from the reply's typed `answer` and `effect`
+  // fields, never from words in the text, so "No worries" stays a plain
+  // reply. Effects only count when the server says the action went through.
+  void _reactToReply(String? answer, String? effect, bool actionDone) {
+    final reaction = HamiReaction.forChatReply(answer: answer, effect: effect, actionDone: actionDone);
+    if (reaction != null) {
+      ref.read(hamiControllerProvider.notifier).play(reaction);
+    } else if (actionDone && effect == 'expense') {
+      hamiOnSpending(ref);
     }
   }
 }

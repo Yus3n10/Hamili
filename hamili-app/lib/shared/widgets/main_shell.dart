@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/budgets/presentation/budget_alert_overlay.dart';
 import '../../features/goals/presentation/goal_alert_overlay.dart';
+import '../../features/hami/presentation/hami_reaction_overlay.dart';
 
 
 class MainShell extends StatefulWidget {
@@ -20,6 +22,8 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
   int _lastIndex = 0;
   bool _forward = true;
 
+  static const _chatTab = 3;
+
   @override
   void dispose() {
     _controller.dispose();
@@ -29,6 +33,13 @@ class _MainShellState extends State<MainShell> with SingleTickerProviderStateMix
   @override
   Widget build(BuildContext context) {
     final current = widget.navigationShell.currentIndex;
+    // The chat tab has Hami in its header; the floating one would double him.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ProviderScope.containerOf(context, listen: false).read(hamiEmbeddedVisibleProvider.notifier).state =
+            current == _chatTab;
+      }
+    });
     if (current != _lastIndex) {
       _forward = current > _lastIndex;
       _lastIndex = current;

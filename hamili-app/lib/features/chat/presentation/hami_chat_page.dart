@@ -3,8 +3,8 @@ import 'package:flutter_animate/flutter_animate.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/theme/app_colors.dart';
+import '../../hami/presentation/hami_avatar.dart';
 import 'chat_providers.dart';
-import 'widgets/hami_mascot.dart';
 
 const _suggestedPrompts = [
   'Where am I overspending?',
@@ -149,6 +149,7 @@ class _HamiHeader extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final sleeping = ref.watch(chatServersDownProvider);
     final thinking = ref.watch(chatIsRespondingProvider);
+    final coin = ref.watch(hamiCoinFlipProvider);
     final status = sleeping
         ? 'Hami is napping…'
         : thinking
@@ -165,7 +166,7 @@ class _HamiHeader extends ConsumerWidget {
       ),
       child: Row(
         children: [
-          const HamiMascot(size: 52),
+          HamiAvatar(size: 52, sleeping: sleeping, coin: (seq: coin.seq, reverse: coin.reverse)),
           const SizedBox(width: 12),
           Column(
             mainAxisSize: MainAxisSize.min,

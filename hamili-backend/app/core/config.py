@@ -34,6 +34,11 @@ class Settings(BaseSettings):
 
     app_timezone: str = "Asia/Manila"
 
+    # Share of a monthly budget, in percent, at which Hami starts to worry
+    # and at which he warns in earnest. Above 100 a budget is over.
+    budget_concern_percent: float = 60.0
+    budget_warning_percent: float = 80.0
+
     # Comma-separated user ids allowed into the admin console. Ids, not
     # emails, because anyone can register an unclaimed email.
     admin_user_ids: str = ""

@@ -1,0 +1,788 @@
+{
+  "schema": "bible-strong/avatar-definition",
+  "schemaVersion": 1,
+  "name": "Hami",
+  "body": {
+    "primary": {
+      "type": "sphere",
+      "width": 250,
+      "height": 228,
+      "depth": 230,
+      "roundness": 1
+    },
+    "nodes": [
+      {
+        "surface": {
+          "type": "cone",
+          "width": 78,
+          "height": 92,
+          "depth": 34,
+          "roundness": 0,
+          "morphRoundness": 0.6,
+          "tipRoundness": 0.5,
+          "baseRoundness": 0.6
+        },
+        "position": [
+          -86,
+          -104,
+          -20
+        ],
+        "rotation": [
+          0,
+          0,
+          -28
+        ]
+      },
+      {
+        "surface": {
+          "type": "cone",
+          "width": 78,
+          "height": 92,
+          "depth": 34,
+          "roundness": 0,
+          "morphRoundness": 0.6,
+          "tipRoundness": 0.5,
+          "baseRoundness": 0.6
+        },
+        "position": [
+          86,
+          -104,
+          -20
+        ],
+        "rotation": [
+          0,
+          0,
+          28
+        ]
+      },
+      {
+        "surface": {
+          "type": "cylinder",
+          "width": 96,
+          "height": 70,
+          "depth": 36,
+          "roundness": 1,
+          "morphRoundness": 0.4
+        },
+        "position": [
+          0,
+          34,
+          112
+        ],
+        "rotation": [
+          0,
+          0,
+          0
+        ]
+      }
+    ]
+  },
+  "colors": {
+    "body": "#f9b7be",
+    "eyes": "#3b2314"
+  },
+  "expressions": {
+    "neutral": {
+      "head": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 18,
+          "height": 24,
+          "x": 0,
+          "y": -26,
+          "angle": 0
+        },
+        "right": {
+          "width": 18,
+          "height": 24,
+          "x": 0,
+          "y": -26,
+          "angle": 0
+        },
+        "spacing": 64
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      }
+    },
+    "friendly": {
+      "head": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 16,
+          "height": 10,
+          "x": 0,
+          "y": -45,
+          "angle": 0
+        },
+        "right": {
+          "width": 16,
+          "height": 10,
+          "x": 0,
+          "y": -45,
+          "angle": 0
+        },
+        "spacing": 93
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      }
+    },
+    "breathe": {
+      "head": {
+        "x": 3,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 16,
+          "height": 10,
+          "x": 0,
+          "y": -46,
+          "angle": 0
+        },
+        "right": {
+          "width": 16,
+          "height": 10,
+          "x": 0,
+          "y": -46,
+          "angle": 0
+        },
+        "spacing": 93
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      }
+    },
+    "angry": {
+      "head": {
+        "x": -8,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 22,
+          "height": 10,
+          "x": 0,
+          "y": -43,
+          "angle": 22
+        },
+        "right": {
+          "width": 22,
+          "height": 10,
+          "x": 0,
+          "y": -43,
+          "angle": -22
+        },
+        "spacing": 93
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "shake"
+      },
+      "colors": {
+        "body": "#ee4b57"
+      }
+    },
+    "angry-glare": {
+      "head": {
+        "x": -12,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 24,
+          "height": 10,
+          "x": 0,
+          "y": -43,
+          "angle": 26
+        },
+        "right": {
+          "width": 24,
+          "height": 10,
+          "x": 0,
+          "y": -43,
+          "angle": -26
+        },
+        "spacing": 93
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "shake"
+      },
+      "colors": {
+        "body": "#e23a48"
+      }
+    },
+    "excited": {
+      "head": {
+        "x": 10,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 30,
+          "height": 10,
+          "x": 0,
+          "y": -49,
+          "angle": 0
+        },
+        "right": {
+          "width": 30,
+          "height": 10,
+          "x": 0,
+          "y": -49,
+          "angle": 0
+        },
+        "spacing": 99
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "microSaccades",
+        "body": "none"
+      }
+    },
+    "excited-wide": {
+      "head": {
+        "x": 14,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 36,
+          "height": 12,
+          "x": 0,
+          "y": -51,
+          "angle": 0
+        },
+        "right": {
+          "width": 36,
+          "height": 12,
+          "x": 0,
+          "y": -51,
+          "angle": 0
+        },
+        "spacing": 103
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "shake",
+        "body": "none"
+      }
+    },
+    "nod-down": {
+      "head": {
+        "x": -16,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 18,
+          "height": 10,
+          "x": 0,
+          "y": -45,
+          "angle": 0
+        },
+        "right": {
+          "width": 18,
+          "height": 10,
+          "x": 0,
+          "y": -45,
+          "angle": 0
+        },
+        "spacing": 93
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      }
+    },
+    "nod-up": {
+      "head": {
+        "x": 8,
+        "y": 0,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 18,
+          "height": 10,
+          "x": 0,
+          "y": -45,
+          "angle": 0
+        },
+        "right": {
+          "width": 18,
+          "height": 10,
+          "x": 0,
+          "y": -45,
+          "angle": 0
+        },
+        "spacing": 93
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      }
+    },
+    "shake-left": {
+      "head": {
+        "x": 0,
+        "y": -24,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 18,
+          "height": 10,
+          "x": 0,
+          "y": -45,
+          "angle": 8
+        },
+        "right": {
+          "width": 18,
+          "height": 10,
+          "x": 0,
+          "y": -45,
+          "angle": -8
+        },
+        "spacing": 93
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      }
+    },
+    "shake-right": {
+      "head": {
+        "x": 0,
+        "y": 24,
+        "z": 0
+      },
+      "eyes": {
+        "left": {
+          "width": 18,
+          "height": 10,
+          "x": 0,
+          "y": -45,
+          "angle": 8
+        },
+        "right": {
+          "width": 18,
+          "height": 10,
+          "x": 0,
+          "y": -45,
+          "angle": -8
+        },
+        "spacing": 93
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      }
+    },
+    "worried": {
+      "head": {
+        "x": -8,
+        "y": 0,
+        "z": 8
+      },
+      "eyes": {
+        "left": {
+          "width": 16,
+          "height": 10,
+          "x": 0,
+          "y": -43,
+          "angle": -16
+        },
+        "right": {
+          "width": 16,
+          "height": 10,
+          "x": 0,
+          "y": -43,
+          "angle": 16
+        },
+        "spacing": 93
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      }
+    },
+    "worried-glance": {
+      "head": {
+        "x": -14,
+        "y": 6,
+        "z": 10
+      },
+      "eyes": {
+        "left": {
+          "width": 15,
+          "height": 10,
+          "x": 0,
+          "y": -39,
+          "angle": -18
+        },
+        "right": {
+          "width": 15,
+          "height": 10,
+          "x": 0,
+          "y": -39,
+          "angle": 18
+        },
+        "spacing": 93
+      },
+      "perspective": 1,
+      "motion": {
+        "eyes": "none",
+        "body": "none"
+      }
+    }
+  },
+  "expressionOrder": [
+    "neutral",
+    "friendly",
+    "breathe",
+    "angry",
+    "angry-glare",
+    "excited",
+    "excited-wide",
+    "nod-down",
+    "nod-up",
+    "shake-left",
+    "shake-right",
+    "worried",
+    "worried-glance"
+  ],
+  "animations": {
+    "idle": {
+      "playbackMode": "pingPong",
+      "steps": [
+        {
+          "expression": "friendly",
+          "holdMs": 1800,
+          "transitionMs": 900,
+          "transition": "smooth"
+        },
+        {
+          "expression": "breathe",
+          "holdMs": 1800,
+          "transitionMs": 900,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": true,
+        "initialDelayMs": 2100,
+        "minIntervalMs": 2800,
+        "maxIntervalMs": 5000,
+        "durationMs": 240
+      },
+      "metadata": {
+        "label": "Idle",
+        "description": "Gentle breathing with natural blinks.",
+        "group": "Hami"
+      }
+    },
+    "warn-spending": {
+      "playbackMode": "once",
+      "steps": [
+        {
+          "expression": "angry",
+          "holdMs": 500,
+          "transitionMs": 220,
+          "transition": "snappy"
+        },
+        {
+          "expression": "angry-glare",
+          "holdMs": 700,
+          "transitionMs": 160,
+          "transition": "snappy"
+        },
+        {
+          "expression": "angry",
+          "holdMs": 400,
+          "transitionMs": 160,
+          "transition": "snappy"
+        },
+        {
+          "expression": "friendly",
+          "holdMs": 300,
+          "transitionMs": 600,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": false,
+        "initialDelayMs": 2000,
+        "minIntervalMs": 3000,
+        "maxIntervalMs": 6000,
+        "durationMs": 220
+      },
+      "metadata": {
+        "label": "Angry spending",
+        "description": "Turns red, glares and shakes when a budget is nearly or fully used.",
+        "group": "Hami"
+      }
+    },
+    "celebrate-savings": {
+      "playbackMode": "once",
+      "steps": [
+        {
+          "expression": "excited",
+          "holdMs": 350,
+          "transitionMs": 180,
+          "transition": "spring"
+        },
+        {
+          "expression": "excited-wide",
+          "holdMs": 450,
+          "transitionMs": 160,
+          "transition": "spring"
+        },
+        {
+          "expression": "excited",
+          "holdMs": 350,
+          "transitionMs": 160,
+          "transition": "spring"
+        },
+        {
+          "expression": "excited-wide",
+          "holdMs": 400,
+          "transitionMs": 160,
+          "transition": "spring"
+        },
+        {
+          "expression": "friendly",
+          "holdMs": 300,
+          "transitionMs": 500,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": false,
+        "initialDelayMs": 2000,
+        "minIntervalMs": 3000,
+        "maxIntervalMs": 6000,
+        "durationMs": 220
+      },
+      "metadata": {
+        "label": "Savings celebration",
+        "description": "Big excited eyes and a happy hop for a savings contribution.",
+        "group": "Hami"
+      }
+    },
+    "celebrate-income": {
+      "playbackMode": "once",
+      "steps": [
+        {
+          "expression": "excited",
+          "holdMs": 450,
+          "transitionMs": 200,
+          "transition": "spring"
+        },
+        {
+          "expression": "nod-up",
+          "holdMs": 300,
+          "transitionMs": 200,
+          "transition": "smooth"
+        },
+        {
+          "expression": "friendly",
+          "holdMs": 300,
+          "transitionMs": 450,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": false,
+        "initialDelayMs": 2000,
+        "minIntervalMs": 3000,
+        "maxIntervalMs": 6000,
+        "durationMs": 220
+      },
+      "metadata": {
+        "label": "Income celebration",
+        "description": "A lighter excited look for recorded income.",
+        "group": "Hami"
+      }
+    },
+    "answer-yes": {
+      "playbackMode": "once",
+      "steps": [
+        {
+          "expression": "nod-down",
+          "holdMs": 120,
+          "transitionMs": 180,
+          "transition": "smooth"
+        },
+        {
+          "expression": "nod-up",
+          "holdMs": 120,
+          "transitionMs": 180,
+          "transition": "smooth"
+        },
+        {
+          "expression": "nod-down",
+          "holdMs": 120,
+          "transitionMs": 180,
+          "transition": "smooth"
+        },
+        {
+          "expression": "nod-up",
+          "holdMs": 120,
+          "transitionMs": 180,
+          "transition": "smooth"
+        },
+        {
+          "expression": "nod-down",
+          "holdMs": 100,
+          "transitionMs": 180,
+          "transition": "smooth"
+        },
+        {
+          "expression": "friendly",
+          "holdMs": 200,
+          "transitionMs": 300,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": false,
+        "initialDelayMs": 2000,
+        "minIntervalMs": 3000,
+        "maxIntervalMs": 6000,
+        "durationMs": 220
+      },
+      "metadata": {
+        "label": "Yes nod",
+        "description": "Nods two to three times with a happy face.",
+        "group": "Hami"
+      }
+    },
+    "answer-no": {
+      "playbackMode": "once",
+      "steps": [
+        {
+          "expression": "shake-left",
+          "holdMs": 120,
+          "transitionMs": 200,
+          "transition": "smooth"
+        },
+        {
+          "expression": "shake-right",
+          "holdMs": 120,
+          "transitionMs": 260,
+          "transition": "smooth"
+        },
+        {
+          "expression": "shake-left",
+          "holdMs": 120,
+          "transitionMs": 260,
+          "transition": "smooth"
+        },
+        {
+          "expression": "shake-right",
+          "holdMs": 120,
+          "transitionMs": 260,
+          "transition": "smooth"
+        },
+        {
+          "expression": "friendly",
+          "holdMs": 200,
+          "transitionMs": 300,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": false,
+        "initialDelayMs": 2000,
+        "minIntervalMs": 3000,
+        "maxIntervalMs": 6000,
+        "durationMs": 220
+      },
+      "metadata": {
+        "label": "No shake",
+        "description": "Shakes the head left and right with narrowed eyes.",
+        "group": "Hami"
+      }
+    },
+    "budget-concern": {
+      "playbackMode": "once",
+      "steps": [
+        {
+          "expression": "worried",
+          "holdMs": 600,
+          "transitionMs": 400,
+          "transition": "smooth"
+        },
+        {
+          "expression": "worried-glance",
+          "holdMs": 900,
+          "transitionMs": 500,
+          "transition": "smooth"
+        },
+        {
+          "expression": "worried",
+          "holdMs": 500,
+          "transitionMs": 400,
+          "transition": "smooth"
+        },
+        {
+          "expression": "friendly",
+          "holdMs": 300,
+          "transitionMs": 600,
+          "transition": "smooth"
+        }
+      ],
+      "blink": {
+        "enabled": false,
+        "initialDelayMs": 2000,
+        "minIntervalMs": 3000,
+        "maxIntervalMs": 6000,
+        "durationMs": 220
+      },
+      "metadata": {
+        "label": "Budget concern",
+        "description": "Raised inner brows, head tilt and a downward glance.",
+        "group": "Hami"
+      }
+    }
+  },
+  "animationOrder": [
+    "idle",
+    "warn-spending",
+    "celebrate-savings",
+    "celebrate-income",
+    "answer-yes",
+    "answer-no",
+    "budget-concern"
+  ]
+}

@@ -7,6 +7,7 @@ import 'core/routing/app_router.dart';
 import 'core/theme/accent_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
+import 'features/hami/presentation/hami_reaction_overlay.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -34,6 +35,15 @@ class HamiliApp extends ConsumerWidget {
       darkTheme: AppTheme.dark(accent),
       themeMode: themeMode,
       routerConfig: router,
+      // Above every route so Hami can react on whichever screen the money
+      // event happened.
+      builder: (context, child) => Stack(
+        fit: StackFit.expand,
+        children: [
+          if (child != null) child,
+          const HamiReactionOverlay(),
+        ],
+      ),
     );
   }
 }

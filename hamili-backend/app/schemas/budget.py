@@ -26,3 +26,5 @@ class BudgetOut(BaseModel):
     spent_amount: float
     remaining_amount: float
     percentage_used: float
+    # ok | approaching | high | over, from app.services.budget_rules.
+    alert_level: str = "ok"

@@ -7,8 +7,11 @@ class AppBudget {
   final double spentAmount;
   final double remainingAmount;
   final double percentageUsed;
+  // ok | approaching | high | over, decided by the server's thresholds.
+  final String alertLevel;
 
   const AppBudget({
+    this.alertLevel = 'ok',
     required this.id,
     required this.categoryId,
     required this.month,
@@ -28,5 +31,6 @@ class AppBudget {
         spentAmount: (json['spent_amount'] as num).toDouble(),
         remainingAmount: (json['remaining_amount'] as num).toDouble(),
         percentageUsed: (json['percentage_used'] as num).toDouble(),
+        alertLevel: json['alert_level'] as String? ?? 'ok',
       );
 }

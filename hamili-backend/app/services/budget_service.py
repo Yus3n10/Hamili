@@ -5,6 +5,7 @@ from app.models.budget import Budget
 from app.models.user import User
 from app.repositories.budget_repository import BudgetRepository
 from app.schemas.budget import BudgetCreate, BudgetOut, BudgetUpdate
+from app.services.budget_rules import budget_alert_level
 from app.services.category_rules import require_category
 
 
@@ -64,4 +65,5 @@ class BudgetService:
             spent_amount=spent,
             remaining_amount=remaining,
             percentage_used=percentage,
+            alert_level=budget_alert_level(percentage),
         )

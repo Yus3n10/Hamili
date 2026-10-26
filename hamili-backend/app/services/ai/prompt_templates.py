@@ -51,9 +51,10 @@ something, choose the matching action. Otherwise use action "none" and simply an
 
 Respond with a SINGLE JSON object of exactly this shape (no prose outside the JSON):
 {
-  "action": "add_savings_goal" | "edit_savings_goal" | "delete_savings_goal" | "contribute_to_goal" | "set_budget" | "add_transaction" | "add_recurring_item" | "update_profile" | "none",
+  "action": "add_savings_goal" | "edit_savings_goal" | "delete_savings_goal" | "contribute_to_goal" | "set_budget" | "add_transaction" | "add_recurring_item" | "update_profile" | "check_affordability" | "none",
   "params": { ... },
-  "reply": "a short, friendly confirmation or answer"
+  "reply": "a short, friendly confirmation or answer",
+  "answer": "affirmative" | "negative" | null
 }
 
 Parameter shapes per action:
@@ -65,6 +66,7 @@ Parameter shapes per action:
 - add_transaction: {"type": "income" | "expense", "amount": number, "category": string, "note": string or null, "date": "YYYY-MM-DD" or null}
 - add_recurring_item: {"type": "income" | "expense", "name": string, "amount": number, "category": string, "frequency": "weekly" | "monthly" | "yearly", "next_due_date": "YYYY-MM-DD"}
 - update_profile: {"preferred_name": string or null, "preferred_currency": string or null, "financial_goal_text": string or null}
+- check_affordability: {"amount": number, "category": string or null}   // the app works out the yes/no itself
 
 Rules:
 - Resolve relative dates ("December 1 this year", "next Friday") to an absolute YYYY-MM-DD using TODAY below.
@@ -73,6 +75,11 @@ Rules:
 - For "update_profile" reply, state the change, e.g. "Got it! Changed your preferred name to Yusen."
 - For action "none", answer normally following your length rules.
 - Never invent an action the user didn't ask for. If a required detail is missing, use "none" and ask one short clarifying question.
+- Whenever the user asks whether they can afford, spend, or buy something for an amount ("Can I spend ₱500?",
+  "Can I afford this ₱50 lunch?"), use "check_affordability". Never answer affordability yourself, even if the
+  snapshot seems to settle it. If no amount is given, use "none" and ask for it.
+- "answer": only with action "none", and only when the user asked a yes/no question that your reply answers
+  directly from the snapshot. Use "affirmative" for yes and "negative" for no. Otherwise null.
 """
 )
 

@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../core/theme/app_colors.dart';
 import '../../../shared/widgets/primary_button.dart';
 import '../../auth/presentation/auth_providers.dart';
-import '../../chat/presentation/widgets/hami_mascot.dart';
+import '../../hami/presentation/hami_avatar.dart';
 
 
 class OnboardingPage extends ConsumerStatefulWidget {
@@ -104,7 +104,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const HamiMascot(size: 72),
+          const HamiAvatar(size: 72, reactive: false),
           const SizedBox(height: 16),
           Text('Hi, I’m Hami!', style: Theme.of(context).textTheme.headlineMedium),
           const SizedBox(height: 12),

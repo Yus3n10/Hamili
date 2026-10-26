@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../core/network/offline_queue.dart';
 import '../../../core/network/offline_sync_provider.dart';
 import '../../../core/session/session_provider.dart';
+import '../../hami/presentation/hami_events.dart';
 import '../data/goal_repository.dart';
 import '../domain/goal.dart';
 
@@ -50,6 +51,7 @@ class GoalsNotifier extends AsyncNotifier<List<AppSavingsGoal>> {
   Future<AppSavingsGoal> contribute(int id, double amount) async {
     try {
       final updated = await ref.read(goalRepositoryProvider).contribute(id, amount);
+      hamiOnSavings(ref, amount, updated.title);
       await _refreshSilently();
       return updated;
     } on OfflineQueuedException {

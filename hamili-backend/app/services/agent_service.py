@@ -18,6 +18,7 @@ from app.schemas.recurring import RecurringItemCreate
 from app.schemas.transaction import TransactionCreate
 from app.schemas.user import UserUpdate
 from app.services.activity_service import ActivityService
+from app.services.affordability_service import ANSWER_AFFIRMATIVE, ANSWER_NEGATIVE, AffordabilityService
 from app.services.ai import get_ai_provider
 from app.services.auth_service import AuthService
 from app.services.budget_service import BudgetService
@@ -34,7 +35,9 @@ class AgentService:
 
     def respond(self, user: User, message_history: list[dict]) -> dict:
         """Returns {"reply": str, "changed": list[str]} — `changed` names the
-        app areas the client should refresh (goals/budgets/transactions/profile)."""
+        app areas the client should refresh (goals/budgets/transactions/profile).
+        An optional "answer" (affirmative/negative/warning) tells the client
+        which gesture Hami makes, kept apart from the reply text."""
         snapshot = InsightService(self.db).build_financial_snapshot(user)
         category_names = [c.name for c in self.db.query(Category).all()]
         result = self.provider.interpret(message_history, snapshot, category_names, local_today().isoformat())
@@ -45,7 +48,15 @@ class AgentService:
         reply = (result.get("reply") or "").strip() or "Done!"
 
         if action == "none":
-            return {"reply": reply, "changed": []}
+            return {"reply": reply, "changed": [], "answer": self._stance(result.get("answer"))}
+
+        if action == "check_affordability":
+            try:
+                verdict = AffordabilityService(self.db).check(user, float(params["amount"]), params.get("category"))
+            except (KeyError, TypeError, ValueError):
+                return {"reply": "How much is it? Tell me the amount and I'll check.", "changed": []}
+            # The server's verdict replaces the model's reply so words and gesture agree.
+            return {"reply": verdict.reply, "changed": [], "answer": verdict.answer}
 
         try:
             changed = self._execute(user, action, params)
@@ -62,7 +73,16 @@ class AgentService:
         """The money-movement kind for the client's sound/animation cue."""
         if action == "add_transaction":
             return params.get("type") or "expense"
+        if action == "contribute_to_goal":
+            return "savings"
         return None
+
+    @staticmethod
+    def _stance(value: object) -> str | None:
+        """A plain yes or no the model gave to a non-financial question.
+        Affordability verdicts come only from AffordabilityService, so the
+        model may not claim "warning"."""
+        return value if value in (ANSWER_AFFIRMATIVE, ANSWER_NEGATIVE) else None
 
     def _execute(self, user: User, action: str, params: dict) -> list[str]:
         if action == "add_savings_goal":

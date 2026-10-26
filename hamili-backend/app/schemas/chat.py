@@ -21,3 +21,6 @@ class ChatReply(BaseModel):
     available: bool = True
     changed: list[str] = []
     effect: str | None = None
+    # affirmative | negative | warning when the reply is a direct answer,
+    # else None. Drives Hami's nod or head shake, separate from the text.
+    answer: str | None = None
