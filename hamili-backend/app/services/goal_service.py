@@ -32,7 +32,11 @@ class GoalService:
     def update(self, user: User, goal_id: int, payload: SavingsGoalUpdate) -> SavingsGoalOut:
         goal = self._get_owned(user, goal_id)
         for field, value in payload.model_dump(exclude_unset=True).items():
+            # target_date is the only field null may clear.
+            if value is None and field != "target_date":
+                continue
             setattr(goal, field, value)
+        goal.status = "completed" if float(goal.current_amount) >= float(goal.target_amount) else "in_progress"
         goal = self.repo.save(goal)
         return self._to_out(goal)
 
@@ -85,7 +89,9 @@ class GoalService:
         if goal.status == "completed" or goal.current_amount <= 0:
             return None
 
-        months_elapsed = max((local_today() - goal.created_at.date()).days / 30.44, 1 / 30.44)
+        # At least one month, or a goal funded on the day it was made projects
+        # completion within days.
+        months_elapsed = max((local_today() - goal.created_at.date()).days / 30.44, 1.0)
         monthly_rate = float(goal.current_amount) / months_elapsed
         if monthly_rate <= 0:
             return None

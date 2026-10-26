@@ -10,6 +10,7 @@ from app.models.transaction import Transaction
 from app.models.user import User
 from app.repositories.recurring_repository import RecurringRepository
 from app.schemas.recurring import RecurringItemCreate, RecurringItemUpdate
+from app.services.category_rules import require_category
 
 MAX_BACKFILL_PERIODS = 60
 
@@ -45,12 +46,16 @@ class RecurringService:
         return self.repo.list_for_user(user.id)
 
     def create(self, user: User, payload: RecurringItemCreate) -> RecurringItem:
+        require_category(self.db, payload.category_id, payload.type)
         item = RecurringItem(user_id=user.id, **payload.model_dump())
         return self.repo.create(item)
 
     def update(self, user: User, item_id: int, payload: RecurringItemUpdate) -> RecurringItem:
         item = self._get_owned(user, item_id)
-        for field, value in payload.model_dump(exclude_unset=True).items():
+        changes = payload.model_dump(exclude_unset=True, exclude_none=True)
+        if "category_id" in changes:
+            require_category(self.db, changes["category_id"], item.type)
+        for field, value in changes.items():
             setattr(item, field, value)
         return self.repo.save(item)
 

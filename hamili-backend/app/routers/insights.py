@@ -1,7 +1,8 @@
-from fastapi import APIRouter, BackgroundTasks, Depends
+from fastapi import APIRouter, BackgroundTasks, Depends, Request
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user
+from app.core.rate_limit import AI_LIMIT, limiter
 from app.db.session import get_db
 from app.models.user import User
 from app.schemas.insight import AIInsightOut
@@ -23,7 +24,8 @@ def list_insights(
 
 
 @router.post("/refresh", response_model=list[AIInsightOut])
-def refresh_insights(current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+@limiter.limit(AI_LIMIT)
+def refresh_insights(request: Request, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
     service = InsightService(db)
     service.generate_and_store(current_user)
     return service.list_active(current_user)

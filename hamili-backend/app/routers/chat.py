@@ -10,7 +10,7 @@ from app.schemas.chat import ChatMessageCreate, ChatMessageOut, ChatReply
 from app.services.agent_service import AgentService
 from app.services.ai.base_provider import AIProviderUnavailable
 
-_SERVERS_DOWN_REPLY = "Hami's servers are down right now, try again tomorrow. 💤"
+_SERVERS_DOWN_REPLY = "I can't reply right now because I've hit my usage limit. Try again in a little while."
 
 router = APIRouter(prefix="/chat", tags=["chat"])
 

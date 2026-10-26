@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.core.clock import local_today
@@ -13,8 +13,8 @@ router = APIRouter(prefix="/budgets", tags=["budgets"])
 
 @router.get("", response_model=list[BudgetOut])
 def list_budgets(
-    month: int | None = None,
-    year: int | None = None,
+    month: int | None = Query(default=None, ge=1, le=12),
+    year: int | None = Query(default=None, ge=2000, le=2100),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):

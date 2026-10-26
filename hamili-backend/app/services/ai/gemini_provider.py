@@ -15,8 +15,8 @@ settings = get_settings()
 
 
 class GeminiProvider(AIProvider):
-    """Google Gemini implementation. Uses the free-tier `gemini-1.5-flash`
-    model by default — fast and cheap enough for chat + insight generation."""
+    """Google Gemini implementation. Defaults to the `gemini-flash-lite-latest`
+    alias, which Google repoints as models are retired."""
 
     def __init__(self, model_name: str = "gemini-flash-lite-latest"):
         genai.configure(api_key=settings.gemini_api_key)

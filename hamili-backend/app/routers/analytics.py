@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 
 from app.core.deps import get_current_user
@@ -12,8 +12,8 @@ router = APIRouter(prefix="/analytics", tags=["analytics"])
 
 @router.get("/summary", response_model=AnalyticsSummaryOut)
 def summary(
-    month: int | None = None,
-    year: int | None = None,
+    month: int | None = Query(default=None, ge=1, le=12),
+    year: int | None = Query(default=None, ge=2000, le=2100),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -22,9 +22,9 @@ def summary(
 
 @router.get("/by-category", response_model=list[CategoryBreakdownOut])
 def by_category(
-    type: str = "expense",
-    month: int | None = None,
-    year: int | None = None,
+    type: str = Query(default="expense", pattern="^(income|expense)$"),
+    month: int | None = Query(default=None, ge=1, le=12),
+    year: int | None = Query(default=None, ge=2000, le=2100),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):
@@ -33,9 +33,9 @@ def by_category(
 
 @router.get("/trend", response_model=list[TrendPointOut])
 def trend(
-    month: int | None = None,
-    year: int | None = None,
-    months: int = 6,
+    month: int | None = Query(default=None, ge=1, le=12),
+    year: int | None = Query(default=None, ge=2000, le=2100),
+    months: int = Query(default=6, ge=1, le=24),
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db),
 ):

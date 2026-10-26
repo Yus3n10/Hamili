@@ -1,5 +1,5 @@
 from fastapi import HTTPException, status
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload
 
 from app.core.clock import local_day_bounds_utc, local_today
 from app.db.session import SessionLocal
@@ -9,6 +9,7 @@ from app.models.goal import SavingsGoal
 from app.models.recurring import RecurringItem
 from app.models.transaction import Transaction
 from app.models.user import User
+from app.repositories.budget_repository import BudgetRepository
 from app.services.ai import get_ai_provider
 
 
@@ -26,6 +27,7 @@ class InsightService:
 
         recent_transactions = (
             self.db.query(Transaction)
+            .options(joinedload(Transaction.category))
             .filter(Transaction.user_id == user.id)
             .order_by(Transaction.transaction_date.desc())
             .limit(30)
@@ -33,21 +35,36 @@ class InsightService:
         )
         budgets = (
             self.db.query(Budget)
+            .options(joinedload(Budget.category))
             .filter(Budget.user_id == user.id, Budget.month == today.month, Budget.year == today.year)
             .all()
         )
         goals = self.db.query(SavingsGoal).filter(SavingsGoal.user_id == user.id).all()
         recurring = self.db.query(RecurringItem).filter(RecurringItem.user_id == user.id, RecurringItem.active).all()
+        spent = BudgetRepository(self.db)
 
         return {
             "preferred_name": user.preferred_name,
             "preferred_currency": user.preferred_currency,
             "financial_goal_text": user.financial_goal_text,
             "recent_transactions": [
-                {"amount": float(t.amount), "type": t.type, "category_id": t.category_id, "date": str(t.transaction_date)}
+                {
+                    "amount": float(t.amount),
+                    "type": t.type,
+                    "category": t.category.name,
+                    "note": t.note,
+                    "date": str(t.transaction_date),
+                }
                 for t in recent_transactions
             ],
-            "budgets": [{"category_id": b.category_id, "limit": float(b.limit_amount)} for b in budgets],
+            "budgets": [
+                {
+                    "category": b.category.name,
+                    "limit": float(b.limit_amount),
+                    "spent": spent.spent_amount(user.id, b.category_id, b.month, b.year),
+                }
+                for b in budgets
+            ],
             "goals": [
                 {"title": g.title, "target": float(g.target_amount), "current": float(g.current_amount)}
                 for g in goals

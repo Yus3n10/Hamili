@@ -5,10 +5,12 @@ from app.models.budget import Budget
 from app.models.user import User
 from app.repositories.budget_repository import BudgetRepository
 from app.schemas.budget import BudgetCreate, BudgetOut, BudgetUpdate
+from app.services.category_rules import require_category
 
 
 class BudgetService:
     def __init__(self, db: Session):
+        self.db = db
         self.repo = BudgetRepository(db)
 
     def list(self, user: User, month: int, year: int) -> list[BudgetOut]:
@@ -16,6 +18,7 @@ class BudgetService:
         return [self._to_out(user, b) for b in budgets]
 
     def create_or_update(self, user: User, payload: BudgetCreate) -> BudgetOut:
+        require_category(self.db, payload.category_id, "expense")
         existing = self.repo.get_by_period_category(user.id, payload.category_id, payload.month, payload.year)
         if existing:
             budget = self.repo.update(existing, payload.limit_amount)

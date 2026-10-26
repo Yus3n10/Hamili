@@ -5,21 +5,26 @@ from app.models.transaction import Transaction
 from app.models.user import User
 from app.repositories.transaction_repository import TransactionRepository
 from app.schemas.transaction import TransactionCreate, TransactionUpdate
+from app.services.category_rules import require_category
 
 
 class TransactionService:
     def __init__(self, db: Session):
+        self.db = db
         self.repo = TransactionRepository(db)
 
     def list(self, user: User, category_id: int | None, search: str | None):
         return self.repo.list_for_user(user.id, category_id, search)
 
     def create(self, user: User, payload: TransactionCreate) -> Transaction:
+        require_category(self.db, payload.category_id, payload.type)
         transaction = Transaction(user_id=user.id, **payload.model_dump())
         return self.repo.create(transaction)
 
     def update(self, user: User, transaction_id: int, payload: TransactionUpdate) -> Transaction:
         transaction = self._get_owned(user, transaction_id)
+        if payload.category_id is not None:
+            require_category(self.db, payload.category_id, transaction.type)
         return self.repo.update(transaction, **payload.model_dump(exclude_unset=True))
 
     def delete(self, user: User, transaction_id: int) -> None:

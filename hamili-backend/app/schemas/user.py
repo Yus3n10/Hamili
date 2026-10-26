@@ -1,4 +1,8 @@
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
+
+
+def _lower(value: str) -> str:
+    return value.lower()
 
 
 class UserRegister(BaseModel):
@@ -6,10 +10,14 @@ class UserRegister(BaseModel):
     password: str = Field(min_length=8, max_length=128)
     preferred_name: str = Field(min_length=1, max_length=100)
 
+    _normalize_email = field_validator("email")(_lower)
+
 
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+
+    _normalize_email = field_validator("email")(_lower)
 
 
 class UserUpdate(BaseModel):

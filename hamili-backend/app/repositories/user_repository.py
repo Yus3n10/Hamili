@@ -1,3 +1,4 @@
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.user import User
@@ -15,7 +16,9 @@ class UserRepository:
         return self.db.get(User, user_id)
 
     def get_by_email(self, email: str) -> User | None:
-        return self.db.query(User).filter(User.email == email).first()
+        # Case-insensitive so accounts created before emails were lowercased
+        # still match.
+        return self.db.query(User).filter(func.lower(User.email) == email.lower()).first()
 
     def create(self, user: User) -> User:
         self.db.add(user)
