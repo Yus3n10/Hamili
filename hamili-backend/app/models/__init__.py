@@ -3,6 +3,7 @@ Importing every model here ensures Alembic's autogenerate can see the full
 schema via Base.metadata, regardless of which module triggers the import.
 """
 
+from app.models.activity import AdminAccessLog, AIUsageEvent, UserActivityDay
 from app.models.ai import AIChatMessage, AIInsight
 from app.models.budget import Budget
 from app.models.category import Category
@@ -20,4 +21,7 @@ __all__ = [
     "RecurringItem",
     "AIChatMessage",
     "AIInsight",
+    "UserActivityDay",
+    "AIUsageEvent",
+    "AdminAccessLog",
 ]

@@ -23,6 +23,10 @@ def local_today() -> date:
     return _utc_now().astimezone(_zone()).date()
 
 
+def local_date(instant: datetime) -> date:
+    return instant.astimezone(_zone()).date()
+
+
 def local_day_bounds_utc(day: date) -> tuple[datetime, datetime]:
     """[start, end) of a local calendar day as UTC instants, for filtering
     timestamp columns stored in UTC."""

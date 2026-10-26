@@ -12,6 +12,7 @@ from app.core.security import decode_token
 from app.db.session import get_db
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
+from app.services.activity_service import ActivityService
 
 bearer_scheme = HTTPBearer()
 
@@ -27,4 +28,5 @@ def get_current_user(
     user = UserRepository(db).get_by_id(int(payload["sub"]))
     if not user:
         raise HTTPException(status.HTTP_401_UNAUTHORIZED, "User not found")
+    ActivityService(db).touch(user)
     return user
