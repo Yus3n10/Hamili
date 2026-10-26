@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart';
+
 // Admin console data. These mirror the server's allowlisted fields: counts
 // and timestamps only, never amounts, notes or chat text.
 
@@ -100,6 +102,12 @@ class AdminTester {
         hamiTokensChat: json['hami_tokens_chat'] as int,
         hamiTokensInsight: json['hami_tokens_insight'] as int,
       );
+
+  String get usageSummary {
+    String count(int n, String word) => '${n >= 1000 ? NumberFormat.compact().format(n) : n} $word${n == 1 ? '' : 's'}';
+    return '${count(transactionsCount, 'transaction')} · ${count(hamiMessagesTotal, 'Hami message')} · '
+        '${count(hamiTokensTotal, 'token')}';
+  }
 
   String lastActiveLabel(DateTime now) {
     final last = lastActiveAt;

@@ -175,3 +175,16 @@ def test_admin_activity_does_not_count_as_tester_activity(admin):
     after = client.get("/admin/overview", headers=admin_headers).json()
 
     assert (after["testers_total"], after["active_today"]) == (before["testers_total"], before["active_today"])
+
+
+def test_admin_timestamps_always_carry_a_timezone(admin):
+    """SQLite returns naive datetimes; without an offset the app reads UTC
+    as local time (8 hours off in Manila)."""
+    _, admin_headers = admin
+    _login("admin_tz@example.com")
+
+    [row] = client.get("/admin/testers", headers=admin_headers, params={"search": "admin_tz@"}).json()["items"]
+    [entry, *_] = client.get("/admin/access-log", headers=admin_headers).json()["items"]
+
+    for value in (row["joined_at"], row["last_active_at"], entry["created_at"]):
+        assert value.endswith("Z") or value.endswith("+00:00"), value

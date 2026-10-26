@@ -50,7 +50,7 @@ class _AdminTestersTabState extends ConsumerState<AdminTestersTab> {
                   onChanged: _onSearch,
                   textInputAction: TextInputAction.search,
                   decoration: const InputDecoration(
-                    hintText: 'Search name or email',
+                    hintText: 'Search testers',
                     prefixIcon: Icon(Icons.search),
                     isDense: true,
                   ),
@@ -128,11 +128,7 @@ class _TesterRow extends StatelessWidget {
             '${tester.lastActiveLabel(now)} · Joined ${DateFormat.MMMd().format(tester.joinedAt.toLocal())}',
             style: text.bodySmall,
           ),
-          Text(
-            '${tester.transactionsCount} transactions · ${tester.hamiMessagesTotal} Hami messages · '
-            '${_compact.format(tester.hamiTokensTotal)} tokens',
-            style: text.bodySmall,
-          ),
+          Text(tester.usageSummary, style: text.bodySmall),
         ],
       ),
       isThreeLine: true,

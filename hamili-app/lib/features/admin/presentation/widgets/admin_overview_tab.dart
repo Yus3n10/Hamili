@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/chart_axis.dart';
 import '../../../../shared/widgets/skeleton.dart';
 import '../../domain/admin_models.dart';
 import '../admin_providers.dart';
@@ -113,6 +114,7 @@ class _DailyChart extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final peak = points.fold<int>(0, (m, p) => valueOf(p) > m ? valueOf(p) : m);
+    final interval = niceAxisInterval(peak.toDouble());
     return Card(
       margin: EdgeInsets.zero,
       child: Padding(
@@ -126,8 +128,8 @@ class _DailyChart extends StatelessWidget {
               height: 140,
               child: BarChart(
                 BarChartData(
-                  maxY: peak == 0 ? 1 : peak * 1.2,
-                  gridData: const FlGridData(show: true, drawVerticalLine: false),
+                  maxY: ((peak / interval).floor() + 1) * interval,
+                  gridData: FlGridData(show: true, drawVerticalLine: false, horizontalInterval: interval),
                   borderData: FlBorderData(show: false),
                   barTouchData: BarTouchData(
                     touchTooltipData: BarTouchTooltipData(
@@ -144,8 +146,9 @@ class _DailyChart extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 36,
+                        interval: interval,
                         getTitlesWidget: (value, meta) {
-                          if (value == meta.max || value != value.roundToDouble()) return const SizedBox.shrink();
+                          if (value == meta.max) return const SizedBox.shrink();
                           return Text(_compact.format(value), style: const TextStyle(fontSize: 10));
                         },
                       ),

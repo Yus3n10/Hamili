@@ -73,4 +73,11 @@ void main() {
       findsOneWidget,
     );
   });
+
+  test('the usage line pluralizes counts', () {
+    final one = AdminTester.fromJson({..._row(), 'transactions_count': 1, 'hami_messages_total': 1, 'hami_tokens_total': 1});
+    final many = AdminTester.fromJson(_row());
+    expect(one.usageSummary, '1 transaction · 1 Hami message · 1 token');
+    expect(many.usageSummary, '12 transactions · 34 Hami messages · 18.2K tokens');
+  });
 }

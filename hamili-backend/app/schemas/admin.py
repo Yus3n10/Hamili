@@ -4,9 +4,19 @@ only. Adding an amount, note, or chat field here breaks the privacy promise
 testers are shown in the app.
 """
 
-from datetime import date, datetime
+from datetime import date, datetime, timezone
+from typing import Annotated
 
-from pydantic import BaseModel
+from pydantic import AfterValidator, BaseModel
+
+
+def _as_utc(value: datetime) -> datetime:
+    # SQLite returns naive datetimes; they are UTC, and the app needs the
+    # offset to show local times correctly.
+    return value if value.tzinfo else value.replace(tzinfo=timezone.utc)
+
+
+UtcDatetime = Annotated[datetime, AfterValidator(_as_utc)]
 
 
 class AdminDayPoint(BaseModel):
@@ -31,8 +41,8 @@ class AdminTesterOut(BaseModel):
     id: int
     name: str
     email: str
-    joined_at: datetime
-    last_active_at: datetime | None
+    joined_at: UtcDatetime
+    last_active_at: UtcDatetime | None
     days_active_30d: int
     transactions_count: int
     budgets_count: int
@@ -53,7 +63,7 @@ class AdminTesterPage(BaseModel):
 
 class AdminAccessEntryOut(BaseModel):
     path: str
-    created_at: datetime
+    created_at: UtcDatetime
 
 
 class AdminAccessPage(BaseModel):
