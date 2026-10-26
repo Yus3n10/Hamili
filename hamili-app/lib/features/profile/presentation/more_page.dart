@@ -1,16 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-class MorePage extends StatelessWidget {
+import '../../auth/presentation/auth_providers.dart';
+
+class MorePage extends ConsumerWidget {
   const MorePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isAdmin = ref.watch(currentUserProvider).value?.isAdmin ?? false;
     final items = [
       ('Budgets', Icons.pie_chart_outline, '/budgets'),
       ('Savings Goals', Icons.savings_outlined, '/goals'),
       ('Recurring', Icons.autorenew, '/recurring'),
       ('Profile', Icons.person_outline, '/profile'),
+      if (isAdmin) ('Admin', Icons.admin_panel_settings_outlined, '/admin'),
     ];
 
     return Scaffold(

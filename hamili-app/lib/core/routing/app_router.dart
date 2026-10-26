@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../features/admin/presentation/admin_page.dart';
 import '../../features/analytics/presentation/analytics_page.dart';
 import '../../features/auth/presentation/auth_providers.dart';
 import '../../features/auth/presentation/login_page.dart';
@@ -38,6 +39,11 @@ final routerProvider = Provider<GoRouter>((ref) {
 
       if (!isLoggedIn && !isAuthRoute && !authState.isLoading) return '/login';
       if (isLoggedIn && isAuthRoute) return '/dashboard';
+      // The server answers 404 to non-admins anyway; this just keeps them
+      // from landing on an empty console.
+      if (state.matchedLocation == '/admin' && !(authState.value?.isAdmin ?? false) && !authState.isLoading) {
+        return '/dashboard';
+      }
       return null;
     },
     routes: [
@@ -48,6 +54,7 @@ final routerProvider = Provider<GoRouter>((ref) {
       GoRoute(path: '/goals', pageBuilder: (c, s) => _slideFade(const GoalsPage(), s)),
       GoRoute(path: '/recurring', pageBuilder: (c, s) => _slideFade(const RecurringPage(), s)),
       GoRoute(path: '/profile', pageBuilder: (c, s) => _slideFade(const ProfilePage(), s)),
+      GoRoute(path: '/admin', pageBuilder: (c, s) => _slideFade(const AdminPage(), s)),
       StatefulShellRoute.indexedStack(
         builder: (context, state, navigationShell) => MainShell(navigationShell: navigationShell),
         branches: [

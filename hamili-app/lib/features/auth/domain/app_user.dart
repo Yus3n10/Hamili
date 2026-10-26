@@ -6,6 +6,7 @@ class AppUser {
   final double? monthlySalary;
   final double? allowance;
   final String? financialGoalText;
+  final bool isAdmin;
 
   const AppUser({
     required this.id,
@@ -15,6 +16,7 @@ class AppUser {
     this.monthlySalary,
     this.allowance,
     this.financialGoalText,
+    this.isAdmin = false,
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class AppUser {
       monthlySalary: (json['monthly_salary'] as num?)?.toDouble(),
       allowance: (json['allowance'] as num?)?.toDouble(),
       financialGoalText: json['financial_goal_text'] as String?,
+      isAdmin: json['is_admin'] as bool? ?? false,
     );
   }
 
@@ -37,5 +40,6 @@ class AppUser {
         'monthly_salary': monthlySalary,
         'allowance': allowance,
         'financial_goal_text': financialGoalText,
+        'is_admin': isAdmin,
       };
 }
