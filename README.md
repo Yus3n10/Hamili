@@ -1,6 +1,6 @@
 # Hamili
 
-Hamili is an AI personal finance tracker for Android and Web. Alongside the usual budgeting tools it includes Hami, an assistant built on Google Gemini that reviews your spending, keeps your savings goals in view, and answers money questions in plain language.
+Hamili is an AI personal finance tracker for Android, iPhone, and the web. Alongside the usual budgeting tools it includes Hami, an assistant built on Google Gemini that reviews your spending, keeps your savings goals in view, and answers money questions in plain language.
 
 ## What it does
 
@@ -39,8 +39,28 @@ hamili/
 
 - Web: https://hamili-48b45.web.app
 - Android: download the latest APK from the [Releases page](https://github.com/Yus3n10/Hamili/releases)
+- iPhone and iPad: add the web app to your home screen (steps below)
 
-The backend runs on a free tier that sleeps when idle, so the first request after a quiet stretch can take up to a minute to wake.
+### Install on iPhone or iPad
+
+There is no App Store version yet, but the web app installs to your home screen and opens full screen like a regular app.
+
+1. Open https://hamili-48b45.web.app in **Safari**. Other browsers on iPhone can't add apps to the home screen.
+2. Tap the **Share** button (the square with an arrow pointing up).
+3. Scroll down and tap **Add to Home Screen**, then tap **Add**.
+4. Open Hamili from the new icon and sign in.
+
+It updates by itself, so there is nothing to reinstall when a new version comes out. The home screen app keeps its own sign-in, separate from Safari, so you sign in once inside it.
+
+### Upgrading on Android from v1.0.x
+
+Version 1.1.0 changed the app ID, so it installs as a separate app instead of replacing the old one. Your data is on the server and comes back when you sign in.
+
+1. Open the old Hamili while online, so anything added offline finishes syncing.
+2. Uninstall the old Hamili.
+3. Install the new APK and sign in.
+
+The backend runs on a free hosting tier. It is kept awake, but if it has gone to sleep the first request can take up to a minute.
 
 ## Documentation
 
