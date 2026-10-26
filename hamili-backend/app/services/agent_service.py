@@ -17,6 +17,7 @@ from app.schemas.goal import GoalContribution, SavingsGoalCreate, SavingsGoalUpd
 from app.schemas.recurring import RecurringItemCreate
 from app.schemas.transaction import TransactionCreate
 from app.schemas.user import UserUpdate
+from app.services.activity_service import ActivityService
 from app.services.ai import get_ai_provider
 from app.services.auth_service import AuthService
 from app.services.budget_service import BudgetService
@@ -37,6 +38,7 @@ class AgentService:
         snapshot = InsightService(self.db).build_financial_snapshot(user)
         category_names = [c.name for c in self.db.query(Category).all()]
         result = self.provider.interpret(message_history, snapshot, category_names, local_today().isoformat())
+        ActivityService(self.db).record_ai_usage(user.id, "chat", result.get("usage"))
 
         action = (result.get("action") or "none").strip()
         params = result.get("params") or {}

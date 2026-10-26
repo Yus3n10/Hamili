@@ -10,6 +10,7 @@ from app.models.recurring import RecurringItem
 from app.models.transaction import Transaction
 from app.models.user import User
 from app.repositories.budget_repository import BudgetRepository
+from app.services.activity_service import ActivityService
 from app.services.ai import get_ai_provider
 
 
@@ -81,7 +82,9 @@ class InsightService:
 
     def generate_proactive_insights(self, user: User) -> list[str]:
         snapshot = self.build_financial_snapshot(user)
-        return self.provider.generate_insights(snapshot)
+        messages, usage = self.provider.generate_insights(snapshot)
+        ActivityService(self.db).record_ai_usage(user.id, "insight", usage)
+        return messages
 
 
     def list_active(self, user: User) -> list[AIInsight]:
@@ -115,9 +118,10 @@ class InsightService:
         untouched and returns an empty list rather than raising, so the
         dashboard degrades gracefully instead of erroring."""
         try:
-            messages = self.provider.generate_insights(self.build_financial_snapshot(user))
+            messages, usage = self.provider.generate_insights(self.build_financial_snapshot(user))
         except Exception:
             return []
+        ActivityService(self.db).record_ai_usage(user.id, "insight", usage)
 
         if not messages:
             return []

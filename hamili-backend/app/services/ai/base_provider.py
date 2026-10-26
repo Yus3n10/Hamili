@@ -9,6 +9,18 @@ changing one line in `get_ai_provider()`.
 """
 
 from abc import ABC, abstractmethod
+from dataclasses import dataclass
+
+
+@dataclass(frozen=True)
+class AIUsage:
+    """Token counts one provider call reported. Counts are None when the
+    provider's response carried no usage data."""
+
+    model: str
+    prompt_tokens: int | None
+    output_tokens: int | None
+    total_tokens: int | None
 
 
 class AIProviderUnavailable(Exception):
@@ -37,9 +49,10 @@ class AIProvider(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def generate_insights(self, financial_context: dict) -> list[str]:
+    def generate_insights(self, financial_context: dict) -> tuple[list[str], AIUsage | None]:
         """Generate proactive insight strings (overspending alerts,
-        goal-progress nudges, subscription suggestions) from a snapshot."""
+        goal-progress nudges, subscription suggestions) from a snapshot,
+        plus the usage the call reported."""
         raise NotImplementedError
 
     @abstractmethod
@@ -51,5 +64,7 @@ class AIProvider(ABC):
         today: str,
     ) -> dict:
         """Interpret the conversation as either a normal reply or an action
-        request. Returns a dict: {"action": str, "params": dict, "reply": str}."""
+        request. Returns a dict: {"action": str, "params": dict, "reply": str,
+        "usage": AIUsage | None}. Usage is returned per call, not stored on
+        the provider, because one provider instance serves every request."""
         raise NotImplementedError

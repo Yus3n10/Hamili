@@ -3,8 +3,9 @@ from datetime import datetime, timedelta, timezone
 from sqlalchemy.orm import Session
 
 from app.core.clock import local_date
-from app.models.activity import UserActivityDay
+from app.models.activity import AIUsageEvent, UserActivityDay
 from app.models.user import User
+from app.services.ai.base_provider import AIUsage
 
 TOUCH_INTERVAL = timedelta(minutes=15)
 
@@ -34,4 +35,18 @@ class ActivityService:
         )
         if exists is None:
             self.db.add(UserActivityDay(user_id=user.id, day=day))
+        self.db.commit()
+
+    def record_ai_usage(self, user_id: int, kind: str, usage: AIUsage | None) -> None:
+        """One row per AI call; kind is "chat" or "insight"."""
+        self.db.add(
+            AIUsageEvent(
+                user_id=user_id,
+                kind=kind,
+                model=usage.model if usage else None,
+                prompt_tokens=usage.prompt_tokens if usage else None,
+                output_tokens=usage.output_tokens if usage else None,
+                total_tokens=usage.total_tokens if usage else None,
+            )
+        )
         self.db.commit()
